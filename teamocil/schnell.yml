@@ -1,0 +1,30 @@
+# vets4pets sessions  GPL (c) 2013-2016
+windows:
+  - name: PSQL
+    root: /home/manuel/entwicklung/rails/chipotle/
+    layout: main-vertical
+    panes:
+      - commands:
+        - psql schnell_development -U postgres
+
+  - name: r-SERVER
+    root: /home/manuel/entwicklung/rails/chipotle/schnell
+    layout: main-vertical
+    panes:
+      - commands:
+        - RAILS_ENV=development bundle exec bin/rails s
+
+  - name: r-CONSOLE
+    root: /home/manuel/entwicklung/rails/chipotle/schnell
+    layout: main-vertical
+    panes:
+      - commands:
+        - RAILS_ENV=development bundle exec bin/rails c
+
+  - name: Webpack
+    root: /home/manuel/entwicklung/rails/chipotle/schnell/lib/assets/frontend/javascripts
+    layout: main-vertical
+    panes:
+      - commands:
+        - npm run dev:hot
+
