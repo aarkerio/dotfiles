@@ -20,7 +20,7 @@
   (package-install 'use-package))
 
 (eval-when-compile
-  (require 'use-package))
+(require 'use-package))
 (require 'diminish)
 (require 'bind-key)
 
@@ -28,6 +28,9 @@
 
 (add-to-list 'load-path "~/.emacs.d/plugins/")
 (add-to-list 'load-path "~/.emacs.d/elpa/")
+
+(require 'neotree)
+  (global-set-key [f8] 'neotree-toggle)
 
 ;; Don't load outdated byte code
 (setq load-prefer-newer t)
@@ -63,6 +66,9 @@
 (load "folding" 'nomessage 'noerror)
 (folding-mode-add-find-file-hook)
 (folding-add-to-marks-list 'ruby-mode "#{{{" "#}}}" nil t)
+
+(require 'auto-complete)
+(global-auto-complete-mode t)
 
 ; Powerline
 (require 'powerline)
@@ -133,12 +139,19 @@
 (global-set-key [(shift f9)]  'swbuff-switch-to-next-buffer)
 (global-set-key [(shift f10)] 'swbuff-switch-to-previous-buffer)
 
-(global-set-key [(shift f8)]  'recentf-open-files)
+(global-set-key (kbd "C-x C-a")  'recentf-open-files)
 (global-set-key [(shift f6)] 'magit-status)
-(global-set-key [(shift f5)] 'replace-string)
+(global-set-key [(shift f5)] 'my-replace-string)
+
+(defun my-replace-string ()
+  (interactive)
+  (save-excursion
+    (beginning-of-buffer)
+    (call-interactively 'replace-string)))
 
 (global-set-key [(?\s-q)] 'helm-buffers-list)
 
+(setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit-") (rx "*helm")))
 
 ;; Display dir if two files have the same name
 (require 'uniquify)
@@ -223,6 +236,21 @@
     (lambda () (interactive) (find-alternate-file "..")))
   ; was dired-up-directory
  ))
+
+;; Folding ruby
+(add-hook 'ruby-mode-hook
+  (lambda () (hs-minor-mode)))
+
+(eval-after-load "hideshow"
+  '(add-to-list 'hs-special-modes-alist
+    `(ruby-mode
+      ,(rx (or "def" "class" "module" "do" "{" "[")) ; Block start
+      ,(rx (or "}" "]" "end"))                       ; Block end
+      ,(rx (or "#" "=begin"))                        ; Comment start
+      ruby-forward-sexp nil)))
+
+(global-set-key (kbd "C-c h") 'hs-hide-block)
+(global-set-key (kbd "C-c s") 'hs-show-block)
 
 ;; Powerline configuration
 (custom-set-variables
