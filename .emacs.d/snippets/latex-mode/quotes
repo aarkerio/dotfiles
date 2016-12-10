@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: quotes
+# key: quo
+# --
+\enquote{$0}

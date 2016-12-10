@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: console-log
+# key: sole
+# --
+console.log('this.props.:  >>>> ' + JSON.stringify(this.props));

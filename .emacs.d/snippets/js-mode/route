@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: route
+# key: uter
+# --
+this.props.router.replace('/search/'+ $1);
