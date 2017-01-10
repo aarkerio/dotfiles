@@ -26,11 +26,21 @@
 
 (use-package smart-mode-line)
 
+;; Minimap
+(require 'minimap)
+(setq minimap-window-location 'right)
+(setq minimap-update-delay 0)
+(setq minimap-width-fraction 0.1)
+
 (add-to-list 'load-path "~/.emacs.d/plugins/")
 (add-to-list 'load-path "~/.emacs.d/elpa/")
 
 (require 'neotree)
   (global-set-key [f8] 'neotree-toggle)
+
+(setq minimap-window-location 'right)
+(require 'nurumacs)
+;;(minimap-create)
 
 ;; Don't load outdated byte code
 (setq load-prefer-newer t)
@@ -263,6 +273,10 @@
  '(custom-safe-themes
    (quote
     ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+  '(minimap-hide-scroll-bar t)
+  '(minimap-window-location 'right)
+  '(show-paren-mode t)
+
  '(powerline-default-separator (quote curve)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -274,3 +288,4 @@
  '(powerline-inactive1 ((t (:inherit mode-line-inactive :background "OliveDrab2"))))
  '(powerline-inactive2 ((t (:inherit mode-line-inactive :background "plum1"))))
  '(trailing-whitespace ((((class color) (background light)) (:background "OliveDrab2")) (((class color) (background dark)) (:background "OliveDrab2")) (t (:inverse-video t)))))
+
