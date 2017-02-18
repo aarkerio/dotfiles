@@ -16,9 +16,6 @@ font pango:DejaVu Sans Mono 10
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
-workspace_auto_back_and_forth yes
-bindsym $mod+Escape workspace back_and_forth
-
 # start a terminal
 bindsym $mod+Return exec i3-sensible-terminal
 
@@ -88,7 +85,7 @@ bindsym $mod+a focus parent
 set $ws1 " 1 ß Chrome "
 set $ws2 " 2 ↑ Emacs "
 set $ws3 " 3 Ω Term "
-set $ws4 " 4 ♪ Music "
+set $ws4 " 4 ♪ MusOpera "
 set $ws5 " 5 © Skype "
 set $ws6 " 6 » Torrent "
 set $ws7 " 7 §  "
@@ -160,15 +157,16 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 
 bar {
+    output eDP
     position top
     # status_command i3status
     tray_output primary
     # mode invisible
-    # status_command i3status
+    status_command i3status
 
-    status_command py3status
-    font pango: System San Francisco Display, FontAwesome 10
-    #status_command i3blocks -c ~/.i3/i3blocks.conf
+    #status_command /home/mmontoya/.local/bin/py3status
+    # font pango: System San Francisco Display, FontAwesome 10
+    # status_command i3blocks -c ~/.i3/i3blocks.conf
 
     modifier $mod
     colors{
@@ -194,26 +192,35 @@ bindsym XF86AudioRaiseVolume exec amixer set Master 9%+
 bindsym XF86AudioLowerVolume exec amixer set Master 9%-
 bindsym XF86AudioMute        exec amixer set Master toggle
 
+# brightness control
+bindsym XF86MonBrightnessDown exec light -U 5
+bindsym XF86MonBrightnessUp exec light -A 5
+
 # suspend computer
 bindsym $mod+Shift+s exec dbus-send --system --print-reply --dest="org.freedesktop.UPower" /org/freedesktop/UPower org.freedesktop.UPower.Suspend
+
+# rofi bindings
+bindsym Shift+F9 exec rofi -show run -fg "#f1f1f1" -bg "#333333" -hlfg "#ffffff" -hlbg "#336699" -o 85
+bindsym F12 exec rofi -show window -fg "#f1f1f1" -bg "#333333" -hlfg "#ffffff" -hlbg "#336699" -o 85
 
 # HIDE EDGE BORDERS
 #hide_edge_borders <none|vertical|horizontal|both>
 hide_edge_borders both
 
-# Back and Forth
-workspace_auto_back_and_forth yes
-
 # start dmenu (a program launcher)
 bindsym $mod+p exec --no-startup-id dmenu_run -b  -fn 'Dejavu Sans Mono:10' -nb '#111111' -nf '#ffffff' -sb '#111111' -sf '#c80000'
 bindsym $mod+m exec rhythmbox
 bindsym $mod+Control+o exec emacs
-bindsym $mod+Control+Left move workspace to output left
-bindsym $mod+Control+Right move workspace to output right
+
+workspace_auto_back_and_forth yes
+
+bindsym $mod+Control+Left workspace prev
+bindsym $mod+Control+Right workspace next
+bindsym $mod+Escape workspace back_and_forth
 
 exec --no-startup-id xscreensaver
-exec --no-startup-id /usr/bin/ffplay -nodisp -t 8 -autoexit /home/manuel/Documents/audio/win95.mp3
-exec --no-startup-id feh --randomize --bg-fill /home/manuel/Dokumente/images/wallpapers/*
+#exec --no-startup-id /usr/bin/ffplay -nodisp -t 8 -autoexit /home/manuel/Documents/audio/win95.mp3
+exec --no-startup-id feh --randomize --bg-fill /home/mmontoya/Pictures/wallpapers/*
 
 #assign [class="^URxvt$"] work
 # Assign apps to workspaces
@@ -222,6 +229,7 @@ assign [instance="chrome"] $ws1
 for_window [instance="chrome"] border none
 assign [class="Emacs"] $ws2
 assign [class="Gnome-terminal"] $ws3
+assign [class="Terminator"] $ws3
 assign [class="Rhythmbox"] $ws4
 for_window [class="Rhythmbox"] floating enable
 
@@ -229,7 +237,7 @@ assign [class="Transmission"] $ws6
 # Skype
 assign [class="Skype"] $ws5
 for_window [class="Skype"] floating enable
-#slack
+# Slack
 assign [class="Opera"] $ws5
 for_window [class="Opera"] floating enable
 
@@ -243,6 +251,6 @@ for_window [window_role="pop-up"] floating enable,move absolute center
 exec --no-startup-id gnome-keyring-daemon --start
 exec --no-startup-id emacs
 exec --no-startup-id google-chrome
-exec --no-startup-id gnome-terminal
+exec --no-startup-id lxterminal
 exec --no-startup-id rhythmbox
 exec --no-startup-id opera
