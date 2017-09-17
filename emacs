@@ -81,8 +81,6 @@
 (require 'dired+)
 (diredp-toggle-find-file-reuse-dir 1)
 
-;; (add-to-list 'load-path
-;;                "~/path-to-yasnippet")
 (require 'yasnippet)
 (yas-global-mode 1)
 
@@ -122,6 +120,12 @@
 (require 'multiple-cursors)
 ;; Multiple continum lines
 (global-set-key [(super shift f10)] 'mc/edit-lines)
+
+;; Column flash
+(global-set-key [(C-escape)] 'col-highlight-flash)
+
+;; Rubocop
+(global-set-key (kbd "C-M-ñ") 'rubocop-check-current-file)
 
 ;; Multiple cursors not based on continuous lines
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
@@ -187,8 +191,6 @@
 
 ;;Set standard indent size
 (setq standard-indent 2)
-
-
 
 (global-hl-line-mode 1)
 
