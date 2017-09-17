@@ -4,7 +4,7 @@
 
 
 ;;(set-default-font "Fira Mono-11")
-;;(set-default-font "Inconsolata-12")
+(set-default-font "Inconsolata-12")
 (require 'package)
 (setq package-enable-at-startup nil)
 
@@ -27,19 +27,25 @@
 (use-package smart-mode-line)
 
 ;; Minimap
-(require 'minimap)
-(setq minimap-window-location 'right)
-(setq minimap-update-delay 0)
-(setq minimap-width-fraction 0.1)
+;;(require 'minimap)
+;;(setq minimap-window-location 'right)
+;;(setq minimap-update-delay 0)
+;;(setq minimap-width-fraction 0.1)
 
 (add-to-list 'load-path "~/.emacs.d/plugins/")
 (add-to-list 'load-path "~/.emacs.d/elpa/")
 
+(add-to-list 'load-path "~/.emacs.d/elisp/screenwriter")
+
+; (require 'screenwriter)
+;  (setq auto-mode-alist (cons '("\\.scp" . screenwriter-mode) auto-mode-alist))
+;  (setq auto-mode-alist (cons '("\\.screenplay" . screenwriter-mode) auto-mode-alist))
+
 (require 'neotree)
   (global-set-key [f8] 'neotree-toggle)
 
-(setq minimap-window-location 'right)
-(require 'nurumacs)
+;; (setq minimap-window-location 'right)
+;;(require 'nurumacs)
 ;;(minimap-create)
 
 ;; Don't load outdated byte code
@@ -273,11 +279,13 @@
  '(custom-safe-themes
    (quote
     ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
-  '(minimap-hide-scroll-bar t)
-  '(minimap-window-location 'right)
-  '(show-paren-mode t)
-
- '(powerline-default-separator (quote curve)))
+ '(minimap-hide-scroll-bar t)
+ '(minimap-window-location (quote right))
+ '(package-selected-packages
+   (quote
+    (cider web-mode use-package undo-tree swap-buffers smart-mode-line slime shell-switcher sass-mode ruby-electric ruby-block rubocop rspec-mode react-snippets projectile-speedbar powershell origami neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized auctex airline-themes ac-inf-ruby)))
+ '(powerline-default-separator (quote curve))
+ '(show-paren-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -289,3 +297,4 @@
  '(powerline-inactive2 ((t (:inherit mode-line-inactive :background "plum1"))))
  '(trailing-whitespace ((((class color) (background light)) (:background "OliveDrab2")) (((class color) (background dark)) (:background "OliveDrab2")) (t (:inverse-video t)))))
 
+(setq scroll-conservatively 20)
