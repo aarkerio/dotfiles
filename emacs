@@ -2,18 +2,17 @@
 ;; mmontoya_arroba_gmail_PUNTO_com
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq default-directory "/home/manuel/entwicklung/chipotle/")
+(setq default-directory "/home/mmontoya/entwicklung/chipotle/")
 ;;(set-default-font "Fira Mono-11")
 (set-default-font "Inconsolata-12")
 (require 'package)
-(setq package-enable-at-startup nil)
-
 (setq package-enable-at-startup nil)
 
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
                          ("melpa" . "http://melpa.org/packages/")))
 (package-initialize)
+
 ;; use package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -40,6 +39,8 @@
 
 (require 'neotree)
   (global-set-key [f8] 'neotree-toggle)
+
+(setq scroll-conservatively 20) ;; move minimum when cursor exits view, instead of recentering
 
 ;; Don't load outdated byte code
 (setq load-prefer-newer t)
@@ -260,9 +261,7 @@
  '(column-number-mode t)
  '(custom-safe-themes
    (quote
- '(package-selected-packages
-   (quote
-    (cider web-mode use-package undo-tree swap-buffers smart-mode-line slime shell-switcher sass-mode ruby-electric ruby-block rubocop rspec-mode react-snippets projectile-speedbar powershell origami neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized auctex airline-themes ac-inf-ruby)))
+    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(powerline-default-separator (quote curve))
  '(show-paren-mode t))
 (custom-set-faces
@@ -276,8 +275,6 @@
  '(powerline-inactive2 ((t (:inherit mode-line-inactive :background "plum1"))))
  '(trailing-whitespace ((((class color) (background light)) (:background "OliveDrab2")) (((class color) (background dark)) (:background "OliveDrab2")) (t (:inverse-video t)))))
 
-(setq scroll-conservatively 20)
-
 ;; Kill all other buffers
 (defun kill-other-buffers ()
   "Kill all buffers but the current one.
@@ -288,4 +285,3 @@
       (kill-buffer buffer))))
 
 (global-set-key (kbd "C-x C-b") 'kill-other-buffers)
-
