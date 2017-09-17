@@ -1,8 +1,8 @@
-;; Manuel Montoya .emacs file 2006-2016
+;; Manuel Montoya .emacs file 2006-2017
 ;; mmontoya_arroba_gmail_PUNTO_com
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
+(setq default-directory "/home/manuel/entwicklung/chipotle/")
 ;;(set-default-font "Fira Mono-11")
 (set-default-font "Inconsolata-12")
 (require 'package)
@@ -24,13 +24,10 @@
 (require 'diminish)
 (require 'bind-key)
 
-(use-package smart-mode-line)
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
 
-;; Minimap
-;;(require 'minimap)
-;;(setq minimap-window-location 'right)
-;;(setq minimap-update-delay 0)
-;;(setq minimap-width-fraction 0.1)
+(setq split-width-threshold 9999) ;; split horizontal always
 
 (add-to-list 'load-path "~/.emacs.d/plugins/")
 (add-to-list 'load-path "~/.emacs.d/elpa/")
@@ -44,37 +41,21 @@
 (require 'neotree)
   (global-set-key [f8] 'neotree-toggle)
 
-;; (setq minimap-window-location 'right)
-;;(require 'nurumacs)
-;;(minimap-create)
-
 ;; Don't load outdated byte code
 (setq load-prefer-newer t)
 
-;;(setq inferior-lisp-program "/usr/bin/sbcl") ; your Lisp system
-;;(require 'slime)
-;;(slime-setup)
-
-(ivy-mode 1)
-(setq ivy-use-virtual-buffers t)
-
-(electric-indent-mode -1)
-
 (require 'ruby-electric)
 (add-hook 'ruby-mode-hook '(lambda () (ruby-electric-mode t)))
-(setq ruby-electric-expand-delimiters-list nil)
+
+(require 'rvm)
+(rvm-use-default) ;; use rvm's default ruby for the current Emacs session
 
 (setq save-interprogram-paste-before-kill t)
 
-(global-visual-line-mode 1); Proper line wrapping
-(setq inhibit-splash-screen t); Disable splash screen
-(setq visible-bell t); Flashes on error
-(setq TeX-PDF-mode t); PDF mode (rather than DVI-mode)
-
-(require 'org)
-(define-key global-map "\C-cl" 'org-store-link)
-(define-key global-map "\C-ca" 'org-agenda)
-(setq org-log-done t)
+(global-visual-line-mode 1)      ;; Proper line wrapping
+(setq inhibit-splash-screen t)   ;; Disable splash screen
+(setq visible-bell t)            ;; Flashes on error
+(setq TeX-PDF-mode t)            ;; PDF mode (rather than DVI-mode)
 
 (setq-default show-trailing-whitespace t)
 
@@ -92,10 +73,6 @@
 
 (load-theme 'solarized t)
 
-;; no tabs just spaces
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 2)
-
 (require 'flymake-jshint)
 (add-hook 'js-mode-hook 'flymake-mode)
 (add-hook 'jsx-mode-hook 'js-mode)
@@ -104,8 +81,6 @@
 (require 'dired+)
 (diredp-toggle-find-file-reuse-dir 1)
 
-;; (add-to-list 'load-path
-;;                "~/path-to-yasnippet")
 (require 'yasnippet)
 (yas-global-mode 1)
 
@@ -146,13 +121,19 @@
 ;; Multiple continum lines
 (global-set-key [(super shift f10)] 'mc/edit-lines)
 
+;; Column flash
+(global-set-key [(C-escape)] 'col-highlight-flash)
+
+;; Rubocop
+(global-set-key (kbd "C-M-ñ") 'rubocop-check-current-file)
+
 ;; Multiple cursors not based on continuous lines
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 (require 'swbuff)
-(global-set-key [(shift f9)]  'swbuff-switch-to-next-buffer)
+(global-set-key [(shift f8)]  'swbuff-switch-to-next-buffer)
 (global-set-key [(shift f10)] 'swbuff-switch-to-previous-buffer)
 
 (global-set-key (kbd "C-x C-a")  'recentf-open-files)
@@ -177,10 +158,6 @@
 (setq uniquify-ignore-buffers-re "^\\*")
 
 (setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit-") (rx "*helm")))
-
-(add-to-list 'load-path "~/.emacs.d/elpa/web-mode-20150612.1118")
-(require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
 
 ;; Apostrophe, do not evaluate the name rubocop and replace it with its value; I really mean the name rubocop
 (require 'rubocop)
@@ -208,6 +185,10 @@
 (setq default-tab-width 2
       indent-tabs-mode t
       c-basic-offset 2)
+(setq tab-width 2)
+(defvaralias 'c-basic-offset 'tab-width)
+(defvaralias 'cperl-indent-level 'tab-width)
+
 ;;Set standard indent size
 (setq standard-indent 2)
 
@@ -276,11 +257,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
  '(custom-safe-themes
    (quote
-    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
- '(minimap-hide-scroll-bar t)
- '(minimap-window-location (quote right))
  '(package-selected-packages
    (quote
     (cider web-mode use-package undo-tree swap-buffers smart-mode-line slime shell-switcher sass-mode ruby-electric ruby-block rubocop rspec-mode react-snippets projectile-speedbar powershell origami neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized auctex airline-themes ac-inf-ruby)))
@@ -298,3 +277,15 @@
  '(trailing-whitespace ((((class color) (background light)) (:background "OliveDrab2")) (((class color) (background dark)) (:background "OliveDrab2")) (t (:inverse-video t)))))
 
 (setq scroll-conservatively 20)
+
+;; Kill all other buffers
+(defun kill-other-buffers ()
+  "Kill all buffers but the current one.
+   Don't mess with special buffers."
+  (interactive)
+  (dolist (buffer (buffer-list))
+    (unless (or (eql buffer (current-buffer)) (not (buffer-file-name buffer)))
+      (kill-buffer buffer))))
+
+(global-set-key (kbd "C-x C-b") 'kill-other-buffers)
+
