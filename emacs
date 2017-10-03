@@ -1,6 +1,8 @@
 ;; Manuel Montoya .emacs file 2006-2017
-;; mmontoya_arroba_gmail_PUNTO_com
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq user-mail-address "mmontoya@gmail.com")
+(setq user-full-name "Manuel Montoya")
 
 (setq default-directory "/home/manuel/entwicklung/chipotle/")
 ;;(set-default-font "Fira Mono-11")
@@ -18,6 +20,12 @@
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
+
+(setq org-todo-keywords
+  '((sequence "TODO" "IN-PROGRESS" "WAITING" "STAGING" "DONE")))
+
+(require 'org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
 (eval-when-compile
 (require 'use-package))
@@ -261,8 +269,12 @@
  '(custom-safe-themes
    (quote
     ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+ '(package-selected-packages
+   (quote
+    (org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rubocop rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby)))
  '(powerline-default-separator (quote curve))
- '(show-paren-mode t))
+ '(show-paren-mode t)
+ '(tramp-syntax (quote default) nil (tramp)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -284,4 +296,13 @@
       (kill-buffer buffer))))
 
 (global-set-key (kbd "C-x C-b") 'kill-other-buffers)
+
+
+(defun show-file-name ()
+  "Show the full path file name in the minibuffer."
+  (interactive)
+  (message (buffer-file-name))
+  (kill-new (file-truename buffer-file-name))
+)
+(global-set-key "\C-cz" 'show-file-name)
 
