@@ -5,17 +5,17 @@
 (setq user-full-name "Manuel Montoya")
 
 (setq default-directory "/home/manuel/entwicklung/chipotle/")
+
 ;;(set-default-font "Fira Mono-11")
 (set-default-font "Inconsolata-12")
 (require 'package)
-(setq package-enable-at-startup nil)
-
 (setq package-enable-at-startup nil)
 
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
                          ("melpa" . "http://melpa.org/packages/")))
 (package-initialize)
+
 ;; use package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -37,17 +37,19 @@
 
 (setq split-width-threshold 9999) ;; split horizontal always
 
-(use-package smart-mode-line)
-
 (add-to-list 'load-path "~/.emacs.d/plugins/")
 (add-to-list 'load-path "~/.emacs.d/elpa/")
 
-(setq scroll-conservatively 101) ;; move minimum when cursor exits view, instead of recentering
-(setq mouse-wheel-scroll-amount '(1)) ;; mouse scroll moves 1 line at a time, instead of 5 lines
-(setq mouse-wheel-progressive-speed nil) ;; on a long mouse scroll keep scrolling by 1 line
+(add-to-list 'load-path "~/.emacs.d/elisp/screenwriter")
+
+; (require 'screenwriter)
+;  (setq auto-mode-alist (cons '("\\.scp" . screenwriter-mode) auto-mode-alist))
+;  (setq auto-mode-alist (cons '("\\.screenplay" . screenwriter-mode) auto-mode-alist))
 
 (require 'neotree)
   (global-set-key [f8] 'neotree-toggle)
+
+(setq scroll-conservatively 20) ;; move minimum when cursor exits view, instead of recentering
 
 ;; Don't load outdated byte code
 (setq load-prefer-newer t)
@@ -297,12 +299,13 @@
 
 (global-set-key (kbd "C-x C-b") 'kill-other-buffers)
 
-
+;; gets the path and file name
 (defun show-file-name ()
   "Show the full path file name in the minibuffer."
   (interactive)
   (message (buffer-file-name))
   (kill-new (file-truename buffer-file-name))
 )
+
 (global-set-key "\C-cz" 'show-file-name)
 
