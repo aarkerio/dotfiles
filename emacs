@@ -262,6 +262,9 @@
  '(custom-safe-themes
    (quote
     ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+ '(package-selected-packages
+   (quote
+    (slim-mode col-highlight web-mode use-package undo-tree swap-buffers smart-mode-line slime shell-switcher sass-mode rvm ruby-electric ruby-block rubocop rspec-mode react-snippets projectile-speedbar powershell origami neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized cider auctex airline-themes ac-inf-ruby)))
  '(powerline-default-separator (quote curve))
  '(show-paren-mode t))
 (custom-set-faces
