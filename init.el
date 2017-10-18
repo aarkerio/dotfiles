@@ -12,6 +12,19 @@
 
 (setq default-directory "/home/manuel/entwicklung/chipotle/")
 
+(require 'package)
+
+(setq package-enable-at-startup nil)
+
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("melpa" . "http://melpa.org/packages/")))
+(package-initialize)
+
+(eval-when-compile
+  (require 'use-package))
+(require 'diminish)
+(require 'bind-key)
+
 ;; Change the echo message
 (defun display-startup-echo-area-message ()
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
@@ -20,29 +33,29 @@
 ;; (set-default-font "Inconsolata-12")
 (set-default-font "Hack-11")
 
-(require 'package)
-(setq package-enable-at-startup nil)
-
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("melpa" . "http://melpa.org/packages/")))
-(package-initialize)
-
 ;; use package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
+
+(use-package whitespace
+  :bind (("C-c T w" . whitespace-mode))
+  :init
+  (dolist (hook '(prog-mode-hook text-mode-hooki
+                  conf-mode-hook))
+    (add-hook hook #'whitespace-mode))
+  :config (setq whitespace-line-column nil)
+  :diminish whitespace-mode)
+
+(use-package imenu-anywhere
+  :ensure t
+  :bind (("C-c i" . imenu-anywhere)))
 
 (setq org-todo-keywords
   '((sequence "TODO" "IN-PROGRESS" "WAITING" "STAGING" "DONE")))
 
 (require 'org-bullets)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-
-(eval-when-compile
-(require 'use-package))
-(require 'diminish)
-(require 'bind-key)
 
 (require 'web-mode)
 (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
