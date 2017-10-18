@@ -10,6 +10,14 @@
 (setq user-mail-address "mmontoya@gmail.com")
 (setq user-full-name "Manuel Montoya")
 
+;; Change the echo message
+(defun display-startup-echo-area-message ()
+  (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
+
+;;(set-default-font "Fira Mono-11")
+;; (set-default-font "Inconsolata-12")
+(set-default-font "Hack-11")
+
 (setq default-directory "/home/manuel/entwicklung/chipotle/")
 
 (require 'package)
@@ -22,57 +30,156 @@
 
 (eval-when-compile
   (require 'use-package))
-(require 'diminish)
-(require 'bind-key)
+(require 'diminish)    ;; Hiding or abbreviation of the mode line displays (lighters) of minor-modes
+(require 'bind-key)   ;; A simple way to manage personal keybindings
 
-;; Change the echo message
-(defun display-startup-echo-area-message ()
-  (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
+;; (use-package twilight-bright-theme
+;;   :ensure t
+;;   :config (load-theme 'twilight-bright t))
 
-;;(set-default-font "Fira Mono-11")
-;; (set-default-font "Inconsolata-12")
-(set-default-font "Hack-11")
+(use-package color-theme-sanityinc-solarized
+  :ensure t
+  :config (load-theme 'solarized t))
+
+(use-package auto-complete
+  :ensure t)
+
+(use-package origami
+  :ensure t
+  :bind (("C-c O O" . origami-mode)
+         ("C-c t"  . origami-toggle-node))
+  :mode
+  (("\\.cjls" . origami-mode)
+   ("\\.cjl"  . origami-mode)
+   ("\\.js"   . origami-mode)
+   ("\\.rb"   . origami-mode))
+  :init
+  (dolist (hook '(js-mode-hook clojure-mode-hook
+                  ruby-mode-hook))
+        (add-hook hook #'origami-mode))
+  :config (setq whitespace-line-column nil)
+  :diminish origami-mode)
+
+(use-package json-mode
+  :ensure t
+  :mode "\\.json\\'")
+
+;; Powerline
+(use-package powerline
+  :ensure t
+  :config
+  (powerline-default-theme))
+
+(use-package yasnippet
+  :ensure t)
+
+(use-package magit
+  :ensure t
+  :bind (([(shift f6)] . magit-status)))
 
 ;; use package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 
+;; Whitespace
 (use-package whitespace
   :bind (("C-c T w" . whitespace-mode))
   :init
-  (dolist (hook '(prog-mode-hook text-mode-hooki
-                  conf-mode-hook))
+  (dolist (hook '(conf-mode-hook))
     (add-hook hook #'whitespace-mode))
   :config (setq whitespace-line-column nil)
   :diminish whitespace-mode)
 
+;; Imenu
 (use-package imenu-anywhere
   :ensure t
   :bind (("C-c i" . imenu-anywhere)))
 
-(setq org-todo-keywords
-  '((sequence "TODO" "IN-PROGRESS" "WAITING" "STAGING" "DONE")))
+(use-package org-bullets
+  :ensure t)
 
-(require 'org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+(use-package org
+  :mode (("\\.org$" . org-mode))
+  :config
+  (dolist (setq org-todo-keywords
+        '((sequence "TODO" "IN-PROGRESS" "WAITING" "STAGING" "DONE")))
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+     ))
 
-(require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(use-package multiple-cursors
+  :ensure t
+  :bind
+  ( ;; Multiple continum lines
+    ([(super shift f10)] . mc/edit-lines)
+    ;; Multiple cursors not based on continuous lines
+    (("C->") . mc/mark-next-like-this)
+    (("C-<") . mc/mark-previous-like-this)
+    (("C-c C-<") . mc/mark-all-like-this)))
+
+(use-package web-mode
+  :ensure t
+  :mode (("\\.html\\'" . web-mode)
+         ("\\.erb\\'" . web-mode)
+         ("\\.mustache\\'" . web-mode))
+  :config
+  (setq web-mode-markup-indent-offset 2))
+
+;; Dired reuse bufffer
+(use-package dired+
+  :config
+  (diredp-toggle-find-file-reuse-dir 1))
+
+(use-package recentf
+  :ensure t)
+
+(use-package helm
+  :ensure t
+  :diminish helm-mode
+  :init
+  (progn
+     (helm-mode 1)
+    (require 'helm-config)
+    (setq helm-candidate-number-limit 100))
+  :config
+  (setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit-") (rx "*helm")))
+  :bind
+  ([(?\s-q)] . helm-buffers-list))
+
+(use-package undo-tree
+  :ensure t)
+
+(use-package neotree
+  :ensure t
+  :bind
+  ([(f8)] . neotree-toggle))
+
+(use-package rubocop
+  :ensure t
+  :config
+  (dolist
+      (add-hook 'ruby-mode-hook 'rubocop-mode)
+      (setq rubocop-check-command "/usr/bin/rubocop --format emacs"))
+  :bind
+  ((("C-M-ñ") . rubocop-check-current-file)))
+
+(use-package swbuff
+  :ensure t
+  :bind
+  (([(shift f8)]  . swbuff-switch-to-next-buffer)
+   ([(shift f10)] . swbuff-switch-to-previous-buffer)))
+
+;; Column flash
+(use-package col-highlight
+  :ensure t
+  :bind
+  ([(C-escape)] . col-highlight-flash))
+
+(require 'flymake-jshint)
+(add-hook 'js-mode-hook 'flymake-mode)
+(add-hook 'jsx-mode-hook 'js-mode)
 
 (setq split-width-threshold 9999) ;; split horizontal always
-
-(add-to-list 'load-path "~/.emacs.d/plugins/")
-(add-to-list 'load-path "~/.emacs.d/elpa/")
-
-(add-to-list 'load-path "~/.emacs.d/elisp/screenwriter")
-
-; (require 'screenwriter)
-;  (setq auto-mode-alist (cons '("\\.scp" . screenwriter-mode) auto-mode-alist))
-;  (setq auto-mode-alist (cons '("\\.screenplay" . screenwriter-mode) auto-mode-alist))
-
-(require 'neotree)
-  (global-set-key [f8] 'neotree-toggle)
 
 (setq scroll-conservatively 20) ;; move minimum when cursor exits view, instead of recentering
 
@@ -94,34 +201,6 @@
 
 (setq-default show-trailing-whitespace t)
 
-;; Folding methods
-(load "folding" 'nomessage 'noerror)
-(folding-mode-add-find-file-hook)
-(folding-add-to-marks-list 'ruby-mode "#{{{" "#}}}" nil t)
-
-(require 'auto-complete)
-(global-auto-complete-mode t)
-
-; Powerline
-(require 'powerline)
-(powerline-default-theme)
-
-(load-theme 'solarized t)
-
-(require 'flymake-jshint)
-(add-hook 'js-mode-hook 'flymake-mode)
-(add-hook 'jsx-mode-hook 'js-mode)
-
-;; Dired reuse bufffer
-(require 'dired+)
-(diredp-toggle-find-file-reuse-dir 1)
-
-(require 'yasnippet)
-(yas-global-mode 1)
-
-;; use web-mode- for .js files
-;;(add-to-list 'auto-mode-alist '("\\.js$" . web-mode-jshint))
-
 ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
 (defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
@@ -138,41 +217,13 @@
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . jsx-mode))
 (autoload 'jsx-mode "jsx-mode" "JSX mode" t)
 
-(require 'recentf)
-(recentf-mode 1)
-
-(require 'helm-config)
-(helm-mode 1)
-
-(require 'undo-tree)
-
 ;; Flyspell
 (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
 (setq flyspell-default-dictionary "castellano")
 
 (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
 
-(require 'multiple-cursors)
-;; Multiple continum lines
-(global-set-key [(super shift f10)] 'mc/edit-lines)
-
-;; Column flash
-(global-set-key [(C-escape)] 'col-highlight-flash)
-
-;; Rubocop
-(global-set-key (kbd "C-M-ñ") 'rubocop-check-current-file)
-
-;; Multiple cursors not based on continuous lines
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-
-(require 'swbuff)
-(global-set-key [(shift f8)]  'swbuff-switch-to-next-buffer)
-(global-set-key [(shift f10)] 'swbuff-switch-to-previous-buffer)
-
 (global-set-key (kbd "C-x C-a")  'recentf-open-files)
-(global-set-key [(shift f6)] 'magit-status)
 (global-set-key [(shift f5)] 'my-replace-string)
 
 (defun my-replace-string ()
@@ -181,26 +232,12 @@
     (beginning-of-buffer)
     (call-interactively 'replace-string)))
 
-(global-set-key [(?\s-q)] 'helm-buffers-list)
-
-(setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit-") (rx "*helm")))
-
 ;; Display dir if two files have the same name
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'reverse)
 (setq uniquify-separator "|")
 (setq uniquify-after-kill-buffer-p t)
 (setq uniquify-ignore-buffers-re "^\\*")
-
-(setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit-") (rx "*helm")))
-
-;; Apostrophe, do not evaluate the name rubocop and replace it with its value; I really mean the name rubocop
-(require 'rubocop)
-(add-hook 'ruby-mode-hook 'rubocop-mode)
-(setq rubocop-check-command "/usr/bin/rubocop --format emacs")
-(defun rubocop-ensure-installed () )
-;; rubocop
-(global-set-key (kbd "C-c r") 'rubocop-check-current-file)
 
 ;; Completion for Ruby
 (eval-after-load 'auto-complete
@@ -218,14 +255,12 @@
 (setq-default indent-tabs-mode nil);
 ;;  Change Tab Width
 (setq default-tab-width 2
+      tab-width 2
       indent-tabs-mode t
-      c-basic-offset 2)
-(setq tab-width 2)
+      c-basic-offset 2
+      standard-indent 2)
 (defvaralias 'c-basic-offset 'tab-width)
 (defvaralias 'cperl-indent-level 'tab-width)
-
-;;Set standard indent size
-(setq standard-indent 2)
 
 (global-hl-line-mode 1)
 
@@ -234,11 +269,6 @@
 (setq default-major-mode 'text-mode)
 ;;Colors for selections (mark region)
 (setq transient-mark-mode t)
-
-(add-to-list 'load-path "~/.emacs.d/plugins")
-(setq load-path (append load-path (list "~/.emacs.d/plugins")))
-
-;; (run-at-time (current-time) 3000 'recentf-save-list)
 
 ;;CSS
 ;;(autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
@@ -286,6 +316,27 @@
 (global-set-key (kbd "C-c h") 'hs-hide-block)
 (global-set-key (kbd "C-c s") 'hs-show-block)
 
+;; Kill all other buffers
+(defun kill-other-buffers ()
+  "Kill all buffers but the current one.
+   Don't mess with special buffers."
+  (interactive)
+  (dolist (buffer (buffer-list))
+    (unless (or (eql buffer (current-buffer)) (not (buffer-file-name buffer)))
+      (kill-buffer buffer))))
+
+(global-set-key (kbd "C-x C-b") 'kill-other-buffers)
+
+;; gets the path and file name
+(defun show-file-name ()
+  "Show the full path file name in the minibuffer."
+  (interactive)
+  (message (buffer-file-name))
+  (kill-new (file-truename buffer-file-name))
+)
+
+(global-set-key "\C-cz" 'show-file-name)
+
 ;; Powerline configuration
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -312,25 +363,4 @@
  '(powerline-inactive1 ((t (:inherit mode-line-inactive :background "OliveDrab2"))))
  '(powerline-inactive2 ((t (:inherit mode-line-inactive :background "plum1"))))
  '(trailing-whitespace ((((class color) (background light)) (:background "OliveDrab2")) (((class color) (background dark)) (:background "OliveDrab2")) (t (:inverse-video t)))))
-
-;; Kill all other buffers
-(defun kill-other-buffers ()
-  "Kill all buffers but the current one.
-   Don't mess with special buffers."
-  (interactive)
-  (dolist (buffer (buffer-list))
-    (unless (or (eql buffer (current-buffer)) (not (buffer-file-name buffer)))
-      (kill-buffer buffer))))
-
-(global-set-key (kbd "C-x C-b") 'kill-other-buffers)
-
-;; gets the path and file name
-(defun show-file-name ()
-  "Show the full path file name in the minibuffer."
-  (interactive)
-  (message (buffer-file-name))
-  (kill-new (file-truename buffer-file-name))
-)
-
-(global-set-key "\C-cz" 'show-file-name)
 
