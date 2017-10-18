@@ -1,5 +1,11 @@
 ;; Manuel Montoya .emacs file 2006-2017
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; -*- lexical-binding: t -*-
+
+(defconst d/emacs-start-time (current-time))
+(setq gc-cons-threshold 64000000)
+(add-hook 'after-init-hook (lambda ()
+                             (setq gc-cons-threshold 800000)))
 
 (setq user-mail-address "mmontoya@gmail.com")
 (setq user-full-name "Manuel Montoya")
@@ -11,7 +17,9 @@
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
 
 ;;(set-default-font "Fira Mono-11")
-(set-default-font "Inconsolata-12")
+;; (set-default-font "Inconsolata-12")
+(set-default-font "Hack-11")
+
 (require 'package)
 (setq package-enable-at-startup nil)
 
