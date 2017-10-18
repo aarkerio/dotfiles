@@ -6,6 +6,10 @@
 
 (setq default-directory "/home/manuel/entwicklung/chipotle/")
 
+;; Change the echo message
+(defun display-startup-echo-area-message ()
+  (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
+
 ;;(set-default-font "Fira Mono-11")
 (set-default-font "Inconsolata-12")
 (require 'package)
