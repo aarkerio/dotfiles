@@ -54,10 +54,9 @@
 (defun display-startup-echo-area-message ()
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
 
-(if (string= system-name "pav23")
-    ;; Set default-directory here.
-    (setq default-directory "/home/manuel/entwicklung/chipotle/")
-    (setq default-directory "/home/mmontoya/entwicklung/chipotle/"))
+(setq default-directory (if (string= system-name "pav23")
+    "/home/manuel/entwicklung/chipotle/"
+    "/home/mmontoya/entwicklung/chipotle/"))
 
 (require 'package)
 
@@ -120,78 +119,57 @@
   :bind ("M-p" . ace-window)
   :init (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
+(use-package clojure-snippets
+  :ensure t)
+
 (use-package clojure-mode
   :ensure t
-  :mode (("\\.edn$" . clojure-mode))
+  :mode (("\\.edn$"  . clojure-mode)
+         ("\\.clj$"  . clojure-mode)
+         ("\\.cljs$" . clojure-mode))
+  :bind (("C-c d f" . cider-code)
+         ("C-c d g" . cider-grimoire)
+         ("C-c d w" . cider-grimoire-web)
+         ("C-c d c" . clojure-cheatsheet)
+         ("C-c d d" . dash-at-point))
+  :init
+  (defconst clojure--prettify-symbols-alist
+    '(("fn"   . ?λ)
+      ("__"   . ?⁈)))
   :config
-  (progn
-    (setq clojure-align-forms-automatically t)
+    (progn
+      (setq clojure-align-forms-automatically t)
+      (define-clojure-indent
+        (defroutes 'defun)
+        (GET 2)
+        (POST 2)
+        (PUT 2)
+        (DELETE 2)
+        (HEAD 2)
+        (ANY 2)
+        (context 2)
+        (let-routes 1))
 
-    (define-clojure-indent
-      (defroutes 'defun)
-      (GET 2)
-      (POST 2)
-      (PUT 2)
-      (DELETE 2)
-      (HEAD 2)
-      (ANY 2)
-      (context 2)
-      (let-routes 1))
+      (define-clojure-indent
+        (s/fdef 1))
 
-    (define-clojure-indent
-      (form-to 1))
+      (defun toggle-nrepl-buffer ()
+        "Toggle the nREPL REPL on and off"
+        (interactive)
+        (if (string-match "cider-repl" (buffer-name (current-buffer)))
+            (delete-window)
+          (cider-switch-to-repl-buffer)))
 
-    (define-clojure-indent
-      (match 1)
-      (are 2)
-      (checking 2)
-      (async 1))
+      (defun cider-save-and-refresh ()
+        (interactive)
+        (save-buffer)
+        (call-interactively 'cider-refresh))
 
-    (define-clojure-indent
-      (select 1)
-      (insert 1)
-      (update 1)
-      (delete 1))
+      (defun cider-eval-last-sexp-and-append ()
+        (interactive)
+        (cider-eval-last-sexp '(1)))
 
-    (define-clojure-indent
-      (run* 1)
-      (fresh 1))
-
-    (define-clojure-indent
-      (extend-freeze 2)
-      (extend-thaw 1))
-
-    (define-clojure-indent
-      (go-loop 1))
-
-    (define-clojure-indent
-      (this-as 1)
-      (specify 1)
-      (specify! 1))
-
-    (define-clojure-indent
-      (s/fdef 1))
-
-    (setq clojure--prettify-symbols-alist
-          '(("fn" . ?λ)))
-
-    (defun toggle-nrepl-buffer ()
-      "Toggle the nREPL REPL on and off"
-      (interactive)
-      (if (string-match "cider-repl" (buffer-name (current-buffer)))
-          (delete-window)
-        (cider-switch-to-repl-buffer)))
-
-    (defun cider-save-and-refresh ()
-      (interactive)
-      (save-buffer)
-      (call-interactively 'cider-refresh))
-
-    (defun cider-eval-last-sexp-and-append ()
-      (interactive)
-      (cider-eval-last-sexp '(1)))
-
-    (global-set-key (kbd "s-r") 'cider-save-and-refresh)))
+      (add-hook 'clojure-mode-hook 'global-prettify-symbols-mode)))
 
 (use-package cider
   :ensure t
