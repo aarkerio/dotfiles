@@ -7,25 +7,64 @@
 (add-hook 'after-init-hook (lambda ()
                              (setq gc-cons-threshold 800000)))
 
-(setq user-mail-address "mmontoya@gmail.com")
-(setq user-full-name "Manuel Montoya")
+;;(set-default-font "Fira Mono-11")
+;; (set-default-font "Inconsolata-12")
+(set-default-font "Hack-11")
+
+(show-paren-mode 1)   ;; Show parentesis
+(global-linum-mode 1) ;; always show line numbers
+(column-number-mode 1)
+(global-hl-line-mode 1)
+(global-visual-line-mode 1)  ;; Proper line wrapping
+
+;; Spaces nos real tabs
+(setq-default indent-tabs-mode nil
+              line-spacing 1
+              tab-width 2
+              c-basic-offset 2
+              cursor-type 'box
+              cursor-in-non-selected-windows nil
+              bidi-display-reordering nil
+              show-trailing-whitespace t
+              truncate-lines t)
+
+;;  Change Tab Width
+(setq default-tab-width 2
+      tab-width 2
+      indent-tabs-mode t
+      c-basic-offset 2
+      default-major-mode 'text-mode
+      transient-mark-mode t                  ;;Colors for selections (mark region)
+      user-mail-address "mmontoya@gmail.com"
+      user-full-name "Manuel Montoya"
+      save-interprogram-paste-before-kill t
+      inhibit-splash-screen t         ;; Disable splash screen
+      visible-bell t                  ;; Flashes on error
+      TeX-PDF-mode t                  ;; PDF mode (rather than DVI-mode)
+      standard-indent 2
+      package-enable-at-startup nil
+      split-width-threshold 9999     ;; split horizontal always
+      scroll-conservatively 20       ;; move minimum when cursor exits view, instead of recentering
+      load-prefer-newer t)           ;; Don't load outdated byte code
+
+(defvaralias 'c-basic-offset 'tab-width)
+(defvaralias 'cperl-indent-level 'tab-width)
 
 ;; Change the echo message
 (defun display-startup-echo-area-message ()
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
 
-;;(set-default-font "Fira Mono-11")
-;; (set-default-font "Inconsolata-12")
-(set-default-font "Hack-11")
+(setq my-dir (if (string= system-name "pav23")
+                (progn (message "/home/manuel/entwicklung/chipotle/"))
+                (progn (message "/home/mmontoya/entwicklung/chipotle/"))))
 
-(setq default-directory "/home/manuel/entwicklung/chipotle/")
+(setq default-directory my-dir)
 
 (require 'package)
 
-(setq package-enable-at-startup nil)
-
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("melpa" . "http://melpa.org/packages/")))
+(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                         ("marmalade" . "https://marmalade-repo.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
 
 (eval-when-compile
@@ -59,6 +98,115 @@
         (add-hook hook #'origami-mode))
   :config (setq whitespace-line-column nil)
   :diminish origami-mode)
+
+;; (use-package paredit
+;;   :ensure t
+;;   :init
+;;   (progn
+;;     (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
+;;     (add-hook 'clojure-mode-hook 'paredit-mode)
+;;     (add-hook 'clojurescript-mode-hook 'paredit-mode)
+;;     (add-hook 'clojurec-mode-hook 'paredit-mode)
+;;     (add-hook 'cider-repl-mode-hook 'paredit-mode)))
+
+(use-package clojure-mode
+  :ensure t
+  :mode (("\\.edn$" . clojure-mode))
+  :config
+  (progn
+    (setq clojure-align-forms-automatically t)
+
+    (define-clojure-indent
+      (defroutes 'defun)
+      (GET 2)
+      (POST 2)
+      (PUT 2)
+      (DELETE 2)
+      (HEAD 2)
+      (ANY 2)
+      (context 2)
+      (let-routes 1))
+
+    (define-clojure-indent
+      (form-to 1))
+
+    (define-clojure-indent
+      (match 1)
+      (are 2)
+      (checking 2)
+      (async 1))
+
+    (define-clojure-indent
+      (select 1)
+      (insert 1)
+      (update 1)
+      (delete 1))
+
+    (define-clojure-indent
+      (run* 1)
+      (fresh 1))
+
+    (define-clojure-indent
+      (extend-freeze 2)
+      (extend-thaw 1))
+
+    (define-clojure-indent
+      (go-loop 1))
+
+    (define-clojure-indent
+      (this-as 1)
+      (specify 1)
+      (specify! 1))
+
+    (define-clojure-indent
+      (s/fdef 1))
+
+    (setq clojure--prettify-symbols-alist
+          '(("fn" . ?λ)))
+
+    (defun toggle-nrepl-buffer ()
+      "Toggle the nREPL REPL on and off"
+      (interactive)
+      (if (string-match "cider-repl" (buffer-name (current-buffer)))
+          (delete-window)
+        (cider-switch-to-repl-buffer)))
+
+    (defun cider-save-and-refresh ()
+      (interactive)
+      (save-buffer)
+      (call-interactively 'cider-refresh))
+
+    (defun cider-eval-last-sexp-and-append ()
+      (interactive)
+      (cider-eval-last-sexp '(1)))
+
+    (global-set-key (kbd "s-r") 'cider-save-and-refresh)))
+
+(use-package cider
+  :ensure t
+  :config
+  (progn
+    (setq nrepl-hide-special-buffers t)
+    (setq cider-popup-stacktraces-in-repl t)
+    (setq cider-repl-history-file "~/.emacs.d/nrepl-history")
+    (setq cider-repl-pop-to-buffer-on-connect nil)
+    (setq cider-auto-select-error-buffer nil)
+    (setq cider-prompt-save-file-on-load nil)
+    (setq cider-repl-display-help-banner nil)
+    (setq cider-repl-use-pretty-printing t)
+    (setq cider-refresh-before-fn "reloaded.repl/suspend")
+    (setq cider-refresh-after-fn "reloaded.repl/resume")
+    (setq cider-cljs-lein-repl "(do (reloaded.repl/go) (user/cljs-repl))")))
+
+(use-package yasnippet
+  :ensure t
+  :init
+  (progn
+    (yas-global-mode 1)
+    (use-package clojure-snippets)))
+
+(use-package yaml-mode
+  :mode ("\\.yml$" . yaml-mode))
 
 (use-package json-mode
   :ensure t
@@ -131,7 +279,13 @@
   (diredp-toggle-find-file-reuse-dir 1))
 
 (use-package recentf
-  :ensure t)
+  :ensure t
+  :commands recentf-mode
+  :config
+  (progn (recentf-mode t) (setq-default recentf-max-saved-items 1000))
+  :bind ("C-x C-a" . recentf-open-files)
+  :init
+  (recentf-mode 1))
 
 (use-package helm
   :ensure t
@@ -175,31 +329,23 @@
   :bind
   ([(C-escape)] . col-highlight-flash))
 
-(require 'flymake-jshint)
-(add-hook 'js-mode-hook 'flymake-mode)
-(add-hook 'jsx-mode-hook 'js-mode)
+;; Display dir if two files have the same name
+(use-package uniquify
+  :init
+    (progn
+     (setq uniquify-buffer-name-style 'reverse
+           uniquify-separator "|"
+           uniquify-after-kill-buffer-p t
+           uniquify-ignore-buffers-re "^\\*")))
 
-(setq split-width-threshold 9999) ;; split horizontal always
-
-(setq scroll-conservatively 20) ;; move minimum when cursor exits view, instead of recentering
-
-;; Don't load outdated byte code
-(setq load-prefer-newer t)
-
-(require 'ruby-electric)
-(add-hook 'ruby-mode-hook '(lambda () (ruby-electric-mode t)))
+(use-package ruby-electric
+  :ensure t
+  :init
+    (progn
+      (add-hook 'ruby-mode-hook '(lambda () (ruby-electric-mode t)))))
 
 (require 'rvm)
 (rvm-use-default) ;; use rvm's default ruby for the current Emacs session
-
-(setq save-interprogram-paste-before-kill t)
-
-(global-visual-line-mode 1)      ;; Proper line wrapping
-(setq inhibit-splash-screen t)   ;; Disable splash screen
-(setq visible-bell t)            ;; Flashes on error
-(setq TeX-PDF-mode t)            ;; PDF mode (rather than DVI-mode)
-
-(setq-default show-trailing-whitespace t)
 
 ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
@@ -223,7 +369,6 @@
 
 (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
 
-(global-set-key (kbd "C-x C-a")  'recentf-open-files)
 (global-set-key [(shift f5)] 'my-replace-string)
 
 (defun my-replace-string ()
@@ -232,50 +377,11 @@
     (beginning-of-buffer)
     (call-interactively 'replace-string)))
 
-;; Display dir if two files have the same name
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'reverse)
-(setq uniquify-separator "|")
-(setq uniquify-after-kill-buffer-p t)
-(setq uniquify-ignore-buffers-re "^\\*")
-
-;; Completion for Ruby
-(eval-after-load 'auto-complete
-  '(add-to-list 'ac-modes 'inf-ruby-mode))
-(add-hook 'inf-ruby-mode-hook 'ac-inf-ruby-enable)
-
-;; Show parentesis
-(show-paren-mode 1)
-
-;; Show line-number in the mode line
-(global-linum-mode 1) ; always show line numbers
-;; Show column-number in the mode line
-(column-number-mode 1)
-;; Spaces nos real tabs
-(setq-default indent-tabs-mode nil);
-;;  Change Tab Width
-(setq default-tab-width 2
-      tab-width 2
-      indent-tabs-mode t
-      c-basic-offset 2
-      standard-indent 2)
-(defvaralias 'c-basic-offset 'tab-width)
-(defvaralias 'cperl-indent-level 'tab-width)
-
-(global-hl-line-mode 1)
-
-;(global-hl-line-mode t) ; turn it on for all modes by default
-;; Make Text mode the default mode for new buffers
-(setq default-major-mode 'text-mode)
-;;Colors for selections (mark region)
-(setq transient-mark-mode t)
-
 ;;CSS
 ;;(autoload 'css-mode "css-mode" "Mode for editing CSS files" t)
 (setq auto-mode-alist
        (append '(("\\.css$" . css-mode))
                auto-mode-alist))
-
 
 (eval-after-load "dired"
        ;; don't remove `other-window', the caller expects it to be there
@@ -293,28 +399,6 @@
      	     (kill-buffer orig)
      	     (dired up)
      	     (dired-goto-file dir))))))
-
-(add-hook 'dired-mode-hook
- (lambda ()
-  (define-key dired-mode-map (kbd "C-<up>")
-    (lambda () (interactive) (find-alternate-file "..")))
-  ; was dired-up-directory
- ))
-
-;; Folding ruby
-(add-hook 'ruby-mode-hook
-  (lambda () (hs-minor-mode)))
-
-(eval-after-load "hideshow"
-  '(add-to-list 'hs-special-modes-alist
-    `(ruby-mode
-      ,(rx (or "def" "class" "module" "do" "{" "[")) ; Block start
-      ,(rx (or "}" "]" "end"))                       ; Block end
-      ,(rx (or "#" "=begin"))                        ; Comment start
-      ruby-forward-sexp nil)))
-
-(global-set-key (kbd "C-c h") 'hs-hide-block)
-(global-set-key (kbd "C-c s") 'hs-show-block)
 
 ;; Kill all other buffers
 (defun kill-other-buffers ()
