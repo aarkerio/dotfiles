@@ -54,11 +54,10 @@
 (defun display-startup-echo-area-message ()
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
 
-(setq my-dir (if (string= system-name "pav23")
-                (progn (message "/home/manuel/entwicklung/chipotle/"))
-                (progn (message "/home/mmontoya/entwicklung/chipotle/"))))
-
-(setq default-directory my-dir)
+(if (string= system-name "pav23")
+    ;; Set default-directory here.
+    (setq default-directory "/home/manuel/entwicklung/chipotle/")
+    (setq default-directory "/home/mmontoya/entwicklung/chipotle/"))
 
 (require 'package)
 
