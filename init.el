@@ -285,7 +285,7 @@
     (require 'helm-config)
     (setq helm-candidate-number-limit 100))
   :config
-  (setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit-") (rx "*helm")))
+  (setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit") (rx "*helm")))
   :bind
   ([(?\s-q)] . helm-buffers-list))
 
@@ -409,6 +409,16 @@
 )
 
 (global-set-key "\C-cz" 'show-file-name)
+
+(defun search-selection (beg end)
+      "search for selected text"
+      (interactive "r")
+      (kill-ring-save beg end)
+      (isearch-mode t nil nil nil)
+      (isearch-yank-pop))
+
+(define-key global-map (kbd "<C-f1>") 'search-selection)
+
 
 ;; Powerline configuration
 (custom-set-variables
