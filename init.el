@@ -7,6 +7,13 @@
 (add-hook 'after-init-hook (lambda ()
                              (setq gc-cons-threshold 800000)))
 
+(require 'package)
+
+(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                         ("marmalade" . "https://marmalade-repo.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")))
+(package-initialize)
+
 ;;(set-default-font "Fira Mono-11")
 ;; (set-default-font "Inconsolata-12")
 (set-default-font "Hack-11")
@@ -28,7 +35,6 @@
               show-trailing-whitespace t
               truncate-lines t)
 
-;;  Change Tab Width
 (setq default-tab-width 2
       tab-width 2
       indent-tabs-mode t
@@ -47,8 +53,18 @@
       scroll-conservatively 20       ;; move minimum when cursor exits view, instead of recentering
       load-prefer-newer t)           ;; Don't load outdated byte code
 
-(defvaralias 'c-basic-offset 'tab-width)
-(defvaralias 'cperl-indent-level 'tab-width)
+(use-package auto-complete
+  :ensure t)
+
+(use-package ac-cider
+  :ensure t
+  :commands ac-cider-setup
+  :config
+  (progn
+    (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+    (add-hook 'cider-mode-hook 'ac-cider-setup)
+    (eval-after-load "auto-complete"
+      '(add-to-list 'ac-modes 'cider-mode))))
 
 ;; Change the echo message
 (defun display-startup-echo-area-message ()
@@ -57,13 +73,6 @@
 (setq default-directory (if (string= system-name "pav23")
     "/home/manuel/entwicklung/chipotle/"
     "/home/mmontoya/entwicklung/chipotle/"))
-
-(require 'package)
-
-(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                         ("marmalade" . "https://marmalade-repo.org/packages/")
-                         ("melpa" . "https://melpa.org/packages/")))
-(package-initialize)
 
 (eval-when-compile
   (require 'use-package))
@@ -77,9 +86,6 @@
 (use-package color-theme-sanityinc-solarized
   :ensure t
   :config (load-theme 'solarized t))
-
-(use-package auto-complete
-  :ensure t)
 
 (use-package origami
   :ensure t
@@ -96,6 +102,73 @@
         (add-hook hook #'origami-mode))
   :config (setq whitespace-line-column nil)
   :diminish origami-mode)
+
+;; TAB,  C-i 	ac-expand 	Completion by TAB
+;; RET,  C-m 	ac-complete 	Completion by RET
+;; down, M-n 	ac-next 	Select next candidate
+;; up,   M-p 	ac-previous 	Select previous candidate
+;; C-?,  f1 	ac-help 	Show buffer help
+;; C-s
+
+(use-package auto-complete
+  :commands auto-complete-mode
+  :init
+  (progn
+    (auto-complete-mode t))
+  :bind (("C-n" . ac-next)
+         ("C-p" . ac-previous))
+  :config
+    (progn
+      (use-package auto-complete-config)
+
+      (ac-set-trigger-key "TAB")
+      (ac-config-default)
+
+      (setq ac-delay 0.02)
+      (setq ac-use-menu-map t)
+      (setq ac-menu-height 50)
+      (setq ac-use-quick-help nil)
+      (setq ac-ignore-case nil)
+      (setq ac-dwim  t)
+      (setq ac-fuzzy-enable t)
+
+      (use-package ac-dabbrev
+        :config
+        (progn
+          (add-to-list 'ac-sources 'ac-source-dabbrev)))
+
+      (setq ac-modes '(js3-mode
+                     emacs-lisp-mode
+                     lisp-mode
+                     lisp-interaction-mode
+                     slime-repl-mode
+                     c-mode
+                     cc-mode
+                     c++-mode
+                     go-mode
+                     java-mode
+                     eclim-mode
+                     malabar-mode
+                     clojure-mode
+                     clojurescript-mode
+                     ruby-mode
+                     enh-ruby-mode
+                     ecmascript-mode
+                     javascript-mode
+                     js-mode
+                     js2-mode
+                     css-mode
+                     xml-mode))))
+
+(use-package auto-complete-config
+  :ensure auto-complete
+  :bind ("M-<tab>" . my--auto-complete)
+  :init
+  (defun my--auto-complete ()
+    (interactive)
+    (unless (boundp 'auto-complete-mode)
+      (global-auto-complete-mode 1))
+    (auto-complete)))
 
 ;; (use-package paredit
 ;;   :ensure t
