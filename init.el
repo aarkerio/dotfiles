@@ -139,16 +139,6 @@
 
       (setq ac-modes '(js3-mode
                      emacs-lisp-mode
-                     lisp-mode
-                     lisp-interaction-mode
-                     slime-repl-mode
-                     c-mode
-                     cc-mode
-                     c++-mode
-                     go-mode
-                     java-mode
-                     eclim-mode
-                     malabar-mode
                      clojure-mode
                      clojurescript-mode
                      ruby-mode
@@ -399,6 +389,50 @@
            uniquify-separator "|"
            uniquify-after-kill-buffer-p t
            uniquify-ignore-buffers-re "^\\*")))
+
+;; markdown mode
+(use-package markdown-mode
+  :config (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
+
+(use-package ruby-mode
+  :ensure t
+  :mode "\\.rb\\'"
+  :mode "Rakefile\\'"
+  :mode "Gemfile\\'"
+  :mode "Berksfile\\'"
+  :mode "Vagrantfile\\'"
+  :interpreter "ruby"
+
+  :init
+  (setq ruby-indent-level 2
+        ruby-indent-tabs-mode nil)
+  (add-hook 'ruby-mode 'superword-mode)
+
+  :bind
+  (([(meta down)] . ruby-forward-sexp)
+   ([(meta up)]   . ruby-backward-sexp)
+   (("C-c C-e"    . ruby-send-region))))  ;; Rebind since Rubocop uses C-c C-r
+
+;; popwin
+(use-package popwin
+  :ensure t
+  :config
+  (popwin-mode 1))
+
+(use-package enh-ruby-mode
+  :ensure t
+  :defer t
+  :mode (("\\.rb\\'"  . enh-ruby-mode)
+         ("\\.erb\\'" . enh-ruby-mode))
+  :config (progn
+	    (setq enh-ruby-indent-level 2
+		  enh-ruby-add-encoding-comment-on-save nil
+		  enh-ruby-deep-indent-paren nil
+		  enh-ruby-bounce-deep-indent t
+		  enh-ruby-hanging-indent-level 2)
+	    (setq ruby-insert-encoding-magic-comment nil)))
 
 (use-package ruby-electric
   :ensure t
