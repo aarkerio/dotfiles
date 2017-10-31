@@ -421,19 +421,6 @@
   :config
   (popwin-mode 1))
 
-(use-package enh-ruby-mode
-  :ensure t
-  :defer t
-  :mode (("\\.rb\\'"  . enh-ruby-mode)
-         ("\\.erb\\'" . enh-ruby-mode))
-  :config (progn
-	    (setq enh-ruby-indent-level 2
-		  enh-ruby-add-encoding-comment-on-save nil
-		  enh-ruby-deep-indent-paren nil
-		  enh-ruby-bounce-deep-indent t
-		  enh-ruby-hanging-indent-level 2)
-	    (setq ruby-insert-encoding-magic-comment nil)))
-
 (use-package ruby-electric
   :ensure t
   :init
