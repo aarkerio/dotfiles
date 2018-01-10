@@ -1,6 +1,7 @@
 ;; Manuel Montoya .emacs file 2006-2017
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; -*- lexical-binding: t -*-
+;; M-s h .  &  M-s h u  ;; Highlight and Unhighlight text
 
 (defconst d/emacs-start-time (current-time))
 (setq gc-cons-threshold 64000000)
@@ -109,6 +110,20 @@
 ;; up,   M-p 	ac-previous 	Select previous candidate
 ;; C-?,  f1 	ac-help 	Show buffer help
 ;; C-s
+
+(use-package js2-mode
+  :mode "\\.js\\'"
+  :bind
+  (:map js2-mode-map
+        ("," . self-with-space)
+        ("=" . pad-equals)
+        (":" . self-with-space))
+  :interpreter
+  ("node" . js2-mode)
+  :config
+  (setenv "NODE_NO_READLINE" "1")
+  (setq-default js2-global-externs
+                '("clearTimeout" "setTimeout" "module" "require" "_")))
 
 (use-package auto-complete
   :commands auto-complete-mode
@@ -465,14 +480,15 @@
 ;; JSX mode
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . jsx-mode))
 (autoload 'jsx-mode "jsx-mode" "JSX mode" t)
+(global-set-key [(shift f5)] 'my-replace-string)
+(global-set-key [(shift f12)] 'eshell)
 
 ;; Flyspell
 (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
 (setq flyspell-default-dictionary "castellano")
 
 (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
-
-(global-set-key [(shift f5)] 'my-replace-string)
+(add-hook 'markdown-mode-hook 'turn-on-flyspell)
 
 (defun my-replace-string ()
   (interactive)
@@ -560,4 +576,20 @@
  '(powerline-inactive1 ((t (:inherit mode-line-inactive :background "OliveDrab2"))))
  '(powerline-inactive2 ((t (:inherit mode-line-inactive :background "plum1"))))
  '(trailing-whitespace ((((class color) (background light)) (:background "OliveDrab2")) (((class color) (background dark)) (:background "OliveDrab2")) (t (:inverse-video t)))))
+
+(defun my-run-latex ()
+  (interactive)
+  (let ((default-directory "/home/manuel/Documents/personal/Schriftstellerei/gypsys/"))
+    (setq gyp-file-path (expand-file-name "gypsys.tex"))
+    (setq aux-files-path (expand-file-name "gypro/*.aux"))
+    (setq aux-file-path (expand-file-name "*.aux"))
+    (TeX-save-document (TeX-master-file))
+    (delete-file aux-files-path)
+    (delete-file aux-file-path)
+    (TeX-command "LaTeX" gyp-file-path -1)))
+
+(defun my-LaTeX-hook ()
+ (local-set-key (kbd "C-c C-a") 'my-run-latex))
+
+(add-hook 'LaTeX-mode-hook 'my-LaTeX-hook)
 
