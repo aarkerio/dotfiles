@@ -36,7 +36,7 @@
 (column-number-mode 1)
 (global-hl-line-mode 1)
 (global-visual-line-mode 1)  ;; Proper line wrapping
-
+(add-hook 'after-init-hook 'global-company-mode)
 ;; Spaces nos real tabs
 (setq-default indent-tabs-mode nil
               line-spacing 1
@@ -65,10 +65,6 @@
       split-width-threshold 9999     ;; split horizontal always
       scroll-conservatively 20       ;; move minimum when cursor exits view, instead of recentering
       load-prefer-newer t)           ;; Don't load outdated byte code
-
-(use-package auto-complete
-  :ensure t)
-
 
 (use-package ac-cider
   :ensure t
@@ -132,62 +128,13 @@
     (add-hook 'js2-mode-hook (lambda ()
                                (bind-key "M-j" 'join-line-or-lines-in-region js2-mode-map)))))
 
-(use-package auto-complete
-  :commands auto-complete-mode
-  :init
-  (progn
-    (auto-complete-mode t))
-  :bind (("C-n" . ac-next)
-         ("C-p" . ac-previous))
-  :config
-    (progn
-      (use-package auto-complete-config)
-
-      (ac-set-trigger-key "TAB")
-      (ac-config-default)
-
-      (setq ac-delay 0.02)
-      (setq ac-use-menu-map t)
-      (setq ac-menu-height 50)
-      (setq ac-use-quick-help nil)
-      (setq ac-ignore-case nil)
-      (setq ac-dwim  t)
-      (setq ac-fuzzy-enable t)
-
-      (use-package ac-dabbrev
-        :config
-        (progn
-          (add-to-list 'ac-sources 'ac-source-dabbrev)))
-
-      (setq ac-modes '(js3-mode
-                     emacs-lisp-mode
-                     clojure-mode
-                     clojurescript-mode
-                     ruby-mode
-                     enh-ruby-mode
-                     ecmascript-mode
-                     javascript-mode
-                     js-mode
-                     js2-mode
-                     css-mode
-                     xml-mode))))
-
-(use-package auto-complete-config
-  :ensure auto-complete
-  :bind ("M-<tab>" . my--auto-complete)
-  :init
-  (defun my-auto-complete ()
-    (interactive)
-    (unless (boundp 'auto-complete-mode)
-      (global-auto-complete-mode 1))
-    (auto-complete)))
-
 (use-package rainbow-delimiters
   :ensure t
   :init
   (progn
     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)))
 
+;; Company is a text completion framework for Emacs.
 (use-package company
   :ensure t
   :defer t
@@ -402,8 +349,13 @@
 
 (use-package swbuff
   :ensure t
+  :init
+    (progn
+      (setq
+        swbuff-clear-delay 1
+        swbuff-exclude-buffer-regexps '("\\` " "^\*Mess" "^\*Back" ".*Completion" "^\*Ido" "^\*Helm" "^\*Help")))
   :bind
-  (([(shift f8)]  . swbuff-switch-to-next-buffer)
+  (([(shift f1)]  . swbuff-switch-to-next-buffer)
    ([(shift f10)] . swbuff-switch-to-previous-buffer)))
 
 ;; Column flash
