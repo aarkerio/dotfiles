@@ -1,6 +1,7 @@
-;; Manuel Montoya .emacs file 2006-2017
+;; Manuel Montoya .emacs file 2006-2018
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; -*- lexical-binding: t -*-
+;; M-s h .  &  M-s h u  ;; Highlight and Unhighlight text
 
 (defconst d/emacs-start-time (current-time))
 (setq gc-cons-threshold 64000000)
@@ -14,16 +15,28 @@
                          ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
 
-;;(set-default-font "Fira Mono-11")
+;; (set-default-font "Fira Mono-11")
 ;; (set-default-font "Inconsolata-12")
 (set-default-font "Hack-11")
+
+(global-hi-lock-mode 1)
+(setq hi-lock-file-patterns-policy #'(lambda (dummy) t))
+
+(require 'hi-lock)
+(defun jpt-toggle-mark-word-at-point ()
+  (interactive)
+  (if hi-lock-interactive-patterns
+      (unhighlight-regexp (car (car hi-lock-interactive-patterns)))
+    (highlight-symbol-at-point)))
+
+(global-set-key (kbd "s-.") 'jpt-toggle-mark-word-at-point)
 
 (show-paren-mode 1)   ;; Show parentesis
 (global-linum-mode 1) ;; always show line numbers
 (column-number-mode 1)
 (global-hl-line-mode 1)
 (global-visual-line-mode 1)  ;; Proper line wrapping
-
+(add-hook 'after-init-hook 'global-company-mode)
 ;; Spaces nos real tabs
 (setq-default indent-tabs-mode nil
               line-spacing 1
@@ -53,9 +66,6 @@
       scroll-conservatively 20       ;; move minimum when cursor exits view, instead of recentering
       load-prefer-newer t)           ;; Don't load outdated byte code
 
-(use-package auto-complete
-  :ensure t)
-
 (use-package ac-cider
   :ensure t
   :commands ac-cider-setup
@@ -77,11 +87,7 @@
 (eval-when-compile
   (require 'use-package))
 (require 'diminish)    ;; Hiding or abbreviation of the mode line displays (lighters) of minor-modes
-(require 'bind-key)   ;; A simple way to manage personal keybindings
-
-;; (use-package twilight-bright-theme
-;;   :ensure t
-;;   :config (load-theme 'twilight-bright t))
+(require 'bind-key)    ;; A simple way to manage personal keybindings
 
 (use-package color-theme-sanityinc-solarized
   :ensure t
@@ -110,55 +116,17 @@
 ;; C-?,  f1 	ac-help 	Show buffer help
 ;; C-s
 
-(use-package auto-complete
-  :commands auto-complete-mode
-  :init
-  (progn
-    (auto-complete-mode t))
-  :bind (("C-n" . ac-next)
-         ("C-p" . ac-previous))
+(use-package js2-mode
+  :mode (("\\.js$" . js2-mode)
+         ("Jakefile$" . js2-mode))
+  :interpreter ("node" . js2-mode)
+  :bind (("C-a" . back-to-indentation-or-beginning-of-line)
+         ("C-M-h" . backward-kill-word))
   :config
-    (progn
-      (use-package auto-complete-config)
-
-      (ac-set-trigger-key "TAB")
-      (ac-config-default)
-
-      (setq ac-delay 0.02)
-      (setq ac-use-menu-map t)
-      (setq ac-menu-height 50)
-      (setq ac-use-quick-help nil)
-      (setq ac-ignore-case nil)
-      (setq ac-dwim  t)
-      (setq ac-fuzzy-enable t)
-
-      (use-package ac-dabbrev
-        :config
-        (progn
-          (add-to-list 'ac-sources 'ac-source-dabbrev)))
-
-      (setq ac-modes '(js3-mode
-                     emacs-lisp-mode
-                     clojure-mode
-                     clojurescript-mode
-                     ruby-mode
-                     enh-ruby-mode
-                     ecmascript-mode
-                     javascript-mode
-                     js-mode
-                     js2-mode
-                     css-mode
-                     xml-mode))))
-
-(use-package auto-complete-config
-  :ensure auto-complete
-  :bind ("M-<tab>" . my--auto-complete)
-  :init
-  (defun my--auto-complete ()
-    (interactive)
-    (unless (boundp 'auto-complete-mode)
-      (global-auto-complete-mode 1))
-    (auto-complete)))
+  (progn
+    (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
+    (add-hook 'js2-mode-hook (lambda ()
+                               (bind-key "M-j" 'join-line-or-lines-in-region js2-mode-map)))))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -166,6 +134,7 @@
   (progn
     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)))
 
+;; Company is a text completion framework for Emacs.
 (use-package company
   :ensure t
   :defer t
@@ -179,16 +148,6 @@
           company-show-numbers t)
     (setq company-dabbrev-downcase nil))
   :diminish company-mode)
-
-;; (use-package paredit
-;;   :ensure t
-;;   :init
-;;   (progn
-;;     (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
-;;     (add-hook 'clojure-mode-hook 'paredit-mode)
-;;     (add-hook 'clojurescript-mode-hook 'paredit-mode)
-;;     (add-hook 'clojurec-mode-hook 'paredit-mode)
-;;     (add-hook 'cider-repl-mode-hook 'paredit-mode)))
 
 (use-package avy
   :ensure t
@@ -390,8 +349,13 @@
 
 (use-package swbuff
   :ensure t
+  :init
+    (progn
+      (setq
+        swbuff-clear-delay 1
+        swbuff-exclude-buffer-regexps '("\\` " "^\*Mess" "^\*Back" ".*Completion" "^\*Ido" "^\*Helm" "^\*Help")))
   :bind
-  (([(shift f8)]  . swbuff-switch-to-next-buffer)
+  (([(shift f1)]  . swbuff-switch-to-next-buffer)
    ([(shift f10)] . swbuff-switch-to-previous-buffer)))
 
 ;; Column flash
@@ -464,14 +428,15 @@
 ;; JSX mode
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . jsx-mode))
 (autoload 'jsx-mode "jsx-mode" "JSX mode" t)
+(global-set-key [(shift f5)] 'my-replace-string)
+(global-set-key [(shift f12)] 'eshell)
 
 ;; Flyspell
 (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
 (setq flyspell-default-dictionary "castellano")
 
 (add-hook 'LaTeX-mode-hook 'turn-on-flyspell)
-
-(global-set-key [(shift f5)] 'my-replace-string)
+(add-hook 'markdown-mode-hook 'turn-on-flyspell)
 
 (defun my-replace-string ()
   (interactive)
@@ -518,8 +483,7 @@
   "Show the full path file name in the minibuffer."
   (interactive)
   (message (buffer-file-name))
-  (kill-new (file-truename buffer-file-name))
-)
+  (kill-new (file-truename buffer-file-name)))
 
 (global-set-key "\C-cz" 'show-file-name)
 
@@ -531,7 +495,6 @@
       (isearch-yank-pop))
 
 (define-key global-map (kbd "<C-f1>") 'search-selection)
-
 
 ;; Powerline configuration
 (custom-set-variables
@@ -545,7 +508,7 @@
     ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(package-selected-packages
    (quote
-    (avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rubocop rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby)))
+    (highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rubocop rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby)))
  '(powerline-default-separator (quote curve))
  '(show-paren-mode t)
  '(tramp-syntax (quote default) nil (tramp)))
@@ -560,3 +523,18 @@
  '(powerline-inactive2 ((t (:inherit mode-line-inactive :background "plum1"))))
  '(trailing-whitespace ((((class color) (background light)) (:background "OliveDrab2")) (((class color) (background dark)) (:background "OliveDrab2")) (t (:inverse-video t)))))
 
+(defun my-run-latex ()
+  (interactive)
+  (let ((default-directory "/home/manuel/Documents/personal/Schriftstellerei/gypsys/"))
+    (setq gyp-file-path (expand-file-name "gypsys.tex"))
+    (setq aux-files-path (expand-file-name "gypro/*.aux"))
+    (setq aux-file-path (expand-file-name "*.aux"))
+    (TeX-save-document (TeX-master-file))
+    (delete-file aux-files-path)
+    (delete-file aux-file-path)
+    (TeX-command "LaTeX" gyp-file-path -1)))
+
+(defun my-LaTeX-hook ()
+ (local-set-key (kbd "C-c C-a") 'my-run-latex))
+
+(add-hook 'LaTeX-mode-hook 'my-LaTeX-hook)
