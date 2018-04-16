@@ -13,23 +13,16 @@
 (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
                          ("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")))
-(package-initialize)
 
 ;; (set-default-font "Fira Mono-11")
 ;; (set-default-font "Inconsolata-12")
-(set-default-font "Hack-11")
+;; (set-default-font "Hack-11")
+(set-frame-font "Hack-11" nil t)
 
 (global-hi-lock-mode 1)
 (setq hi-lock-file-patterns-policy #'(lambda (dummy) t))
 
 (require 'hi-lock)
-(defun jpt-toggle-mark-word-at-point ()
-  (interactive)
-  (if hi-lock-interactive-patterns
-      (unhighlight-regexp (car (car hi-lock-interactive-patterns)))
-    (highlight-symbol-at-point)))
-
-(global-set-key (kbd "s-.") 'jpt-toggle-mark-word-at-point)
 
 (show-paren-mode 1)   ;; Show parentesis
 (global-linum-mode 1) ;; always show line numbers
@@ -75,6 +68,12 @@
     (add-hook 'cider-mode-hook 'ac-cider-setup)
     (eval-after-load "auto-complete"
       '(add-to-list 'ac-modes 'cider-mode))))
+
+;; Minimap
+(use-package sublimity
+  :config (require 'sublimity)
+  (require 'sublimity-scroll)
+  (sublimity-mode 1))
 
 ;; Change the echo message
 (defun display-startup-echo-area-message ()
@@ -148,6 +147,8 @@
           company-show-numbers t)
     (setq company-dabbrev-downcase nil))
   :diminish company-mode)
+
+
 
 (use-package avy
   :ensure t
@@ -340,12 +341,8 @@
 
 (use-package rubocop
   :ensure t
-  :config
-  (dolist
-      (add-hook 'ruby-mode-hook 'rubocop-mode)
-      (setq rubocop-check-command "/usr/bin/rubocop --format emacs"))
   :bind
-  ((("C-M-ñ") . rubocop-check-current-file)))
+  (([(M f12)] . rubocop-check-current-file)))
 
 (use-package swbuff
   :ensure t
@@ -490,11 +487,14 @@
 (defun search-selection (beg end)
       "search for selected text"
       (interactive "r")
-      (kill-ring-save beg end)
-      (isearch-mode t nil nil nil)
-      (isearch-yank-pop))
+      (let (
+            (selection (buffer-substring-no-properties beg end))
+           )
+        (deactivate-mark)
+        (isearch-mode t nil nil nil)
+        (isearch-yank-string selection)))
 
-(define-key global-map (kbd "<C-f1>") 'search-selection)
+(define-key global-map (kbd "<C-f3>") 'search-selection)
 
 ;; Powerline configuration
 (custom-set-variables
@@ -504,14 +504,12 @@
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(custom-safe-themes
-   (quote
-    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+   '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(package-selected-packages
-   (quote
-    (highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rubocop rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby)))
- '(powerline-default-separator (quote curve))
+   '(flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rubocop rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
+ '(powerline-default-separator 'curve)
  '(show-paren-mode t)
- '(tramp-syntax (quote default) nil (tramp)))
+ '(tramp-syntax 'default nil (tramp)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -538,3 +536,11 @@
  (local-set-key (kbd "C-c C-a") 'my-run-latex))
 
 (add-hook 'LaTeX-mode-hook 'my-LaTeX-hook)
+
+(defun jpt-toggle-mark-word-at-point ()
+  (interactive)
+  (if hi-lock-interactive-patterns
+      (unhighlight-regexp (car (car hi-lock-interactive-patterns)))
+    (highlight-symbol-at-point)))
+
+(global-set-key (kbd "s-.") 'jpt-toggle-mark-word-at-point)
