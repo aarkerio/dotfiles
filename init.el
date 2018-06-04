@@ -3,6 +3,13 @@
 ;;; -*- lexical-binding: t -*-
 ;; M-s h .  &  M-s h u  ;; Highlight and Unhighlight text
 
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (defconst d/emacs-start-time (current-time))
 (setq gc-cons-threshold 64000000)
 (add-hook 'after-init-hook (lambda ()
@@ -80,8 +87,8 @@
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
 
 (setq default-directory (if (string= system-name "pav23")
-    "/home/manuel/entwicklung/chipotle/"
-    "/home/mmontoya/entwicklung/chipotle/"))
+    "/home/manuel/entwicklung/chipotle/tangosource/"
+    "/home/mmontoya/entwicklung/chipotle/tangosource/"))
 
 (eval-when-compile
   (require 'use-package))
@@ -254,7 +261,9 @@
 
 (use-package magit
   :ensure t
-  :bind (([(shift f6)] . magit-status)))
+  :bind (([(shift f6)] . magit-status)
+         ("C-c m b" . magit-blame)
+         ("C-c m q" . magit-blame-quit)))
 
 ;; use package
 (unless (package-installed-p 'use-package)
@@ -292,9 +301,10 @@
   ( ;; Multiple continum lines
     ([(super shift f10)] . mc/edit-lines)
     ;; Multiple cursors not based on continuous lines
-    (("C->") . mc/mark-next-like-this)
-    (("C-<") . mc/mark-previous-like-this)
-    (("C-c C-<") . mc/mark-all-like-this)))
+    ;;(("C->") . mc/mark-next-like-this)
+    ;;(("C-<") . mc/mark-previous-like-this)
+    ;;(("C-c C-<") . mc/mark-all-like-this))
+  ))
 
 (use-package web-mode
   :ensure t
@@ -341,8 +351,9 @@
 
 (use-package rubocop
   :ensure t
+  :defer t
   :bind
-  (([(M f12)] . rubocop-check-current-file)))
+    (([(M f12)] . rubocop-check-current-file)))
 
 (use-package swbuff
   :ensure t
@@ -427,6 +438,7 @@
 (autoload 'jsx-mode "jsx-mode" "JSX mode" t)
 (global-set-key [(shift f5)] 'my-replace-string)
 (global-set-key [(shift f12)] 'eshell)
+(global-set-key [(C f11)] 'find-grep-dired)
 
 ;; Flyspell
 (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
@@ -504,12 +516,14 @@
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(custom-safe-themes
-   '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
+   (quote
+    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(package-selected-packages
-   '(flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rubocop rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
- '(powerline-default-separator 'curve)
+   (quote
+    (latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby)))
+ '(powerline-default-separator (quote curve))
  '(show-paren-mode t)
- '(tramp-syntax 'default nil (tramp)))
+ '(tramp-syntax (quote default) nil (tramp)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -544,3 +558,43 @@
     (highlight-symbol-at-point)))
 
 (global-set-key (kbd "s-.") 'jpt-toggle-mark-word-at-point)
+
+(defun beginning-of-line-or-indentation ()
+  "move to beginning of line, or indentation"
+  (interactive)
+  (if (bolp)
+      (back-to-indentation)
+    (beginning-of-line)))
+
+(global-set-key (kbd "M-m") 'beginning-of-line-or-indentation)
+
+
+(require 'tabbar)
+; turn on the tabbar
+(tabbar-mode t)
+; define all tabs to be one of 3 possible groups: “Emacs Buffer”, “Dired”,
+;“User Buffer”.
+
+(defun tabbar-buffer-groups ()
+  "Return the list of group names the current buffer belongs to.
+This function is a custom function for tabbar-mode's tabbar-buffer-groups.
+This function group all buffers into 3 groups:
+Those Dired, those user buffer, and those emacs buffer.
+Emacs buffer are those starting with “*”."
+  (list
+   (cond
+    ((string-equal "*" (substring (buffer-name) 0 1))
+     "Emacs Buffer"
+     )
+    ((eq major-mode 'dired-mode)
+     "Dired"
+     )
+    (t
+     "User Buffer"
+     )
+    ))) 
+
+(setq tabbar-buffer-groups-function 'tabbar-buffer-groups)
+
+(global-set-key [M-s-left] 'tabbar-backward)
+(global-set-key [M-s-right] 'tabbar-forward)

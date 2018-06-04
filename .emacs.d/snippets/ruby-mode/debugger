@@ -2,4 +2,4 @@
 # name: debugger
 # key: bugg
 # --
-logger.debug "####  var #################>>>  #{var.inspect}"
+Rails.logger.debug "####  var #################>>>  #{var.inspect}"
