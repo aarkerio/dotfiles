@@ -21,6 +21,10 @@
                          ("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")))
 
+(add-to-list 'exec-path "/home/manuel/.rvm/gems/ruby-2.1.3@thrive/bin:/home/manuel/.rvm/gems/ruby-2.1.3@global/bin:/home/manuel/.rvm/rubies/ruby-2.1.3/bin:/home/manuel/.rvm/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/home/manuel/.rvm/gems/ruby-2.1.3@thrive:/home/manuel/.rvm/gems/ruby-2.1.3@global")
+
+(exec-path-from-shell-copy-env "GEM_PATH")
+
 ;; (set-default-font "Fira Mono-11")
 ;; (set-default-font "Inconsolata-12")
 ;; (set-default-font "Hack-11")
@@ -66,6 +70,8 @@
       scroll-conservatively 20       ;; move minimum when cursor exits view, instead of recentering
       load-prefer-newer t)           ;; Don't load outdated byte code
 
+(use-package all-the-icons)
+
 (use-package ac-cider
   :ensure t
   :commands ac-cider-setup
@@ -87,8 +93,8 @@
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
 
 (setq default-directory (if (string= system-name "pav23")
-    "/home/manuel/entwicklung/chipotle/tangosource/"
-    "/home/mmontoya/entwicklung/chipotle/tangosource/"))
+    "/home/manuel/entwicklung/chipotle/lisp/"
+    "/home/mmontoya/entwicklung/chipotle/lisp/"))
 
 (eval-when-compile
   (require 'use-package))
@@ -520,7 +526,7 @@
     ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
  '(package-selected-packages
    (quote
-    (latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby)))
+    (exec-path-from-shell all-the-icons latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby)))
  '(powerline-default-separator (quote curve))
  '(show-paren-mode t)
  '(tramp-syntax (quote default) nil (tramp)))
