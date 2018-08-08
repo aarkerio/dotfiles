@@ -3,13 +3,6 @@
 ;;; -*- lexical-binding: t -*-
 ;; M-s h .  &  M-s h u  ;; Highlight and Unhighlight text
 
-
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-(package-initialize)
-
 (defconst d/emacs-start-time (current-time))
 (setq gc-cons-threshold 64000000)
 (add-hook 'after-init-hook (lambda ()
@@ -33,7 +26,7 @@
 (global-hi-lock-mode 1)
 (setq hi-lock-file-patterns-policy #'(lambda (dummy) t))
 
-(require 'hi-lock)
+(require 'hi-lock)   ;; highlight a string in the current buffer.
 
 (show-paren-mode 1)   ;; Show parentesis
 (global-linum-mode 1) ;; always show line numbers
@@ -520,16 +513,16 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(cider-show-error-buffer nil)
+ '(cider-use-tooltips t)
  '(column-number-mode t)
  '(custom-safe-themes
-   (quote
-    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+   '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(package-selected-packages
-   (quote
-    (exec-path-from-shell all-the-icons latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby)))
- '(powerline-default-separator (quote curve))
+   '(exwm exec-path-from-shell all-the-icons latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
+ '(powerline-default-separator 'curve)
  '(show-paren-mode t)
- '(tramp-syntax (quote default) nil (tramp)))
+ '(tramp-syntax 'default nil (tramp)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -574,7 +567,6 @@
 
 (global-set-key (kbd "M-m") 'beginning-of-line-or-indentation)
 
-
 (require 'tabbar)
 ; turn on the tabbar
 (tabbar-mode t)
@@ -583,24 +575,22 @@
 
 (defun tabbar-buffer-groups ()
   "Return the list of group names the current buffer belongs to.
-This function is a custom function for tabbar-mode's tabbar-buffer-groups.
-This function group all buffers into 3 groups:
-Those Dired, those user buffer, and those emacs buffer.
-Emacs buffer are those starting with “*”."
+   This function is a custom function for tabbar-mode's tabbar-buffer-groups.
+   This function group all buffers into 3 groups:
+   Those Dired, those user buffer, and those emacs buffer.
+   Emacs buffer are those starting with “*”."
   (list
-   (cond
-    ((string-equal "*" (substring (buffer-name) 0 1))
-     "Emacs Buffer"
-     )
-    ((eq major-mode 'dired-mode)
-     "Dired"
-     )
-    (t
-     "User Buffer"
-     )
-    ))) 
+    (cond
+      ((string-equal "*" (substring (buffer-name) 0 1))
+       "Emacs Buffer")
+      ((eq major-mode 'dired-mode)
+       "Dired")
+      (t
+       "User Buffer"))))
 
 (setq tabbar-buffer-groups-function 'tabbar-buffer-groups)
 
 (global-set-key [M-s-left] 'tabbar-backward)
 (global-set-key [M-s-right] 'tabbar-forward)
+
+
