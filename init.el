@@ -593,4 +593,14 @@
 (global-set-key [M-s-left] 'tabbar-backward)
 (global-set-key [M-s-right] 'tabbar-forward)
 
+;; CIDER
+(global-set-key (kbd "M-s-o") 'cider-repl-clear-buffer)
 
+(defun clj-connect ()
+  "easy connect"
+  (interactive)
+  (defvar foo "Wazzza!!")
+  (message "Hello (%s)" foo)
+  (cider-connect "localhost"  7000))
+
+(global-set-key (kbd "M-s-p") 'clj-connect)
