@@ -86,22 +86,6 @@
 
 (load-theme 'majapahit-light t)
 
-(use-package origami
-  :ensure t
-  :bind (("C-c O O" . origami-mode)
-         ("C-c t"  . origami-toggle-node))
-  :mode
-  (("\\.cjls" . origami-mode)
-   ("\\.cjl"  . origami-mode)
-   ("\\.js"   . origami-mode)
-   ("\\.rb"   . origami-mode))
-  :init
-  (dolist (hook '(js-mode-hook clojure-mode-hook
-                  ruby-mode-hook))
-        (add-hook hook #'origami-mode))
-  :config (setq whitespace-line-column nil)
-  :diminish origami-mode)
-
 ;; TAB,  C-i 	ac-expand 	Completion by TAB
 ;; RET,  C-m 	ac-complete 	Completion by RET
 ;; down, M-n 	ac-next 	Select next candidate
@@ -588,7 +572,7 @@
   (interactive)
   (defvar foo "Ich verbinde mich mit dem Nest!!!")
   (message "Hello (%s)" foo)
-  (cider-connect-clj "lisp/ZentaurLMS@localhost:7000"))
+  (cider-connect '(:host "localhost" :port "7000")))
 
 (global-set-key (kbd "M-s-p") 'clj-connect)
 
