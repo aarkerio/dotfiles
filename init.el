@@ -3,6 +3,13 @@
 ;;; -*- lexical-binding: t -*-
 ;; M-s h .  &  M-s h u  ;; Highlight and Unhighlight text
 
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (defconst d/emacs-start-time (current-time))
 (setq gc-cons-threshold 64000000)
 (add-hook 'after-init-hook (lambda ()
@@ -16,7 +23,7 @@
 
 (add-to-list 'exec-path "/home/manuel/.rvm/gems/ruby-2.1.3@thrive/bin:/home/manuel/.rvm/gems/ruby-2.1.3@global/bin:/home/manuel/.rvm/rubies/ruby-2.1.3/bin:/home/manuel/.rvm/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/home/manuel/.rvm/gems/ruby-2.1.3@thrive:/home/manuel/.rvm/gems/ruby-2.1.3@global")
 
-(exec-path-from-shell-copy-env "GEM_PATH")
+;; (exec-path-from-shell-copy-env "GEM_PATH")
 
 ;; (set-default-font "Fira Mono-11")
 ;; (set-default-font "Inconsolata-12")
@@ -74,12 +81,6 @@
     (add-hook 'cider-mode-hook 'ac-cider-setup)
     (eval-after-load "auto-complete"
       '(add-to-list 'ac-modes 'cider-mode))))
-
-;; Minimap
-(use-package sublimity
-  :config (require 'sublimity)
-  (require 'sublimity-scroll)
-  (sublimity-mode 1))
 
 ;; Change the echo message
 (defun display-startup-echo-area-message ()
