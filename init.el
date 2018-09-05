@@ -14,12 +14,12 @@
 (setq gc-cons-threshold 64000000)
 (add-hook 'after-init-hook (lambda ()
                              (setq gc-cons-threshold 800000)))
-
 (require 'package)
 
-(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                         ("marmalade" . "https://marmalade-repo.org/packages/")
-                         ("melpa" . "https://melpa.org/packages/")))
+(setq package-archives '(("gnu" .          "https://elpa.gnu.org/packages/")
+                         ("marmalade" .    "https://marmalade-repo.org/packages/")
+                         ("melpa-stable" . "https://stable.melpa.org/packages/")
+                         ("melpa" .        "https://melpa.org/packages/")))
 
 (add-to-list 'exec-path "/home/manuel/.rvm/gems/ruby-2.1.3@thrive/bin:/home/manuel/.rvm/gems/ruby-2.1.3@global/bin:/home/manuel/.rvm/rubies/ruby-2.1.3/bin:/home/manuel/.rvm/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/home/manuel/.rvm/gems/ruby-2.1.3@thrive:/home/manuel/.rvm/gems/ruby-2.1.3@global")
 
@@ -72,16 +72,6 @@
 
 (use-package all-the-icons)
 
-(use-package ac-cider
-  :ensure t
-  :commands ac-cider-setup
-  :config
-  (progn
-    (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-    (add-hook 'cider-mode-hook 'ac-cider-setup)
-    (eval-after-load "auto-complete"
-      '(add-to-list 'ac-modes 'cider-mode))))
-
 ;; Change the echo message
 (defun display-startup-echo-area-message ()
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
@@ -90,14 +80,18 @@
     "/home/manuel/entwicklung/chipotle/lisp/"
     "/home/mmontoya/entwicklung/chipotle/lisp/"))
 
+;; (load (concat default-directory "elisp/myfunctions"))
+
 (eval-when-compile
   (require 'use-package))
 (require 'diminish)    ;; Hiding or abbreviation of the mode line displays (lighters) of minor-modes
 (require 'bind-key)    ;; A simple way to manage personal keybindings
 
-(use-package color-theme-sanityinc-solarized
-  :ensure t
-  :config (load-theme 'solarized t))
+;;(use-package color-theme-sanityinc-solarized
+;;  :ensure t
+;;  :config (load-theme 'solarized t))
+
+(load-theme 'majapahit-light t)
 
 (use-package origami
   :ensure t
@@ -154,8 +148,6 @@
           company-show-numbers t)
     (setq company-dabbrev-downcase nil))
   :diminish company-mode)
-
-
 
 (use-package avy
   :ensure t
@@ -222,6 +214,7 @@
 
 (use-package cider
   :ensure t
+  :bind (("C-x f" . cider-namespace-refresh))
   :config
   (progn
     (setq nrepl-hide-special-buffers t)
@@ -520,7 +513,7 @@
  '(custom-safe-themes
    '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(package-selected-packages
-   '(exwm exec-path-from-shell all-the-icons latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
+   '(majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
  '(powerline-default-separator 'curve)
  '(show-paren-mode t)
  '(tramp-syntax 'default nil (tramp)))
@@ -600,8 +593,10 @@
 (defun clj-connect ()
   "easy connect"
   (interactive)
-  (defvar foo "Wazzza!!")
+  (defvar foo "Ich verbinde mich mit dem Nest!!!")
   (message "Hello (%s)" foo)
-  (cider-connect "localhost"  7000))
+  (cider-connect-clj "lisp/ZentaurLMS@localhost:7000"))
 
 (global-set-key (kbd "M-s-p") 'clj-connect)
+
+(global-set-key (kbd "C-s-t") 'eval-buffer)
