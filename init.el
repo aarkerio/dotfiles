@@ -93,22 +93,6 @@
 
 (load-theme 'majapahit-light t)
 
-(use-package origami
-  :ensure t
-  :bind (("C-c O O" . origami-mode)
-         ("C-c t"  . origami-toggle-node))
-  :mode
-  (("\\.cjls" . origami-mode)
-   ("\\.cjl"  . origami-mode)
-   ("\\.js"   . origami-mode)
-   ("\\.rb"   . origami-mode))
-  :init
-  (dolist (hook '(js-mode-hook clojure-mode-hook
-                  ruby-mode-hook))
-        (add-hook hook #'origami-mode))
-  :config (setq whitespace-line-column nil)
-  :diminish origami-mode)
-
 ;; TAB,  C-i 	ac-expand 	Completion by TAB
 ;; RET,  C-m 	ac-complete 	Completion by RET
 ;; down, M-n 	ac-next 	Select next candidate
@@ -127,6 +111,13 @@
     (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
     (add-hook 'js2-mode-hook (lambda ()
                                (bind-key "M-j" 'join-line-or-lines-in-region js2-mode-map)))))
+
+(use-package hs-minor-mode
+  :bind
+  ("C-c T h" . hs-minor-mode)
+  ("C-c h a" . hs-hide-all)
+  ("C-c h s" . hs-show-all)
+  ("C-c h h" . hs-toggle-hiding))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -210,7 +201,8 @@
         (interactive)
         (cider-eval-last-sexp '(1)))
 
-      (add-hook 'clojure-mode-hook 'global-prettify-symbols-mode)))
+      (add-hook 'clojure-mode-hook 'global-prettify-symbols-mode)
+      (add-hook 'clojure-mode-hook 'hs-minor-mode)))
 
 (use-package cider
   :ensure t
@@ -393,6 +385,7 @@
   (setq ruby-indent-level 2
         ruby-indent-tabs-mode nil)
   (add-hook 'ruby-mode 'superword-mode)
+  (add-hook 'ruby-mode 'hs-minor-mode)
 
   :bind
   (([(meta down)] . ruby-forward-sexp)
@@ -511,9 +504,9 @@
  '(cider-use-tooltips t)
  '(column-number-mode t)
  '(custom-safe-themes
-   '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
+	 '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(package-selected-packages
-   '(majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
+	 '(hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
  '(powerline-default-separator 'curve)
  '(show-paren-mode t)
  '(tramp-syntax 'default nil (tramp)))
@@ -595,7 +588,7 @@
   (interactive)
   (defvar foo "Ich verbinde mich mit dem Nest!!!")
   (message "Hello (%s)" foo)
-  (cider-connect-clj "lisp/ZentaurLMS@localhost:7000"))
+  (cider-connect '(:host "localhost" :port "7000")))
 
 (global-set-key (kbd "M-s-p") 'clj-connect)
 
