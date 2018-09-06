@@ -93,6 +93,10 @@
 
 (load-theme 'majapahit-light t)
 
+;(use-package color-theme-sanityinc-solarized
+;  :ensure t
+;  :config (load-theme 'majapahit-light t))
+
 ;; TAB,  C-i 	ac-expand 	Completion by TAB
 ;; RET,  C-m 	ac-complete 	Completion by RET
 ;; down, M-n 	ac-next 	Select next candidate
