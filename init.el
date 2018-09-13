@@ -11,9 +11,8 @@
 (package-initialize)
 
 (defconst d/emacs-start-time (current-time))
-(setq gc-cons-threshold 64000000)
 (add-hook 'after-init-hook (lambda ()
-                             (setq gc-cons-threshold 800000)))
+                             (setq gc-cons-threshold 800000)))  ;; Better Garbage Collection
 (require 'package)
 
 (setq package-archives '(("gnu" .          "https://elpa.gnu.org/packages/")
@@ -70,7 +69,8 @@
       scroll-conservatively 20       ;; move minimum when cursor exits view, instead of recentering
       load-prefer-newer t)           ;; Don't load outdated byte code
 
-(use-package all-the-icons)
+(use-package all-the-icons
+  :ensure t) ;; various Icon and Fonts for Emacs
 
 ;; Change the echo message
 (defun display-startup-echo-area-message ()
@@ -90,6 +90,9 @@
 ;;(use-package color-theme-sanityinc-solarized
 ;;  :ensure t
 ;;  :config (load-theme 'solarized t))
+
+;; (use-package majapahit-theme
+;;  :ensure t)
 
 (load-theme 'majapahit-light t)
 
@@ -143,18 +146,6 @@
           company-show-numbers t)
     (setq company-dabbrev-downcase nil))
   :diminish company-mode)
-
-(use-package avy
-  :ensure t
-  :bind
-  (("C-." . avy-goto-word-1)
-   ("C-," . avy-goto-char-2))
-  :config (setq avy-all-windows nil))
-
-(use-package ace-window
-  :ensure t
-  :bind ("M-p" . ace-window)
-  :init (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 (use-package clojure-snippets
   :ensure t)
@@ -303,11 +294,6 @@
   :config
   (setq web-mode-markup-indent-offset 2))
 
-;; Dired reuse bufffer
-(use-package dired+
-  :config
-  (diredp-toggle-find-file-reuse-dir 1))
-
 (use-package recentf
   :ensure t
   :commands recentf-mode
@@ -326,7 +312,7 @@
     (require 'helm-config)
     (setq helm-candidate-number-limit 100))
   :config
-  (setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit") (rx "*helm")))
+  (setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit") (rx "*Echo")(rx "*code") (rx "*Mini") (rx "*helm")))
   :bind
   ([(?\s-q)] . helm-buffers-list))
 
@@ -343,17 +329,6 @@
   :defer t
   :bind
     (([(M f12)] . rubocop-check-current-file)))
-
-(use-package swbuff
-  :ensure t
-  :init
-    (progn
-      (setq
-        swbuff-clear-delay 1
-        swbuff-exclude-buffer-regexps '("\\` " "^\*Mess" "^\*Back" ".*Completion" "^\*Ido" "^\*Helm" "^\*Help")))
-  :bind
-  (([(shift f1)]  . swbuff-switch-to-next-buffer)
-   ([(shift f10)] . swbuff-switch-to-previous-buffer)))
 
 ;; Column flash
 (use-package col-highlight
@@ -408,8 +383,15 @@
     (progn
       (add-hook 'ruby-mode-hook '(lambda () (ruby-electric-mode t)))))
 
-(require 'rvm)
-(rvm-use-default) ;; use rvm's default ruby for the current Emacs session
+(use-package rvm
+  :ensure t
+  :init
+    (progn (rvm-use-default)))  ;; use rvm's default ruby for the current Emacs session
+
+(use-package tabbar
+  :ensure t
+  :init
+    (progn (tabbar-mode t)))
 
 ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
@@ -450,21 +432,21 @@
                auto-mode-alist))
 
 (eval-after-load "dired"
-       ;; don't remove `other-window', the caller expects it to be there
-       '(defun dired-up-directory (&optional other-window)
-          "Run Dired on parent directory of current directory."
-          (interactive "P")
-          (let* ((dir (dired-current-directory))
-     	    (orig (current-buffer))
-     	    (up (file-name-directory (directory-file-name dir))))
-            (or (dired-goto-file (directory-file-name dir))
-     	   ;; Only try dired-goto-subdir if buffer has more than one dir.
-     	   (and (cdr dired-subdir-alist)
-     		(dired-goto-subdir up))
-     	   (progn
-     	     (kill-buffer orig)
-     	     (dired up)
-     	     (dired-goto-file dir))))))
+  ;; don't remove `other-window', the caller expects it to be there
+  '(defun dired-up-directory (&optional other-window)
+     "Run Dired on parent directory of current directory."
+     (interactive "P")
+     (let* ((dir (dired-current-directory))
+       	    (orig (current-buffer))
+     	      (up (file-name-directory (directory-file-name dir))))
+       (or (dired-goto-file (directory-file-name dir))
+     	     ;; Only try dired-goto-subdir if buffer has more than one dir.
+     	     (and (cdr dired-subdir-alist)
+     		        (dired-goto-subdir up))
+     	     ((progn )
+     	      (kill-buffer orig)
+     	      (dired up)
+     	      (dired-goto-file dir))))))
 
 ;; Kill all other buffers
 (defun kill-other-buffers ()
@@ -508,9 +490,9 @@
  '(cider-use-tooltips t)
  '(column-number-mode t)
  '(custom-safe-themes
-	 '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
+   '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(package-selected-packages
-	 '(hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
+   '(hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
  '(powerline-default-separator 'curve)
  '(show-paren-mode t)
  '(tramp-syntax 'default nil (tramp)))
@@ -527,14 +509,14 @@
 
 (defun my-run-latex ()
   (interactive)
-  (let ((default-directory "/home/manuel/Documents/personal/Schriftstellerei/gypsys/"))
-    (setq gyp-file-path (expand-file-name "gypsys.tex"))
-    (setq aux-files-path (expand-file-name "gypro/*.aux"))
-    (setq aux-file-path (expand-file-name "*.aux"))
-    (TeX-save-document (TeX-master-file))
-    (delete-file aux-files-path)
-    (delete-file aux-file-path)
-    (TeX-command "LaTeX" gyp-file-path -1)))
+  (let ((default-directory "/home/manuel/Documents/personal/Schriftstellerei/gypsys/")
+        (gyp-file-path (expand-file-name "gypsys.tex"))
+        (aux-files-path (expand-file-name "gypro/*.aux"))
+        (aux-file-path (expand-file-name "*.aux"))
+        (TeX-save-document (TeX-master-file))
+        (delete-file aux-files-path)
+        (delete-file aux-file-path)
+        (TeX-command "LaTeX" gyp-file-path -1))))
 
 (defun my-LaTeX-hook ()
  (local-set-key (kbd "C-c C-a") 'my-run-latex))
@@ -557,12 +539,6 @@
     (beginning-of-line)))
 
 (global-set-key (kbd "M-m") 'beginning-of-line-or-indentation)
-
-(require 'tabbar)
-; turn on the tabbar
-(tabbar-mode t)
-; define all tabs to be one of 3 possible groups: “Emacs Buffer”, “Dired”,
-;“User Buffer”.
 
 (defun tabbar-buffer-groups ()
   "Return the list of group names the current buffer belongs to.
