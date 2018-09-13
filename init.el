@@ -9,16 +9,34 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 
+(require 'package)
+(setq package-enable-at-startup nil)
+
 (defconst d/emacs-start-time (current-time))
 (add-hook 'after-init-hook (lambda ()
                              (setq gc-cons-threshold 800000)))  ;; Better Garbage Collection
-(require 'package)
 
-(setq package-archives '(("melpa-stable" . "https://stable.melpa.org/packages/")))
+(setq package-archives '(("gnu" .          "https://elpa.gnu.org/packages/")
+                         ("marmalade" .    "https://marmalade-repo.org/packages/")
+                         ("melpa-stable" . "https://stable.melpa.org/packages/")
+                         ("melpa" .        "https://melpa.org/packages/")))
+;; (package-initialize)
+
+(defun acg-initial-buffer-choice ()
+  (if (get-buffer "*scratch*")
+      (kill-buffer "*scratch*"))
+  (get-buffer "*Messages*"))
+
+(setq initial-buffer-choice 'acg-initial-buffer-choice)  ;; no scratch buffer
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
 
 (add-to-list 'exec-path "/home/manuel/.rvm/gems/ruby-2.1.3@thrive/bin:/home/manuel/.rvm/gems/ruby-2.1.3@global/bin:/home/manuel/.rvm/rubies/ruby-2.1.3/bin:/home/manuel/.rvm/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/home/manuel/.rvm/gems/ruby-2.1.3@thrive:/home/manuel/.rvm/gems/ruby-2.1.3@global")
-
-(exec-path-from-shell-copy-env "GEM_PATH")
 
 ;; (set-default-font "Fira Mono-11")
 ;; (set-default-font "Inconsolata-12")
@@ -65,30 +83,47 @@
       scroll-conservatively 20       ;; move minimum when cursor exits view, instead of recentering
       load-prefer-newer t)           ;; Don't load outdated byte code
 
-(use-package all-the-icons
-  :ensure t) ;; various Icon and Fonts for Emacs
-
 ;; Change the echo message
 (defun display-startup-echo-area-message ()
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
 
 (setq default-directory (if (string= system-name "pav23")
-    "/home/manuel/entwicklung/chipotle/lisp/"
-    "/home/mmontoya/entwicklung/chipotle/lisp/"))
+			    "/home/manuel/entwicklung/chipotle/lisp/"
+			  "/home/mmontoya/entwicklung/chipotle/lisp/"))
 
 ;; (load (concat default-directory "elisp/myfunctions"))
-
-(eval-when-compile
-  (require 'use-package))
-(require 'diminish)    ;; Hiding or abbreviation of the mode line displays (lighters) of minor-modes
-(require 'bind-key)    ;; A simple way to manage personal keybindings
 
 ;;(use-package color-theme-sanityinc-solarized
 ;;  :ensure t
 ;;  :config (load-theme 'solarized t))
 
 ;; (use-package majapahit-theme
-;;  :ensure t)
+;;	     :ensure majapahit-theme
+;;	     :config (load-theme 'majapahit-light t))
+
+(use-package exec-path-from-shell
+	     :ensure t)
+
+(use-package page-break-lines
+	     :ensure t)
+
+(use-package projectile
+	     :ensure t)
+
+(use-package dashboard  ;; An extensible emacs startup screen showing you what’s most important.
+	     :ensure t
+	     :config
+	     (dashboard-setup-startup-hook))
+;; Set the title
+(setq dashboard-banner-logo-title "Willkommen zu einem weiteren großen Tag des Erfolgs!!")
+;; Set the banner
+(setq dashboard-startup-banner "/home/manuel/Documents/images/lisplogo_fancy_256.png")
+
+(setq dashboard-items '((recents  . 5)
+                        (bookmarks . 5)
+                        (projects . 0)
+                        (agenda . 5)
+                        (registers . 5)))
 
 (load-theme 'majapahit-light t)
 
@@ -96,12 +131,27 @@
 ;  :ensure t
 ;  :config (load-theme 'majapahit-light t))
 
-;; TAB,  C-i 	ac-expand 	Completion by TAB
-;; RET,  C-m 	ac-complete 	Completion by RET
-;; down, M-n 	ac-next 	Select next candidate
-;; up,   M-p 	ac-previous 	Select previous candidate
-;; C-?,  f1 	ac-help 	Show buffer help
-;; C-s
+(use-package buffer-flip
+  :ensure t
+  :bind  (("M-<tab>" . buffer-flip)
+          :map buffer-flip-map
+          ( "M-<tab>" .   buffer-flip-forward) 
+          ( "M-S-<tab>" . buffer-flip-backward) 
+          ( "M-ESC" .     buffer-flip-abort))
+  :config
+  (setq buffer-flip-skip-patterns
+        '("^\\*helm\\b"
+          "^\\*swiper\\*$")))
+
+(use-package all-the-icons
+  :ensure t) ;; various Icon and Fonts for Emacs
+
+(use-package avy   ;; Jump to things in Emacs tree-style
+  :ensure t
+  :bind
+  (("C-." . avy-goto-word-1)
+   ("C-," . avy-goto-char-2))
+  :config (setq avy-all-windows nil))
 
 (use-package js2-mode
   :mode (("\\.js$" . js2-mode)
@@ -115,21 +165,20 @@
     (add-hook 'js2-mode-hook (lambda ()
                                (bind-key "M-j" 'join-line-or-lines-in-region js2-mode-map)))))
 
-(use-package hs-minor-mode
+(use-package hs-minor-mode   ;; hide-show blocks
   :bind
   ("C-c T h" . hs-minor-mode)
   ("C-c h a" . hs-hide-all)
   ("C-c h s" . hs-show-all)
   ("C-c h h" . hs-toggle-hiding))
 
-(use-package rainbow-delimiters
+(use-package rainbow-delimiters  ;; "rainbow parentheses"
   :ensure t
   :init
   (progn
     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)))
 
-;; Company is a text completion framework for Emacs.
-(use-package company
+(use-package company  ;; Company is a text completion framework for Emacs.
   :ensure t
   :defer t
   :init (global-company-mode)
@@ -226,8 +275,7 @@
   :ensure t
   :mode "\\.json\\'")
 
-;; Powerline
-(use-package powerline
+(use-package powerline  ;; Powerline
   :ensure t
   :config
   (powerline-default-theme))
@@ -241,13 +289,7 @@
          ("C-c m b" . magit-blame)
          ("C-c m q" . magit-blame-quit)))
 
-;; use package
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-;; Whitespace
-(use-package whitespace
+(use-package whitespace ;; shows Whitespaces
   :bind (("C-c T w" . whitespace-mode))
   :init
   (dolist (hook '(conf-mode-hook))
@@ -255,8 +297,7 @@
   :config (setq whitespace-line-column nil)
   :diminish whitespace-mode)
 
-;; Imenu
-(use-package imenu-anywhere
+(use-package imenu-anywhere  ;; Imenu
   :ensure t
   :bind (("C-c i" . imenu-anywhere)))
 
@@ -282,14 +323,6 @@
     ;;(("C-c C-<") . mc/mark-all-like-this))
   ))
 
-(use-package web-mode
-  :ensure t
-  :mode (("\\.html\\'" . web-mode)
-         ("\\.erb\\'" . web-mode)
-         ("\\.mustache\\'" . web-mode))
-  :config
-  (setq web-mode-markup-indent-offset 2))
-
 (use-package recentf
   :ensure t
   :commands recentf-mode
@@ -301,16 +334,15 @@
 
 (use-package helm
   :ensure t
-  :diminish helm-mode
   :init
-  (progn
-     (helm-mode 1)
-    (require 'helm-config)
-    (setq helm-candidate-number-limit 100))
+    (progn
+      (helm-mode 1)
+      (require 'helm-config)
+      (setq helm-candidate-number-limit 100))
   :config
-  (setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit") (rx "*Echo")(rx "*code") (rx "*Mini") (rx "*helm")))
+    (setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit") (rx "*Echo")(rx "*Complet")(rx "*code")(rx "*Mini") (rx "*helm")))
   :bind
-  ([(?\s-q)] . helm-buffers-list))
+    ([(?\s-q)] . helm-buffers-list))
 
 (use-package undo-tree
   :ensure t)
@@ -321,73 +353,76 @@
   ([(f8)] . neotree-toggle))
 
 (use-package rubocop
-  :ensure t
-  :defer t
-  :bind
-    (([(M f12)] . rubocop-check-current-file)))
+	     :ensure t
+	     :defer t
+	     :bind
+	     (([(M f12)] . rubocop-check-current-file)))
 
-;; Column flash
-(use-package col-highlight
-  :ensure t
-  :bind
-  ([(C-escape)] . col-highlight-flash))
+(use-package col-highlight    ;; Column flash
+	     :ensure t
+	     :bind
+	     ([(C-escape)] . col-highlight-flash))
 
-;; Display dir if two files have the same name
-(use-package uniquify
-  :init
-    (progn
-     (setq uniquify-buffer-name-style 'reverse
-           uniquify-separator "|"
-           uniquify-after-kill-buffer-p t
-           uniquify-ignore-buffers-re "^\\*")))
+(use-package uniquify   ;; Display dir if two files have the same name
+	     :init
+	     (progn
+	       (setq uniquify-buffer-name-style 'reverse
+		     uniquify-separator "|"
+		     uniquify-after-kill-buffer-p t
+		     uniquify-ignore-buffers-re "^\\*")))
 
-;; markdown mode
 (use-package markdown-mode
-  :config (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
+	     :config (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+	     (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+	     (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
 
 (use-package ruby-mode
-  :ensure t
-  :mode "\\.rb\\'"
-  :mode "Rakefile\\'"
-  :mode "Gemfile\\'"
-  :mode "Berksfile\\'"
-  :mode "Vagrantfile\\'"
-  :interpreter "ruby"
+	     :ensure t
+	     :mode "\\.rb\\'"
+	     :mode "Rakefile\\'"
+	     :mode "Gemfile\\'"
+	     :mode "Berksfile\\'"
+	     :mode "Vagrantfile\\'"
+	     :interpreter "ruby"
+	     :init
+	     (setq ruby-indent-level 2
+		   ruby-indent-tabs-mode nil)
+	     (add-hook 'ruby-mode 'superword-mode)
+	     (add-hook 'ruby-mode 'hs-minor-mode)
 
-  :init
-  (setq ruby-indent-level 2
-        ruby-indent-tabs-mode nil)
-  (add-hook 'ruby-mode 'superword-mode)
-  (add-hook 'ruby-mode 'hs-minor-mode)
+	     :bind
+	     (([(meta down)] . ruby-forward-sexp)
+	      ([(meta up)]   . ruby-backward-sexp)
+	      (("C-c C-e"    . ruby-send-region))))  ;; Rebind since Rubocop uses C-c C-r
 
-  :bind
-  (([(meta down)] . ruby-forward-sexp)
-   ([(meta up)]   . ruby-backward-sexp)
-   (("C-c C-e"    . ruby-send-region))))  ;; Rebind since Rubocop uses C-c C-r
-
-;; popwin
-(use-package popwin
-  :ensure t
-  :config
-  (popwin-mode 1))
+(use-package popwin ;; popwin
+	     :ensure t
+	     :config
+	     (popwin-mode 1))
 
 (use-package ruby-electric
-  :ensure t
-  :init
-    (progn
-      (add-hook 'ruby-mode-hook '(lambda () (ruby-electric-mode t)))))
+	     :ensure t
+	     :init
+	     (progn
+	       (add-hook 'ruby-mode-hook '(lambda () (ruby-electric-mode t)))))
 
 (use-package rvm
-  :ensure t
-  :init
-    (progn (rvm-use-default)))  ;; use rvm's default ruby for the current Emacs session
+	     :ensure t
+	     :init
+	     (progn (rvm-use-default)))  ;; use rvm's default ruby for the current Emacs session
 
 (use-package tabbar
+	     :ensure t
+	     :init
+	     (progn (tabbar-mode t)))
+
+(use-package web-mode
   :ensure t
-  :init
-    (progn (tabbar-mode t)))
+  :mode (("\\.html\\'" . web-mode)
+         ("\\.erb\\'" . web-mode)
+         ("\\.mustache\\'" . web-mode))
+  :config
+  (setq web-mode-markup-indent-offset 2))
 
 ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
@@ -431,7 +466,7 @@
   ;; don't remove `other-window', the caller expects it to be there
   '(defun dired-up-directory (&optional other-window)
      "Run Dired on parent directory of current directory."
-     (interactive "P")
+     (interactive "P")P
      (let* ((dir (dired-current-directory))
        	    (orig (current-buffer))
      	      (up (file-name-directory (directory-file-name dir))))
@@ -488,7 +523,7 @@
  '(custom-safe-themes
    '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(package-selected-packages
-   '(hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
+   '(helm-navi helm-pages popup-imenu popup-edit-menu ivy ace-link ace-jump-helm-line dashboard buffer-flip auto-complete ace-isearch ace-popup-menu ace-jump-buffer discover hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-rails helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
  '(powerline-default-separator 'curve)
  '(show-paren-mode t)
  '(tramp-syntax 'default nil (tramp)))
@@ -569,3 +604,14 @@
 (global-set-key (kbd "M-s-p") 'clj-connect)
 
 (global-set-key (kbd "C-s-t") 'eval-buffer)
+
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "C-x l") 'helm-recentf)
+
+;;Keybinds for manipulating windows
+
+(global-set-key (kbd "C-<left>")      'shrink-window-horizontally)
+(global-set-key (kbd "C-<right>")     'enlarge-window-horizontally)
+(global-set-key (kbd "C-<down>")      'shrink-window)
+(global-set-key (kbd "C-<up>")        'enlarge-window)
+(global-set-key (kbd "C-x K")         'kill-buffer-and-window)
