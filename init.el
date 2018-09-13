@@ -8,21 +8,17 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
-(package-initialize)
 
 (defconst d/emacs-start-time (current-time))
 (add-hook 'after-init-hook (lambda ()
                              (setq gc-cons-threshold 800000)))  ;; Better Garbage Collection
 (require 'package)
 
-(setq package-archives '(("gnu" .          "https://elpa.gnu.org/packages/")
-                         ("marmalade" .    "https://marmalade-repo.org/packages/")
-                         ("melpa-stable" . "https://stable.melpa.org/packages/")
-                         ("melpa" .        "https://melpa.org/packages/")))
+(setq package-archives '(("melpa-stable" . "https://stable.melpa.org/packages/")))
 
 (add-to-list 'exec-path "/home/manuel/.rvm/gems/ruby-2.1.3@thrive/bin:/home/manuel/.rvm/gems/ruby-2.1.3@global/bin:/home/manuel/.rvm/rubies/ruby-2.1.3/bin:/home/manuel/.rvm/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/home/manuel/.rvm/gems/ruby-2.1.3@thrive:/home/manuel/.rvm/gems/ruby-2.1.3@global")
 
-;; (exec-path-from-shell-copy-env "GEM_PATH")
+(exec-path-from-shell-copy-env "GEM_PATH")
 
 ;; (set-default-font "Fira Mono-11")
 ;; (set-default-font "Inconsolata-12")
