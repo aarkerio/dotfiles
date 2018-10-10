@@ -101,6 +101,10 @@
 ;;	     :ensure majapahit-theme
 ;;	     :config (load-theme 'majapahit-light t))
 
+(use-package auctex  ;;  Sophisticated document creation
+  :defer t
+  :ensure t)
+
 (use-package exec-path-from-shell
 	     :ensure t)
 
@@ -157,7 +161,7 @@
   :mode (("\\.js$" . js2-mode)
          ("Jakefile$" . js2-mode))
   :interpreter ("node" . js2-mode)
-  :bind (("C-a" . back-to-indentation-or-beginning-of-line)
+  :bind (("C-s-l" . back-to-indentation-or-beginning-of-line)
          ("C-M-h" . backward-kill-word))
   :config
   (progn
@@ -193,6 +197,9 @@
   :diminish company-mode)
 
 (use-package clojure-snippets
+  :ensure t)
+
+(use-package clojurescript-mode
   :ensure t)
 
 (use-package clojure-mode
@@ -397,7 +404,7 @@
 	     :interpreter "ruby"
 	     :init
 	     (setq ruby-indent-level 2
-		   ruby-indent-tabs-mode nil)
+		         ruby-indent-tabs-mode nil)
 	     (add-hook 'ruby-mode 'superword-mode)
 	     (add-hook 'ruby-mode 'hs-minor-mode)
 
@@ -625,6 +632,8 @@
 
 (global-set-key (kbd "C-s-<left>")      'shrink-window-horizontally)
 (global-set-key (kbd "C-s-<right>")     'enlarge-window-horizontally)
+
 (global-set-key (kbd "C-s-<down>")      'shrink-window)
 (global-set-key (kbd "C-s-<up>")        'enlarge-window)
+
 (global-set-key (kbd "C-x K")         'kill-buffer-and-window)
