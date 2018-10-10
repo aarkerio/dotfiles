@@ -1,0 +1,30 @@
+# Clojure Zentaur sessions  GPL (c) 2013-2018
+windows:
+  - name: PSQL
+    root: /home/manuel/entwicklung/chipotle/lisp/ZentaurLMS
+    layout: main-vertical
+    panes:
+      - commands:
+        - psql zentaur_dev -U zentaur
+
+  - name: r-SERVER
+    root: /home/manuel/entwicklung/chipotle/lisp/ZentaurLMS
+    layout: main-vertical
+    panes:
+      - commands:
+        - lein with-profile dev run
+
+  - name: Figwheel-ClojureScript
+    root: /home/manuel/entwicklung/chipotle/lisp/ZentaurLMS
+    layout: main-vertical
+    panes:
+      - commands:
+        - lein figwheel
+
+  - name: REPL
+    root: /home/manuel/entwicklung/chipotle/lisp/ZentaurLMS
+    layout: main-vertical
+    panes:
+      - commands:
+        - sleep 3m && lein repl :connect localhost:7000
+
