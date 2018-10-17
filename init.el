@@ -20,7 +20,7 @@
                          ("marmalade" .    "https://marmalade-repo.org/packages/")
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("melpa" .        "https://melpa.org/packages/")))
-(package-initialize)
+;; (package-initialize)
 
 (defun acg-initial-buffer-choice ()
   (if (get-buffer "*scratch*")

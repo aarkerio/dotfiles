@@ -2,4 +2,4 @@
 # name: console
 # key: cons
 # --
-(.log js/console (str ">>> VALUE >>>>> " (.stringify js/JSON value)))
+(.log js/console (str ">>> VALUE >>>>> " value ))
