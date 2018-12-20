@@ -1,0 +1,8 @@
+
+dependencies:
+    pre:
+        - sudo apt-get install latex-xcolor texlive-xetex texlive-math-extra texlive-latex-extra
+test:
+    override:
+        - make
+        - cp cv.pdf $CIRCLE_ARTIFACTS/cv.pdf
