@@ -22,6 +22,9 @@
                          ("melpa" .        "https://melpa.org/packages/")))
 (package-initialize)
 
+;; change all prompts to y or n
+(fset 'yes-or-no-p 'y-or-n-p)
+
 (defun acg-initial-buffer-choice ()
   (if (get-buffer "*scratch*")
       (kill-buffer "*scratch*"))
