@@ -20,7 +20,7 @@
                          ("marmalade" .    "https://marmalade-repo.org/packages/")
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("melpa" .        "https://melpa.org/packages/")))
-(package-initialize)
+;; (package-initialize)
 
 ;; change all prompts to y or n
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -92,7 +92,11 @@
 
 (setq default-directory (if (string= system-name "pav23")
 			    "/home/manuel/entwicklung/chipotle/lisp/"
-			  "/home/mmontoya/entwicklung/chipotle/lisp/"))
+			    "/home/mmontoya/entwicklung/chipotle/lisp/"))
+
+(setq home-directory (if (string= system-name "pav23")
+			    "/home/manuel/"
+			  "/home/mmontoya/"))
 
 ;; (load (concat default-directory "elisp/myfunctions"))
 
@@ -143,6 +147,7 @@
 ;; Set the title
 (setq dashboard-banner-logo-title "Willkommen zu einem weiteren großen Tag des Erfolgs!!")
 ;; Set the banner
+;; home-directory
 (setq dashboard-startup-banner "/home/manuel/Documents/images/lisplogo_fancy_256.png")
 
 (setq dashboard-items '((recents  . 5)
