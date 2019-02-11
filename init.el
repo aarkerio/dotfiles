@@ -20,7 +20,7 @@
                          ("marmalade" .    "https://marmalade-repo.org/packages/")
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("melpa" .        "https://melpa.org/packages/")))
-(package-initialize)
+;; (package-initialize)
 
 ;; change all prompts to y or n
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -92,7 +92,11 @@
 
 (setq default-directory (if (string= system-name "pav23")
 			    "/home/manuel/entwicklung/chipotle/lisp/"
-			  "/home/mmontoya/entwicklung/chipotle/lisp/"))
+			    "/home/mmontoya/entwicklung/chipotle/lisp/"))
+
+(setq home-directory (if (string= system-name "pav23")
+			    "/home/manuel/"
+			  "/home/mmontoya/"))
 
 ;; (load (concat default-directory "elisp/myfunctions"))
 
@@ -136,6 +140,34 @@
 (use-package projectile
 	     :ensure t)
 
+(use-package tide
+  :ensure t
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save)))
+
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  ;; company is an optional dependency. You have to
+  ;; install it separately via package-install
+  ;; `M-x package-install [ret] company`
+  (company-mode +1))
+
+;; aligns annotation to the right hand side
+(setq company-tooltip-align-annotations t)
+
+;; formats the buffer before saving
+(add-hook 'before-save-hook 'tide-format-before-save)
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+
 (use-package dashboard  ;; An extensible emacs startup screen showing you what’s most important.
 	     :ensure t
 	     :config
@@ -143,6 +175,7 @@
 ;; Set the title
 (setq dashboard-banner-logo-title "Willkommen zu einem weiteren großen Tag des Erfolgs!!")
 ;; Set the banner
+
 (setq dashboard-startup-banner "/home/mmontoya/Bilder/lisplogo_fancy_256.png")
 
 (setq dashboard-items '((recents  . 5)
@@ -561,14 +594,13 @@
  '(cider-use-tooltips t)
  '(column-number-mode t)
  '(custom-safe-themes
-   (quote
-    ("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default)))
+   '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(package-selected-packages
    (quote
     (dart-mode tide yaml-mode graphql-mode use-package-chords helm-navi helm-pages popup-imenu popup-edit-menu ivy ace-link ace-jump-helm-line dashboard buffer-flip auto-complete ace-isearch ace-popup-menu ace-jump-buffer discover hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby)))
  '(powerline-default-separator (quote curve))
  '(show-paren-mode t)
- '(tramp-syntax (quote default) nil (tramp)))
+ '(tramp-syntax 'default nil (tramp)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -582,7 +614,7 @@
 
 (defun my-run-latex ()
   (interactive)
-  (let ((default-directory "/home/manuel/Documents/personal/Schriftstellerei/gypsys/")
+  (let ((default-directory "/home/mmontoya/Documents/personal/Schriftstellerei/gypsys/")
         (gyp-file-path (expand-file-name "gypsys.tex"))
         (aux-files-path (expand-file-name "gypro/*.aux"))
         (aux-file-path (expand-file-name "*.aux"))

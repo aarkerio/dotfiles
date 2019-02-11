@@ -1,0 +1,18 @@
+[push]
+	default = simple
+[user]
+	name = aarkerio
+	email = mmontoya@gmail.com
+[alias]
+  co = checkout
+  # show last 10 branches worked on
+  recent-branches="!git for-each-ref --sort=-committerdate --count=10 --format='%(refname:short)' refs/heads/"
+  get-parents=!git log --oneline --merges "$@" | grep into | sed 's/.* into //g' | uniq --count | head -n 10
+  plog = log --graph --pretty='format:%C(red)%d%C(reset) %C(yellow)%h%C(reset) %ar %C(green)%aN%C(reset) %s'
+  lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit
+  llg = log --graph --pretty=oneline --abbrev-commit
+  logo = log --graph --pretty=oneline --decorate --all
+[core]
+	editor = emacs
+[pull]
+	rebase = true
