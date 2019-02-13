@@ -39,8 +39,6 @@
 (eval-when-compile
   (require 'use-package))
 
-(add-to-list 'exec-path "/home/manuel/.rvm/gems/ruby-2.1.3@thrive/bin:/home/manuel/.rvm/gems/ruby-2.1.3@global/bin:/home/manuel/.rvm/rubies/ruby-2.1.3/bin:/home/manuel/.rvm/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games:/home/manuel/.rvm/gems/ruby-2.1.3@thrive:/home/manuel/.rvm/gems/ruby-2.1.3@global")
-
 ;; (set-default-font "Fira Mono-11")
 ;; (set-default-font "Inconsolata-12")
 ;; (set-default-font "Hack-11")
@@ -90,15 +88,13 @@
 (defun display-startup-echo-area-message ()
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
 
-(setq default-directory (if (string= system-name "pav23")
-			    "/home/manuel/entwicklung/chipotle/lisp/"
-			    "/home/mmontoya/entwicklung/chipotle/lisp/"))
-
 (setq home-directory (if (string= system-name "pav23")
 			    "/home/manuel/"
 			  "/home/mmontoya/"))
 
-;; (load (concat default-directory "elisp/myfunctions"))
+(setq default-directory (concat home-directory "entwicklung/chipotle/lisp/"))
+
+;; (load (concat home-directory "elisp/myfunctions"))
 
 ;;(use-package color-theme-sanityinc-solarized
 ;;  :ensure t
@@ -176,7 +172,7 @@
 (setq dashboard-banner-logo-title "Willkommen zu einem weiteren großen Tag des Erfolgs!!")
 ;; Set the banner
 
-(setq dashboard-startup-banner "/home/mmontoya/Bilder/lisplogo_fancy_256.png")
+(setq dashboard-startup-banner (concat home-directory "Bilder/lisplogo_fancy_256.png"))
 
 (setq dashboard-items '((recents  . 5)
                         (bookmarks . 5)
@@ -385,15 +381,6 @@
     ;;(("C-c C-<") . mc/mark-all-like-this))
   ))
 
-(use-package recentf
-  :ensure t
-  :commands recentf-mode
-  :config
-  (progn (recentf-mode t) (setq-default recentf-max-saved-items 1000))
-  :bind ("C-x C-a" . recentf-open-files)
-  :init
-  (recentf-mode 1))
-
 (use-package helm
   :ensure t
   :init
@@ -449,40 +436,10 @@
 	     (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 	     (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
 
-(use-package ruby-mode
-	     :ensure t
-	     :mode "\\.rb\\'"
-	     :mode "Rakefile\\'"
-	     :mode "Gemfile\\'"
-	     :mode "Berksfile\\'"
-	     :mode "Vagrantfile\\'"
-	     :interpreter "ruby"
-	     :init
-	     (setq ruby-indent-level 2
-		         ruby-indent-tabs-mode nil)
-	     (add-hook 'ruby-mode 'superword-mode)
-	     (add-hook 'ruby-mode 'hs-minor-mode)
-
-	     :bind
-	     (([(meta down)] . ruby-forward-sexp)
-	      ([(meta up)]   . ruby-backward-sexp)
-	      (("C-c C-e"    . ruby-send-region))))  ;; Rebind since Rubocop uses C-c C-r
-
 (use-package popwin ;; popwin
 	     :ensure t
 	     :config
 	     (popwin-mode 1))
-
-(use-package ruby-electric
-	     :ensure t
-	     :init
-	     (progn
-	       (add-hook 'ruby-mode-hook '(lambda () (ruby-electric-mode t)))))
-
-(use-package rvm
-	     :ensure t
-	     :init
-	     (progn (rvm-use-default)))  ;; use rvm's default ruby for the current Emacs session
 
 (use-package tabbar
 	     :ensure t
@@ -596,9 +553,8 @@
  '(custom-safe-themes
    '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(package-selected-packages
-   (quote
-    (dart-mode tide yaml-mode graphql-mode use-package-chords helm-navi helm-pages popup-imenu popup-edit-menu ivy ace-link ace-jump-helm-line dashboard buffer-flip auto-complete ace-isearch ace-popup-menu ace-jump-buffer discover hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode flymake-ruby ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode rvm ruby-electric ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby)))
- '(powerline-default-separator (quote curve))
+   '(recently dart-mode tide yaml-mode graphql-mode use-package-chords helm-navi helm-pages popup-imenu popup-edit-menu ivy ace-link ace-jump-helm-line dashboard buffer-flip auto-complete ace-isearch ace-popup-menu ace-jump-buffer discover hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
+ '(powerline-default-separator 'curve)
  '(show-paren-mode t)
  '(tramp-syntax 'default nil (tramp)))
 (custom-set-faces
