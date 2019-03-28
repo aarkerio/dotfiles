@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: keys
+# key: oke
+# --
+console.log(' >>>  OBJECT KEYS  >>>> ' + Object.keys(object));
