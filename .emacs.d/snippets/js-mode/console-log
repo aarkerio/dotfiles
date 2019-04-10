@@ -2,4 +2,4 @@
 # name: console-log
 # key: sole
 # --
-console.log('this.props.:  >>>> ' + JSON.stringify(this.props));
+console.log("  ############  :  >>>> " + JSON.stringify(da));

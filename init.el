@@ -9,6 +9,7 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 
+
 (require 'package)
 (setq package-enable-at-startup nil)
 
@@ -21,6 +22,7 @@
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("melpa" .        "https://melpa.org/packages/")))
 ;; (package-initialize)
+(add-to-list 'exec-path "/home/manuel/.yarn/bin/")
 
 ;; change all prompts to y or n
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -92,7 +94,7 @@
 			    "/home/manuel/"
 			    "/home/mmontoya/"))
 
-(setq default-directory (concat home-directory "entwicklung/chipotle/lisp/"))
+(setq default-directory (concat home-directory "entwicklung/chipotle/fondeadora/"))
 
 ;; (load (concat home-directory "elisp/myfunctions"))
 
@@ -107,6 +109,9 @@
 (use-package use-package-chords
   :ensure t
   :config (key-chord-mode 1))
+
+(use-package yaml-mode
+  :ensure t)
 
 (use-package ace-jump-buffer
   :bind
@@ -133,36 +138,48 @@
 (use-package page-break-lines
 	     :ensure t)
 
-(use-package projectile
-	     :ensure t)
+(custom-set-variables
+ 
+ )
 
-(use-package tide
-  :ensure t
-  :after ((typescript-mode company flycheck)
-          (flycheck-add-mode 'typescript-tslint 'ng2-ts-mode)
-          (flycheck-add-mode 'typescript-tide 'ng2-ts-mode))
-  :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)
-         (before-save . tide-format-before-save)))
+; Flycheck
+(use-package flycheck
+  :defer 1
+  :init (setq
+         flycheck-checkers
+         '(typescript-tslint
+           css-csslint
+           emacs-lisp
+           haml
+           json-jsonlint
+           yaml-jsyaml))
+  :config (global-flycheck-mode))
+
+;; TypeScript
+(use-package typescript-mode
+  :mode (("\\.ts\\'" . typescript-mode)
+         ("\\.tsx\\'" . typescript-mode)))
 
 (defun setup-tide-mode ()
-  (interactive)
-  (tide-setup)
-  (flycheck-mode +1)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  (eldoc-mode +1)
-  (tide-hl-identifier-mode +1)
-  ;; company is an optional dependency. You have to
-  ;; install it separately via package-install
-  ;; `M-x package-install [ret] company`
-  (company-mode +1))
+   (interactive)
+   (tide-setup)
+   (flycheck-mode +1)
+   (setq flycheck-check-syntax-automatically '(save mode-enabled))
+   (flycheck-add-next-checker 'typescript-tide '(t . typescript-tslint) 'append)
+   (eldoc-mode +1)
+   (company-mode +1))
 
-;; aligns annotation to the right hand side
-(setq company-tooltip-align-annotations t)
+(use-package tide
+  :config
+  (progn
+    (add-hook 'typescript-mode-hook #'setup-tide-mode)
+    (add-hook 'js2-mode-hook #'setup-tide-mode)))
 
-;; formats the buffer before saving
-(add-hook 'before-save-hook 'tide-format-before-save)
-(add-hook 'typescript-mode-hook #'setup-tide-mode)
+(use-package page-break-lines ;; dashboard dependency
+  :ensure t)
+
+(use-package projectile  ;; dashboard dependency
+  :ensure t)
 
 (use-package dashboard  ;; An extensible emacs startup screen showing you what’s most important.
 	     :ensure t
@@ -170,8 +187,8 @@
 	     (dashboard-setup-startup-hook))
 ;; Set the title
 (setq dashboard-banner-logo-title "Willkommen zu einem weiteren großen Tag des Erfolgs!!")
-;; Set the banner
 
+;; Set the banner
 (setq dashboard-startup-banner (concat home-directory "Bilder/lisplogo_fancy_256.png"))
 
 (setq dashboard-items '((recents  . 5)
@@ -365,12 +382,11 @@
   :ensure t)
 
 (use-package org
+  :ensure t
   :mode (("\\.org$" . org-mode))
-  :config
-  (dolist (setq org-todo-keywords
-        '((sequence "TODO" "IN-PROGRESS" "WAITING" "STAGING" "DONE")))
-    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-     ))
+  :config (dolist (setq org-todo-keywords
+                        '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "STAGING" "DONE" "CANCELED"))))
+  :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
 (use-package multiple-cursors
   :ensure t
@@ -549,6 +565,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(flycheck-typescript-tslint-config "~/entwicklung/chipotle/node/tslint.json")
  '(cider-show-error-buffer nil)
  '(cider-use-tooltips t)
  '(column-number-mode t)
@@ -650,5 +667,11 @@
 
 (global-set-key (kbd "C-x K")         'kill-buffer-and-window)
 
-(eval-after-load 'flycheck
-  '(add-hook 'flycheck-mode-hook #'flycheck-typescript-tslint-setup))
+(defun copy-line (arg)
+      "Copy lines (as many as prefix argument) in the kill ring"
+      (interactive "p")
+      (kill-ring-save (line-beginning-position)
+                      (line-beginning-position (+ 1 arg)))
+      (message "%d line%s copied" arg (if (= 1 arg) "" "s")))
+;; optional key binding
+(global-set-key "\C-c\C-a" 'copy-line)
