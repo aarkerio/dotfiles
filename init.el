@@ -1,4 +1,4 @@
-;; Manuel Montoya .emacs file 2006-2018
+;; Manuel Montoya .emacs file 2006-2019
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; -*- lexical-binding: t -*-
 ;; M-s h .  &  M-s h u  ;; Highlight and Unhighlight text
@@ -90,7 +90,7 @@
 (defun display-startup-echo-area-message ()
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
 
-(setq home-directory (if (string= system-name "pav23")
+(setq home-directory (if (string= (system-name) "pav23") ;; laptop or desktop ?
 			    "/home/manuel/"
 			    "/home/mmontoya/"))
 
@@ -207,7 +207,7 @@
           :map buffer-flip-map
           ( "M-<tab>" .   buffer-flip-forward)
           ( "M-S-<tab>" . buffer-flip-backward)
-          ( "M-ESC" .     buffer-flip-abort))
+          ( "M-<ESC>" .     buffer-flip-abort))
   :config
   (setq buffer-flip-skip-patterns
         '("^\\*helm\\b"
@@ -379,10 +379,11 @@
 
 (use-package org
   :ensure t
-  :mode (("\\.org$" . org-mode))
-  :config (dolist (setq org-todo-keywords
-                        '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "STAGING" "DONE" "CANCELED"))))
-  :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+  :init (progn
+          (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+          (setq org-todo-keywords
+                '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "STAGING" "DONE" "CANCELED"))))
+  :mode (("\\.org$" . org-mode)))
 
 (use-package multiple-cursors
   :ensure t
