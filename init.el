@@ -138,10 +138,6 @@
 (use-package page-break-lines
 	     :ensure t)
 
-(custom-set-variables
- 
- )
-
 ; Flycheck
 (use-package flycheck
   :defer 1
