@@ -96,6 +96,14 @@
 
 (setq default-directory (concat home-directory "entwicklung/chipotle/fondeadora/"))
 
+;; (load-theme 'majapahit-light t)
+;;(load-theme 'kaolin-light t)
+(load-theme 'leuven t)
+
+;(use-package color-theme-sanityinc-solarized
+;  :ensure t
+;  :config (load-theme 'majapahit-light t))
+
 ;; (load (concat home-directory "elisp/myfunctions"))
 
 ;;(use-package color-theme-sanityinc-solarized
@@ -106,100 +114,21 @@
 ;;	     :ensure majapahit-theme
 ;;	     :config (load-theme 'majapahit-light t))
 
-(use-package use-package-chords
-  :ensure t
-  :config (key-chord-mode 1))
+;;;;;;;;;;;;;;   USE PACKAGE SECTION STARTS   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package yaml-mode
-  :ensure t)
-
-(use-package ace-jump-buffer
-  :bind
-  ("s-|" . ace-jump-buffer)
-  :chords
-  ((";a" . ace-jump-buffer)
-   (":A" . ace-jump-buffer-other-window)
-   (";x" . ace-jump-special-buffers))
-  :config
-  (make-ace-jump-buffer-function
-      "special"
-    (with-current-buffer buffer
-      (--all?
-       (not (derived-mode-p it))
-       '(comint-mode magit-mode inf-ruby-mode rg-mode compilation-mode)))))
+(use-package all-the-icons
+  :ensure t) ;; various Icon and Fonts for Emacs
 
 (use-package auctex  ;;  Sophisticated document creation
   :defer t
   :ensure t)
 
-(use-package exec-path-from-shell
-	     :ensure t)
-
-(use-package page-break-lines
-	     :ensure t)
-
-; Flycheck
-(use-package flycheck
-  :defer 1
-  :init (setq
-         flycheck-checkers
-         '(typescript-tslint
-           css-csslint
-           emacs-lisp
-           haml
-           json-jsonlint
-           yaml-jsyaml))
-  :config (global-flycheck-mode))
-
-;; TypeScript
-(use-package typescript-mode
-  :mode (("\\.ts\\'" . typescript-mode)
-         ("\\.tsx\\'" . typescript-mode)))
-
-(defun setup-tide-mode ()
-   (interactive)
-   (tide-setup)
-   (flycheck-mode +1)
-   (setq flycheck-check-syntax-automatically '(save mode-enabled))
-   (flycheck-add-next-checker 'typescript-tide '(t . typescript-tslint) 'append)
-   (eldoc-mode +1)
-   (company-mode +1))
-
-(use-package tide
-  :config
-  (progn
-    (add-hook 'typescript-mode-hook #'setup-tide-mode)
-    (add-hook 'js2-mode-hook #'setup-tide-mode)))
-
-(use-package page-break-lines ;; dashboard dependency
-  :ensure t)
-
-(use-package projectile  ;; dashboard dependency
-  :ensure t)
-
-(use-package dashboard  ;; An extensible emacs startup screen showing you what’s most important.
-	     :ensure t
-	     :config
-	     (dashboard-setup-startup-hook))
-;; Set the title
-(setq dashboard-banner-logo-title "Willkommen zu einem weiteren großen Tag des Erfolgs!!")
-
-;; Set the banner
-(setq dashboard-startup-banner (concat home-directory "Bilder/lisplogo_fancy_256.png"))
-
-(setq dashboard-items '((recents  . 5)
-                        (bookmarks . 5)
-                        (projects . 0)
-                        (agenda . 5)
-                        (registers . 5)))
-
-;; (load-theme 'majapahit-light t)
-;;(load-theme 'kaolin-light t)
-(load-theme 'leuven t)
-
-;(use-package color-theme-sanityinc-solarized
-;  :ensure t
-;  :config (load-theme 'majapahit-light t))
+(use-package avy   ;; Jump to things in Emacs tree-style
+  :ensure t
+  :bind
+  (("C-." . avy-goto-word-1)
+   ("C-," . avy-goto-char-2))
+  :config (setq avy-all-windows nil))
 
 (use-package buffer-flip
   :ensure t
@@ -213,54 +142,22 @@
         '("^\\*helm\\b"
           "^\\*swiper\\*$")))
 
-(use-package all-the-icons
-  :ensure t) ;; various Icon and Fonts for Emacs
-
-(use-package avy   ;; Jump to things in Emacs tree-style
+(use-package cider
   :ensure t
-  :bind
-  (("C-." . avy-goto-word-1)
-   ("C-," . avy-goto-char-2))
-  :config (setq avy-all-windows nil))
-
-(use-package js2-mode
-  :mode (("\\.js$" . js2-mode)
-         ("Jakefile$" . js2-mode))
-  :interpreter ("node" . js2-mode)
-  :bind (("C-s-l" . back-to-indentation-or-beginning-of-line)
-         ("C-M-h" . backward-kill-word))
+  :bind (("C-x f" . cider-namespace-refresh))
   :config
   (progn
-    (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
-    (add-hook 'js2-mode-hook (lambda ()
-                               (bind-key "M-j" 'join-line-or-lines-in-region js2-mode-map)))))
-
-(use-package hs-minor-mode   ;; hide-show blocks
-  :bind
-  ("C-c T h" . hs-minor-mode)
-  ("C-c h a" . hs-hide-all)
-  ("C-c h s" . hs-show-all)
-  ("C-c h h" . hs-toggle-hiding))
-
-(use-package rainbow-delimiters  ;; "rainbow parentheses"
-  :ensure t
-  :init
-  (progn
-    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)))
-
-(use-package company  ;; Company is a text completion framework for Emacs.
-  :ensure t
-  :defer t
-  :init (global-company-mode)
-  :config
-  (progn
-    ;; Use Company for completion
-    (bind-key [remap completion-at-point] #'company-complete company-mode-map)
-    (setq company-tooltip-align-annotations t
-          ;; Easy navigation to candidates with M-<n>
-          company-show-numbers t)
-    (setq company-dabbrev-downcase nil))
-  :diminish company-mode)
+    (setq nrepl-hide-special-buffers t)
+    (setq cider-popup-stacktraces-in-repl t)
+    (setq cider-repl-history-file "~/.emacs.d/nrepl-history")
+    (setq cider-repl-pop-to-buffer-on-connect nil)
+    (setq cider-auto-select-error-buffer nil)
+    (setq cider-prompt-save-file-on-load nil)
+    (setq cider-repl-display-help-banner nil)
+    (setq cider-repl-use-pretty-printing t)
+    (setq cider-refresh-before-fn "reloaded.repl/suspend")
+    (setq cider-refresh-after-fn "reloaded.repl/resume")
+    (setq cider-cljs-lein-repl "(do (reloaded.repl/go) (user/cljs-repl))")))
 
 (use-package clojure-snippets
   :ensure t)
@@ -317,84 +214,60 @@
       (add-hook 'clojure-mode-hook 'global-prettify-symbols-mode)
       (add-hook 'clojure-mode-hook 'hs-minor-mode)))
 
-(use-package cider
+(use-package col-highlight    ;; Column flash
+	:ensure t
+	:bind
+	([(C-escape)] . col-highlight-flash))
+
+(use-package company  ;; Company is a text completion framework for Emacs.
   :ensure t
-  :bind (("C-x f" . cider-namespace-refresh))
+  :defer t
+  :init (global-company-mode)
   :config
   (progn
-    (setq nrepl-hide-special-buffers t)
-    (setq cider-popup-stacktraces-in-repl t)
-    (setq cider-repl-history-file "~/.emacs.d/nrepl-history")
-    (setq cider-repl-pop-to-buffer-on-connect nil)
-    (setq cider-auto-select-error-buffer nil)
-    (setq cider-prompt-save-file-on-load nil)
-    (setq cider-repl-display-help-banner nil)
-    (setq cider-repl-use-pretty-printing t)
-    (setq cider-refresh-before-fn "reloaded.repl/suspend")
-    (setq cider-refresh-after-fn "reloaded.repl/resume")
-    (setq cider-cljs-lein-repl "(do (reloaded.repl/go) (user/cljs-repl))")))
+    ;; Use Company for completion
+    (bind-key [remap completion-at-point] #'company-complete company-mode-map)
+    (setq company-tooltip-align-annotations t
+          ;; Easy navigation to candidates with M-<n>
+          company-show-numbers t)
+    (setq company-dabbrev-downcase nil))
+  :diminish company-mode)
 
-(use-package yasnippet
-  :ensure t
+(use-package dashboard  ;; An extensible emacs startup screen showing you what’s most important.
+	:ensure t
+	:config
+  (setq dashboard-banner-logo-title "Willkommen zu einem weiteren großen Tag des Erfolgs!!") ;; Set the title
+  (setq dashboard-startup-banner (concat home-directory "Bilder/lisplogo_fancy_256.png")) ;; Set the banner
+  (setq dashboard-items '((recents  . 5)
+                          (bookmarks . 5)
+                          (projects . 0)
+                          (agenda . 5)
+                          (registers . 5)))
+	(dashboard-setup-startup-hook))
+
+(use-package dired-quick-sort
+	:ensure t
   :init
-  (progn
-    (yas-global-mode 1)
-    (use-package clojure-snippets)))
+  (dired-quick-sort-setup))
 
-(use-package yaml-mode
-  :mode ("\\.yml$" . yaml-mode))
+(use-package exec-path-from-shell
+	:ensure t)
 
-(use-package json-mode
-  :ensure t
-  :mode "\\.json\\'")
+; Flycheck
+(use-package flycheck
+  :defer 1
+  :init (setq
+         flycheck-checkers
+         '(typescript-tslint
+           css-csslint
+           emacs-lisp
+           haml
+           json-jsonlint
+           yaml-jsyaml))
+  :config (global-flycheck-mode))
 
-(use-package powerline  ;; Powerline
-  :ensure t
-  :config
-  (powerline-default-theme))
-
-(use-package yasnippet
+(use-package git-timemachine
   :ensure t)
-
-(use-package magit
-  :ensure t
-  :bind (([(shift f6)] . magit-status)
-         ("C-c m b" . magit-blame)
-         ("C-c m q" . magit-blame-quit)))
-
-(use-package whitespace ;; shows Whitespaces
-  :bind (("C-c T w" . whitespace-mode))
-  :init
-  (dolist (hook '(conf-mode-hook))
-    (add-hook hook #'whitespace-mode))
-  :config (setq whitespace-line-column nil)
-  :diminish whitespace-mode)
-
-(use-package imenu-anywhere  ;; Imenu
-  :ensure t
-  :bind (("C-c i" . imenu-anywhere)))
-
-(use-package org-bullets
-  :ensure t)
-
-(use-package org
-  :ensure t
-  :init (progn
-          (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-          (setq org-todo-keywords
-                '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "STAGING" "DONE" "CANCELED"))))
-  :mode (("\\.org$" . org-mode)))
-
-(use-package multiple-cursors
-  :ensure t
-  :bind
-  ( ;; Multiple continum lines
-    ([(super shift f10)] . mc/edit-lines)
-    ;; Multiple cursors not based on continuous lines
-    ;;(("C->") . mc/mark-next-like-this)
-    ;;(("C-<") . mc/mark-previous-like-this)
-    ;;(("C-c C-<") . mc/mark-all-like-this))
-  ))
 
 (use-package helm
   :ensure t
@@ -419,13 +292,91 @@
    ("C-h" . helm-find-files-up-one-level)
    ("C-l" . helm-execute-persistent-action)))
 
-(use-package undo-tree
-  :ensure t)
+(use-package hs-minor-mode   ;; hide-show blocks
+  :bind
+  ("C-c T h" . hs-minor-mode)
+  ("C-c h a" . hs-hide-all)
+  ("C-c h s" . hs-show-all)
+  ("C-c h h" . hs-toggle-hiding))
+
+(use-package json-mode
+  :ensure t
+  :mode "\\.json\\'")
+
+(use-package js2-mode
+  :mode (("\\.js$" . js2-mode)
+         ("Jakefile$" . js2-mode))
+  :interpreter ("node" . js2-mode)
+  :bind (("C-s-l" . back-to-indentation-or-beginning-of-line)
+         ("C-M-h" . backward-kill-word))
+  :config
+  (progn
+    (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
+    (add-hook 'js2-mode-hook (lambda ()
+                               (bind-key "M-j" 'join-line-or-lines-in-region js2-mode-map)))))
+
+(use-package magit    ;; git magic in Emacs
+  :ensure t
+  :bind (([(shift f6)] . magit-status)
+         ("C-c m b" . magit-blame)
+         ("C-c m q" . magit-blame-quit)))
+
+(use-package markdown-mode
+	     :config (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+	     (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+	     (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
+
+(use-package multiple-cursors
+  :ensure t
+  :bind
+  ( ;; Multiple continum lines
+    ([(super shift f10)] . mc/edit-lines)
+    ;; Multiple cursors not based on continuous lines
+    ;;(("C->") . mc/mark-next-like-this)
+    ;;(("C-<") . mc/mark-previous-like-this)
+    ;;(("C-c C-<") . mc/mark-all-like-this))
+    ))
 
 (use-package neotree
   :ensure t
   :bind
   ([(f8)] . neotree-toggle))
+
+(use-package org
+  :ensure t
+  :init (progn
+          (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+          (setq org-todo-keywords
+                '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "STAGING" "DONE" "CANCELED")))
+          (setq org-clock-persist 'history)
+          (org-clock-persistence-insinuate)
+          )
+  :mode (("\\.org$" . org-mode)))
+
+(use-package org-bullets  ;; for org-mode
+  :ensure t)
+
+(use-package page-break-lines ;; dashboard dependency
+  :ensure t)
+
+(use-package popwin ;; popwin
+	     :ensure t
+	     :config
+	     (popwin-mode 1))
+
+(use-package projectile  ;; dashboard dependency
+  :ensure t)
+
+(use-package powerline  ;; Powerline
+  :ensure t
+  :config
+  (powerline-default-theme))
+
+(use-package rainbow-delimiters  ;; "rainbow parentheses"
+  :ensure t
+  :init
+  (progn
+    (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)))
 
 (use-package rubocop
 	     :ensure t
@@ -433,10 +384,47 @@
 	     :bind
 	     (([(M f12)] . rubocop-check-current-file)))
 
-(use-package col-highlight    ;; Column flash
+(use-package smart-mode-line-powerline-theme
+  :ensure t
+  :after powerline
+  :after smart-mode-line
+  :config
+  (sml/setup)
+  (sml/theme 'light)
+  (sml/apply-theme 'powerline))
+
+(use-package swiper
+  :after ivy
+  :bind (("C-s" . swiper)
+         ("C-r" . swiper)))
+
+(use-package tabbar   ;; tabs for emacs
 	     :ensure t
-	     :bind
-	     ([(C-escape)] . col-highlight-flash))
+	     :init
+	     (progn (tabbar-mode t)))
+
+(use-package tide
+  :config
+  (progn
+    (add-hook 'typescript-mode-hook #'setup-tide-mode)
+    (add-hook 'js2-mode-hook #'setup-tide-mode)))
+
+(defun setup-tide-mode ()
+   (interactive)
+   (tide-setup)
+   (flycheck-mode +1)
+   (setq flycheck-check-syntax-automatically '(save mode-enabled))
+   (flycheck-add-next-checker 'typescript-tide '(t . typescript-tslint) 'append)
+   (eldoc-mode +1)
+   (company-mode +1))
+
+;; TypeScript
+(use-package typescript-mode
+  :mode (("\\.ts\\'" . typescript-mode)
+         ("\\.tsx\\'" . typescript-mode)))
+
+(use-package undo-tree
+  :ensure t)
 
 (use-package uniquify   ;; Display dir if two files have the same name
 	     :init
@@ -446,21 +434,6 @@
 		     uniquify-after-kill-buffer-p t
 		     uniquify-ignore-buffers-re "^\\*")))
 
-(use-package markdown-mode
-	     :config (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
-	     (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-	     (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
-
-(use-package popwin ;; popwin
-	     :ensure t
-	     :config
-	     (popwin-mode 1))
-
-(use-package tabbar
-	     :ensure t
-	     :init
-	     (progn (tabbar-mode t)))
-
 (use-package web-mode
   :ensure t
   :mode (("\\.html\\'" . web-mode)
@@ -468,6 +441,27 @@
          ("\\.mustache\\'" . web-mode))
   :config
   (setq web-mode-markup-indent-offset 2))
+
+(use-package whitespace ;; shows Whitespaces
+  :bind (("C-c T w" . whitespace-mode))
+  :init
+  (dolist (hook '(conf-mode-hook))
+    (add-hook hook #'whitespace-mode))
+  :config (setq whitespace-line-column nil)
+  :diminish whitespace-mode)
+
+(use-package yaml-mode
+  :ensure t
+  :mode ("\\.yml$" . yaml-mode))
+
+(use-package yasnippet
+  :ensure t
+  :init
+  (progn
+    (yas-global-mode 1)
+    (use-package clojure-snippets)))
+
+;;;;;;;;;;;;;;   USE PACKAGE SECTION ENDS   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
@@ -562,14 +556,14 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(flycheck-typescript-tslint-config "~/entwicklung/chipotle/node/tslint.json")
  '(cider-show-error-buffer nil)
  '(cider-use-tooltips t)
  '(column-number-mode t)
  '(custom-safe-themes
    '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
+ '(flycheck-typescript-tslint-config "~/entwicklung/chipotle/node/tslint.json")
  '(package-selected-packages
-   '(leuven-theme twilight-theme kaolin-themes flycheck prettier-js recently dart-mode tide yaml-mode graphql-mode use-package-chords helm-navi helm-pages popup-imenu popup-edit-menu ivy ace-link ace-jump-helm-line dashboard buffer-flip auto-complete ace-isearch ace-popup-menu ace-jump-buffer discover hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
+   '(leuven-theme twilight-theme kaolin-themes flycheck prettier-js recently dart-mode tide yaml-mode graphql-mode use-package-chords helm-navi helm-pages popup-imenu popup-edit-menu ivy ace-link ace-jump-helm-line dashboard buffer-flip auto-complete ace-isearch ace-popup-menu discover hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
  '(powerline-default-separator 'curve)
  '(show-paren-mode t)
  '(tramp-syntax 'default nil (tramp)))
@@ -583,22 +577,6 @@
  '(powerline-inactive1 ((t (:inherit mode-line-inactive :background "OliveDrab2"))))
  '(powerline-inactive2 ((t (:inherit mode-line-inactive :background "plum1"))))
  '(trailing-whitespace ((((class color) (background light)) (:background "OliveDrab2")) (((class color) (background dark)) (:background "OliveDrab2")) (t (:inverse-video t)))))
-
-(defun my-run-latex ()
-  (interactive)
-  (let ((default-directory "/home/mmontoya/Documents/personal/Schriftstellerei/gypsys/")
-        (gyp-file-path (expand-file-name "gypsys.tex"))
-        (aux-files-path (expand-file-name "gypro/*.aux"))
-        (aux-file-path (expand-file-name "*.aux"))
-        (TeX-save-document (TeX-master-file))
-        (delete-file aux-files-path)
-        (delete-file aux-file-path)
-        (TeX-command "LaTeX" gyp-file-path -1))))
-
-(defun my-LaTeX-hook ()
- (local-set-key (kbd "C-c C-a") 'my-run-latex))
-
-(add-hook 'LaTeX-mode-hook 'my-LaTeX-hook)
 
 (defun jpt-toggle-mark-word-at-point ()
   (interactive)
