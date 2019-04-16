@@ -24,6 +24,37 @@
 ;; (package-initialize)
 (add-to-list 'exec-path "/home/manuel/.yarn/bin/")
 
+;; Turn off mouse interface early in startup to avoid momentary display
+;; (when (fboundp 'menu-bar-mode) (menu-bar-mode 0))
+(when (fboundp 'tool-bar-mode) (tool-bar-mode 0))
+;; (when (fboundp 'scroll-bar-mode) (scroll-bar-mode 0))
+
+;; use ibuffer instead of buffer
+(bind-key "C-x C-b" 'ibuffer)
+
+;; use trash
+(setq delete-by-moving-to-trash t)
+
+;; disable garbage collection when minibuffer is active
+(defun my-minibuffer-setup-hook ()
+  (setq gc-cons-threshold most-positive-fixnum))
+
+(defun my-minibuffer-exit-hook ()
+  (setq gc-cons-threshold 800000))
+
+(add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
+(add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
+
+;; disable confirmation if a file or buffer does not exist when you
+;; use C-x C-f or C-x b
+(setq confirm-nonexistent-file-or-buffer nil)
+
+;; show buffer file name in title bar
+(setq frame-title-format
+      '((:eval (if (buffer-file-name)
+                   (abbreviate-file-name (buffer-file-name))
+                 "%b"))))
+
 ;; change all prompts to y or n
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -33,6 +64,10 @@
   (get-buffer "*Messages*"))
 
 (setq initial-buffer-choice 'acg-initial-buffer-choice)  ;; no scratch buffer
+
+;; electric-pair-mode
+(electric-pair-mode 1)
+(show-paren-mode 1)
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -98,7 +133,7 @@
 
 ;; (load-theme 'majapahit-light t)
 ;;(load-theme 'kaolin-light t)
-(load-theme 'leuven t)
+;; (load-theme 'leuven t)
 
 ;(use-package color-theme-sanityinc-solarized
 ;  :ensure t
@@ -392,6 +427,15 @@
   (sml/setup)
   (sml/theme 'light)
   (sml/apply-theme 'powerline))
+
+(use-package solarized-theme
+  :ensure t
+  :config
+  (setq solarized-distinct-fringe-background t)
+  (setq solarized-use-variable-pitch nil)
+  (setq solarized-scale-org-headlines nil)
+  (setq solarized-high-contrast-mode-line t)
+  (load-theme 'solarized-light t))
 
 (use-package swiper
   :after ivy
