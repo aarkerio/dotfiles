@@ -24,6 +24,9 @@
 ;; (package-initialize)
 (add-to-list 'exec-path "/home/manuel/.yarn/bin/")
 
+(require 'recentf)
+(recentf-mode 1)
+
 ;; Turn off mouse interface early in startup to avoid momentary display
 ;; (when (fboundp 'menu-bar-mode) (menu-bar-mode 0))
 (when (fboundp 'tool-bar-mode) (tool-bar-mode 0))
@@ -273,6 +276,7 @@
 	:config
   (setq dashboard-banner-logo-title "Willkommen zu einem weiteren großen Tag des Erfolgs!!") ;; Set the title
   (setq dashboard-startup-banner (concat home-directory "Bilder/lisplogo_fancy_256.png")) ;; Set the banner
+  (setq show-week-agenda-p t)
   (setq dashboard-items '((recents  . 5)
                           (bookmarks . 5)
                           (projects . 0)
@@ -302,6 +306,11 @@
   :config (global-flycheck-mode))
 
 (use-package git-timemachine
+  :ensure t)
+
+(use-package graphql-mode
+   :mode (("\\.graphql.ts\\'" . graphql-mode)
+          ("\\.graphql\\'" . graphql-mode))
   :ensure t)
 
 (use-package helm
@@ -357,9 +366,9 @@
          ("C-c m q" . magit-blame-quit)))
 
 (use-package markdown-mode
-	     :config (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
-	     (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
-	     (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
+	:config (add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+	        (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+	        (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)))
 
 (use-package multiple-cursors
   :ensure t
@@ -384,6 +393,23 @@
           (setq org-todo-keywords
                 '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "STAGING" "DONE" "CANCELED")))
           (setq org-clock-persist 'history)
+          (setq org-agenda-custom-commands
+                '(("d" "Daily agenda and all TODOs"
+                   ((tags "PRIORITY=\"A\""
+                          ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                           (org-agenda-overriding-header "High-priority unfinished tasks:")))
+                    (agenda "" ((org-agenda-ndays 1)))
+                    (alltodo ""
+                             ((org-agenda-skip-function '(or (air-org-skip-subtree-if-habit)
+                                                             (air-org-skip-subtree-if-priority ?A)
+                                                             (org-agenda-skip-if nil '(scheduled deadline))))
+                              (org-agenda-overriding-header "ALL normal priority tasks:"))))
+                   ((org-agenda-compact-blocks t)))))
+          (setq org-agenda-files
+                '("~/Documents/personal/org/privat.org"
+                  "~/Documents/personal/org/meine_beste_arbeit.org"
+                  "~/Documents/personal/org/view.org"
+                  "~/Documents/personal/org/mein_lernpfad.org"))
           (org-clock-persistence-insinuate)
           )
   :mode (("\\.org$" . org-mode)))
@@ -606,8 +632,10 @@
  '(custom-safe-themes
    '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(flycheck-typescript-tslint-config "~/entwicklung/chipotle/node/tslint.json")
+ '(org-agenda-files
+   '("~/Documents/personal/org/privat.org" "~/Documents/personal/org/meine_beste_arbeit.org" "~/Documents/personal/org/mein_lernpfad.org"))
  '(package-selected-packages
-   '(leuven-theme twilight-theme kaolin-themes flycheck prettier-js recently dart-mode tide yaml-mode graphql-mode use-package-chords helm-navi helm-pages popup-imenu popup-edit-menu ivy ace-link ace-jump-helm-line dashboard buffer-flip auto-complete ace-isearch ace-popup-menu discover hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
+   '(transpose-frame leuven-theme twilight-theme kaolin-themes flycheck prettier-js recently dart-mode tide yaml-mode graphql-mode use-package-chords helm-navi helm-pages popup-imenu popup-edit-menu ivy ace-link ace-jump-helm-line dashboard buffer-flip auto-complete ace-isearch ace-popup-menu discover hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
  '(powerline-default-separator 'curve)
  '(show-paren-mode t)
  '(tramp-syntax 'default nil (tramp)))
@@ -669,7 +697,7 @@
   (message "Hello (%s)" foo)
   (cider-connect '(:host "localhost" :port "7000")))
 
-(global-set-key (kbd "M-s-p") 'clj-connect)
+(global-set-key (kbd "M-s M-p") 'clj-connect)
 
 (global-set-key (kbd "C-s-t") 'eval-buffer)
 

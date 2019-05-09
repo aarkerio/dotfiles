@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: each
+# key: each
+# --
+Object.entries(obj).forEach((entry: any) => {
+  let key = entry[0];
+  let value = entry[1];
+  //use key and value here
+});
