@@ -1,0 +1,175 @@
+\documentclass[]{k-cv}
+
+\defaultfontfeatures{Mapping=tex-text}
+\usepackage{xcolor}
+\addbibresource{bibliography.bib}
+
+\begin{document}
+\header{manuel}{montoya}
+       {Full stack RoR/JS developer}
+
+% In the aside, each new line forces a line break
+\begin{aside}
+  \section{contact}
+    \href{mailto:mmontoya@gmail.com}{mmontoya@gmail.com}
+    Tel  52 (55) 4168-7570
+    Cell 52 (55) 2878-3910
+    \href{http://github.com/aarkerio}{github://aarkerio}
+    \href{https://medium.com/@mmontoya}{medium://mmontoya}
+    skype://aarkerio
+    Mexico City
+  \section{languages}
+    native spanish
+	  spoken english
+	  can read german
+
+  \section{gems I use often}
+    capistrano \textbf{factory}-boot \textbf{r}spec
+    \textbf{bootstrap} sidekiq unicorn \textbf{hamlit} sassrails \textit{compass}
+    decent\_exposure \textbf{debugger} carrierwave \textbf{devise} cells
+    cucumber \textbf{guard} capybara \textbf{unicorn}
+    \textbf{rubo}cop \textbf{react-rails}
+    \textbf{will\_paginate} \textbf{database}\_cleaner
+
+\end{aside}
+
+\section{profile}
+
+I'm a remote web developer with a lot of experience in e-Commerce, e-Learning, e-Health and Fintech sectors.
+Last years I've been working remotely for US and Swedish based companies. Coding clean and good software
+is easier if you know your tools and the domain, not just the language.
+
+I love coffee, solving problems, learning new stuff and hiking with my dogs. I've been
+programming for eighteen fun years, since the old days when the Web was made with CGI
+pages and ugly java applets. Now I develop using RoR, Clojure and TypeScript with SQL and
+noSQL DBs. I code under the TDD and Continuous Integration paradigms. I'm a big fan of
+Functional Programming and immutability. My daily desktop is i3 on Debian. I use NetBSD
+on my hobby servers because compiling from the sources is fun. \href{https://github.com/aarkerio/ZentaurLMS/blob/development/src/cljs/zentaur/events.cljs}{http://Zentaur}
+is my current side project, a LMS built with GraphQL and ClojureScript.
+
+I use Emacs as my default editor because well, nobody is perfect... and Lisp!
+
+\section{summary of qualifications}
+  \begin{itemize}
+    \item Eighteen years of experience delivering non-trivial Web solutions, from Single Page Applications
+          with React or a new SCORM player, to implementation of Archetype-based medical semantics on e-Health.
+    \item Advanced OOP level with Ruby, JavaScript and PHP.
+    \item Three years of experience with Amazon Web Services: EC2, DynamoDB, RDS, SQS, S3, API Gateway, Cognito and Lambdas.
+    \item Lots of experience installing and configuring server side services (HTTP server,
+          RDBMS, RabbitMQ, Subversion, Git, SMTP, SSH, FTP, DNS, LDAP ) on Linux and
+          BSD servers.
+    \item Aware that good communication, respect and close collaboration inside a team
+          are very important to create great products.
+    \item Good and patient helping and encouraging the junior developers.
+   \end{itemize}
+
+\section{technologies I use often}
+
+    Linux (since 1997), RoR (since 2008), JavaScript (since 1999), Lisp, Perl, jQuery, Node.js, ReactJS, Redux, Webpack, Git,
+    Github, Clojure, Apache, Nginx, PostgreSQL, MySQL, SQLite, Redis, Solaris,
+    tmux, JSON, SSH, XML, RESTful architecture, GraphQL, Test Driven Development (rspec),
+    Integration Server (Jenkins), I develop under Scrum and Kanban methodologies.
+
+\section{education}
+
+\begin{entrylist}
+  \entry
+    {1995 - 2000)}
+    {B. Sc. in Computer Science}
+    {National University (UNAM)}
+	  {Faculty of Sciences, Mexico City}
+  \entry
+    {June 2008}
+    {OOP Design Patterns with Python}
+    {JBI Training}
+    {London, England}
+   \entry
+    {December 2010}
+    {Refactoring your Rails code}
+    {Global Day of Code Retreat}
+    {Leipzig, Germany}
+
+\end{entrylist}
+
+\newpage
+
+\section{professional experience}
+
+  \textbf{TypeScript/Lambda Developer}  \textit{Not a Bank}
+  {\color{gray} {\small Jul. 2018 - May. 2019 \par}}
+  \begin{itemize}
+    \item \textit{Not a Bank} is a startup that offers whole financial services trough a Cell phone App.
+    \item After the definition of the domain, I made the analysis and design of the GraphQL API that the new App
+          requires in order to make transactions and notifications safely.
+    \item Together, two TypeScript developers and I deployed on production 23 lambdas that are executed on Nodejs.
+    \item Cognito, SES, RDS PostgreSQL, SQS, S3 and DymamodDB were used on AWS.
+  \end{itemize}
+
+  \textbf{Ruby/ReactJS Developer}  \textit{HOMIE}
+  {\color{gray} {\small Sep. 2016 - Jul. 2018 \par}}
+  \begin{itemize}
+    \item Homie is a startup that provides Real State related services. In this project I
+          worked with people from the financial and data science fields to create a new
+          \textit{Risk Score Assessment Tool}.
+    \item I lead a team of four remote engineers to build and launch in five months the tool
+          using Rails, MongoDB, RabbitMQ, React and R language.
+    \item Several REST and GraphQL APIs were used in order to receive payments and extract info from social networks.
+    \item I developed and deployed several services on AWS.
+  \end{itemize}
+
+   \textbf{RoR/JS Developer} \textit{Las Lomas Veterinary Clinic}
+   {\color{gray} {\small Sep. 2015 - Sep. 2016 \par}}
+   \begin{itemize}
+     \item I developed a full Customer Management System from scratch using Webpack/React/Redux in the front end.
+     \item Coded a RoR4 JSON API. I used PostgreSQL JSONB options.
+     \item Full TDD covering using Rspec and Mocha/Enzyme in the front end.
+     \item The Website included payroll, suppliers, appointments and invoice sections.
+     \item Developed a new gem to connect the mailing list with MailChimp.
+   \end{itemize}
+
+  \textbf{Ruby Developer}  \textit{ePublishing, inc.}
+  {\color{gray} {\small Mar. 2014 - Jul. 2015 \par}}
+   \begin{itemize}
+     \item I created a new RESTful JSON API for a pharmaceutical client with Rails 4 to
+           search for medicines and medical supplies. Redis was used to store
+           special offers and taxes by state.
+     \item Wrote the full integration between Rails 4 and Gigya.com API services (shared
+           sessions, comments, social networks).
+     \item Developed a Newsletter Manager gem. I imported and normalised 300,000
+           scientific articles and abstracts from different sources and formats.
+     \item Coded ruby scripts to update and interchange data between several kind of
+           databases using JSON files.
+  \end{itemize}
+
+   \textbf{CTO} \textit{PCSB, SA de CV}
+   {\color{gray} {\small Jun. 2007 - Jan. 2014 \par}}
+   \begin{itemize}
+     \item Six years leading a team of three developers, a pedagogic planner and a
+           graphic designer to create four big medical web sites, including a new tool to
+           search, import and display medical resources (video, audio, books, magazines).
+     \item I designed and coded a new e-Learning platform (virtual classrooms,
+           chatrooms, e-tests) for a Medical Institution using Rails 3 and Postgres. I
+           developed and implemented SCORM courses.
+     \item Google and Facebook APIs were used to create Docs, Sessions and Calendars
+           inside the Rails platform.
+   \end{itemize}
+
+   \textbf{Developer and webmaster} \textit{University of Mexico}
+   {\color{gray} {\small Sep. 2004 - May 2007 \par}}
+   \begin{itemize}
+     \item Maintaining and porting legacy code from PHP3 spaghetti code to OOP PHP5 using CakePHP framework.
+     \item A budget/purchases system, delivering XML and PDF reports.
+   \end{itemize}
+
+   \textbf{Web Developer} \textit{Bank of Commerce (Bancomext)}
+   {\color{gray} {\small Jan. 1998 - Aug. 2004 \par}}
+   \begin{itemize}
+     \item I designed, developed and deployed an Intranet solution using Perl and PHP
+           over Solaris servers and Oracle as RDBMS.
+     \item Using Perl, Apache and MySQL, I developed a Loan Management System.
+     \item Coded a new Web File Sharing System.
+   \end{itemize}
+
+\end{entrylist}
+
+\end{document}
