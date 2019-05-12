@@ -163,12 +163,64 @@
   :defer t
   :ensure t)
 
-(use-package avy   ;; Jump to things in Emacs tree-style
+(use-package exec-path-from-shell
+	     :ensure t)
+
+(use-package page-break-lines
+	     :ensure t)
+
+(setq exec-path (append exec-path '("/home/mmontoya/.nvm/versions/node/v8.10.0/bin")))
+
+(setq tide-tsserver-executable "/home/mmontoya/.nvm/versions/node/v8.10.0/bin/tsserver")
+
+(use-package tide
   :ensure t
-  :bind
-  (("C-." . avy-goto-word-1)
-   ("C-," . avy-goto-char-2))
-  :config (setq avy-all-windows nil))
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)
+         (before-save . tide-format-before-save)))
+
+(defun setup-tide-mode ()
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  ;; company is an optional dependency. You have to
+  ;; install it separately via package-install
+  ;; `M-x package-install [ret] company`
+  (company-mode +1))
+
+;; aligns annotation to the right hand side
+(setq company-tooltip-align-annotations t)
+
+;; formats the buffer before saving
+(add-hook 'before-save-hook 'tide-format-before-save)
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+(use-package dashboard  ;; An extensible emacs startup screen showing you what’s most important.
+	     :ensure t
+	     :config
+	     (dashboard-setup-startup-hook))
+;; Set the title
+(setq dashboard-banner-logo-title "Willkommen zu einem weiteren großen Tag des Erfolgs!!")
+;; Set the banner
+
+(setq dashboard-startup-banner (concat home-directory "Bilder/lisplogo_fancy_256.png"))
+
+(setq dashboard-items '((recents  . 5)
+                        (bookmarks . 5)
+                        (projects . 0)
+                        (agenda . 5)
+                        (registers . 5)))
+
+(load-theme 'majapahit-light t)
+
+;(use-package color-theme-sanityinc-solarized
+;  :ensure t
+;  :config (load-theme 'majapahit-light t))
 
 (use-package buffer-flip
   :ensure t
@@ -423,10 +475,7 @@
                               (org-agenda-overriding-header "ALL normal priority tasks:"))))
                    ((org-agenda-compact-blocks t)))))
           (setq org-agenda-files
-                '("~/Documents/personal/org/privat.org"
-                  "~/Documents/personal/org/meine_beste_arbeit.org"
-                  "~/Documents/personal/org/view.org"
-                  "~/Documents/personal/org/mein_lernpfad.org"))
+                '("~/Documents/personal/zeitplane/meine_schweren_Verpflichtungen.org"))
           (org-clock-persistence-insinuate)
           )
   :mode (("\\.org$" . org-mode)))
@@ -650,7 +699,7 @@
    '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(flycheck-typescript-tslint-config "~/entwicklung/chipotle/node/tslint.json")
  '(org-agenda-files
-   '("~/Documents/personal/org/privat.org" "~/Documents/personal/org/meine_beste_arbeit.org" "~/Documents/personal/org/mein_lernpfad.org"))
+   '("~/Documents/personal/zeitplane/meine_schweren_Verpflichtungen.org"))
  '(package-selected-packages
    '(flycheck-pos-tip flycheck-clojure transpose-frame leuven-theme twilight-theme kaolin-themes flycheck prettier-js recently dart-mode tide yaml-mode graphql-mode use-package-chords helm-navi helm-pages popup-imenu popup-edit-menu ivy ace-link ace-jump-helm-line dashboard buffer-flip auto-complete ace-isearch ace-popup-menu discover hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
  '(powerline-default-separator 'curve)
