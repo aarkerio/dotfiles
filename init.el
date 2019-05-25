@@ -8,10 +8,13 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
-
-
 (require 'package)
-(setq package-enable-at-startup nil)
+
+;; Add melpa package source when using package list
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives '("mermalade" . "https://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/")  t)
 
 (defconst d/emacs-start-time (current-time))
 (add-hook 'after-init-hook (lambda ()
@@ -136,25 +139,41 @@
 
 (setq default-directory (concat home-directory "entwicklung/chipotle/fondeadora/"))
 
-;; (load-theme 'majapahit-light t)
-;;(load-theme 'kaolin-light t)
-;; (load-theme 'leuven t)
-
-;(use-package color-theme-sanityinc-solarized
-;  :ensure t
-;  :config (load-theme 'majapahit-light t))
 
 ;; (load (concat home-directory "elisp/myfunctions"))
 
-;;(use-package color-theme-sanityinc-solarized
-;;  :ensure t
-;;  :config (load-theme 'solarized t))
+;;;;;;;;;;;;;;   USE PACKAGE THEME SECTION  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; (use-package apropospriate-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'apropospriate-light t))
 
 ;; (use-package majapahit-theme
 ;;	     :ensure majapahit-theme
 ;;	     :config (load-theme 'majapahit-light t))
 
+(use-package solarized-theme
+  :ensure t
+  :config
+  (setq solarized-distinct-fringe-background t)
+  (setq solarized-use-variable-pitch nil)
+  (setq solarized-scale-org-headlines nil)
+  (setq solarized-high-contrast-mode-line t)
+  (load-theme 'solarized-light t))
+
 ;;;;;;;;;;;;;;   USE PACKAGE SECTION STARTS   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package ace-jump-buffer
+  :bind
+  ("s-|" . ace-jump-buffer)
+  :config
+  (make-ace-jump-buffer-function
+      "special"
+    (with-current-buffer buffer
+      (--all?
+       (not (derived-mode-p it))
+       '(comint-mode magit-mode inf-ruby-mode rg-mode compilation-mode)))))
 
 (use-package all-the-icons
   :ensure t) ;; various Icon and Fonts for Emacs
@@ -169,58 +188,26 @@
 (use-package page-break-lines
 	     :ensure t)
 
-(setq exec-path (append exec-path '("/home/mmontoya/.nvm/versions/node/v8.10.0/bin")))
-
-(setq tide-tsserver-executable "/home/mmontoya/.nvm/versions/node/v8.10.0/bin/tsserver")
-
-(use-package tide
-  :ensure t
-  :after (typescript-mode company flycheck)
-  :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)
-         (before-save . tide-format-before-save)))
-
-(defun setup-tide-mode ()
-  (interactive)
-  (tide-setup)
-  (flycheck-mode +1)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  (eldoc-mode +1)
-  (tide-hl-identifier-mode +1)
-  ;; company is an optional dependency. You have to
-  ;; install it separately via package-install
-  ;; `M-x package-install [ret] company`
-  (company-mode +1))
-
-;; aligns annotation to the right hand side
-(setq company-tooltip-align-annotations t)
-
-;; formats the buffer before saving
-(add-hook 'before-save-hook 'tide-format-before-save)
-
-(add-hook 'typescript-mode-hook #'setup-tide-mode)
-
 (use-package dashboard  ;; An extensible emacs startup screen showing you what’s most important.
 	     :ensure t
 	     :config
-	     (dashboard-setup-startup-hook))
-;; Set the title
-(setq dashboard-banner-logo-title "Willkommen zu einem weiteren großen Tag des Erfolgs!!")
-;; Set the banner
+	     (dashboard-setup-startup-hook)
+       ;; Set the title
+       (setq dashboard-banner-logo-title "Willkommen zu einem weiteren großen Tag des Erfolgs!!")
+       ;; Set the banner
+       (setq dashboard-startup-banner (concat home-directory "Bilder/lisplogo_fancy_256.png"))
+       (setq dashboard-items '((recents  . 5)
+                               (bookmarks . 5)
+                               (projects . 0)
+                               (agenda . 5)
+                               (registers . 5))))
 
-(setq dashboard-startup-banner (concat home-directory "Bilder/lisplogo_fancy_256.png"))
-
-(setq dashboard-items '((recents  . 5)
-                        (bookmarks . 5)
-                        (projects . 0)
-                        (agenda . 5)
-                        (registers . 5)))
-
-(load-theme 'majapahit-light t)
-
-;(use-package color-theme-sanityinc-solarized
-;  :ensure t
-;  :config (load-theme 'majapahit-light t))
+(use-package better-jumper
+  :ensure t
+  :bind (("C-c o" . better-jumper-jump-backward)
+         ("C-c g" . better-jumper-jump-forward))
+  :config
+  (better-jumper-mode +1))
 
 (use-package buffer-flip
   :ensure t
@@ -395,6 +382,7 @@
    (([(?\s-q)] . helm-buffers-list)
     ("M-x" . helm-M-x)
     ("C-x C-f" . helm-find-files)
+    ("C-x l" . helm-recentf)
     :map helm-map
     ("C-j" . helm-next-line)
     ("C-k" . helm-previous-line)))
@@ -520,15 +508,6 @@
   (sml/theme 'light)
   (sml/apply-theme 'powerline))
 
-(use-package solarized-theme
-  :ensure t
-  :config
-  (setq solarized-distinct-fringe-background t)
-  (setq solarized-use-variable-pitch nil)
-  (setq solarized-scale-org-headlines nil)
-  (setq solarized-high-contrast-mode-line t)
-  (load-theme 'solarized-light t))
-
 (use-package swiper
   :after ivy
   :bind (("C-s" . swiper)
@@ -600,13 +579,11 @@
 ;;;;;;;;;;;;;;   USE PACKAGE SECTION ENDS   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; backup/autosave
-(defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
 (defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
-(setq backup-directory-alist (list (cons ".*" backup-dir)))
+(setq backup-directory-alist '(("." . "~/.emacs.d/autosave/")))
 (setq auto-save-list-file-prefix autosave-dir)
 (setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
 
-;; Go to
 (global-set-key (kbd "M-g") 'goto-line)    ;; M-g  'goto-line
 (global-set-key [(f7)]  'comment-region)
 (global-set-key [(shift f7)] 'uncomment-region)
@@ -701,7 +678,7 @@
  '(org-agenda-files
    '("~/Documents/personal/zeitplane/meine_schweren_Verpflichtungen.org"))
  '(package-selected-packages
-   '(flycheck-pos-tip flycheck-clojure transpose-frame leuven-theme twilight-theme kaolin-themes flycheck prettier-js recently dart-mode tide yaml-mode graphql-mode use-package-chords helm-navi helm-pages popup-imenu popup-edit-menu ivy ace-link ace-jump-helm-line dashboard buffer-flip auto-complete ace-isearch ace-popup-menu discover hs-minor-mode majapahit-theme cider exwm exec-path-from-shell all-the-icons latex-extra feature-mode ztree highlight auto-highlight-symbol js2-mode avy org-bullets web-mode use-package undo-tree tabbar swap-buffers sublimity smooth-scrolling smart-mode-line slime slim-mode shell-switcher scss-mode sass-mode ruby-block rspec-mode react-snippets projectile-speedbar powershell origami nurumacs neotree multiple-cursors mocha-snippets minimap markdown-mode magit light-soap-theme less-css-mode jsx-mode ivy-pages helm-rb helm-git git-timemachine git-auto-commit-mode fountain-mode folding flyspell-lazy flymake-json flymake-jshint faff-theme dired+ color-theme-solarized col-highlight auctex airline-themes ac-inf-ruby))
+   '(alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rubocop rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
  '(powerline-default-separator 'curve)
  '(show-paren-mode t)
  '(tramp-syntax 'default nil (tramp)))
@@ -766,9 +743,6 @@
 (global-set-key (kbd "M-s M-p") 'clj-connect)
 
 (global-set-key (kbd "C-s-t") 'eval-buffer)
-
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-(global-set-key (kbd "C-x l") 'helm-recentf)
 
 ;; Keybinds for manipulating windows
 
