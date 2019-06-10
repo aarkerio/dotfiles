@@ -24,6 +24,7 @@
                          ("marmalade" .    "https://marmalade-repo.org/packages/")
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("melpa" .        "https://melpa.org/packages/")))
+
 ;; (package-initialize)
 (add-to-list 'exec-path "/home/manuel/.yarn/bin/")
 
@@ -223,6 +224,7 @@
 
 (use-package cider
   :ensure t
+  :pin melpa-stable
   :bind (("C-x f" . cider-namespace-refresh))
   :config
   (progn
@@ -325,10 +327,26 @@
                           (registers . 5)))
 	(dashboard-setup-startup-hook))
 
+(use-package dired-narrow               ; Live-narrowing of search results
+  :ensure t
+  :bind (:map dired-mode-map
+              ("/" . dired-narrow)))
+
 (use-package dired-quick-sort
 	:ensure t
   :init
   (dired-quick-sort-setup))
+
+(use-package dired-ranger
+  :ensure t
+  :bind (:map dired-mode-map
+              ("W" . dired-ranger-copy)
+              ("X" . dired-ranger-move)
+              ("Y" . dired-ranger-paste)))
+
+(use-package diredfl                    ; Add colours to Dired
+  :ensure t
+  :config (diredfl-global-mode))
 
 (use-package exec-path-from-shell
 	:ensure t)
