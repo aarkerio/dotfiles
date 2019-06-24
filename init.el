@@ -379,6 +379,11 @@
   :config
   (with-eval-after-load 'flycheck (flycheck-pos-tip-mode)))
 
+(use-package frog-jump-buffer
+  :ensure t
+    :bind
+   (([(?\s-q)] . frog-jump-buffer)))
+
 (use-package git-timemachine
   :ensure t)
 
@@ -397,7 +402,7 @@
   :config
     (setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit") (rx "*Echo")(rx "*Complet")(rx "*code")(rx "*Mini") (rx "*helm")))
   :bind
-   (([(?\s-q)] . helm-buffers-list)
+   (([(?\s-w)] . helm-buffers-list)
     ("M-x" . helm-M-x)
     ("C-x C-f" . helm-find-files)
     ("C-x l" . helm-recentf)
