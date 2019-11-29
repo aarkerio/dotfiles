@@ -502,6 +502,12 @@
 	     :config
 	     (popwin-mode 1))
 
+;; prettier-emacs: minor-mode to prettify javascript files on save
+;; https://github.com/prettier/prettier-emacs
+(use-package prettier-js
+  :hook ((js2-mode . prettier-js-mode)
+         (rjsx-mode . prettier-js-mode)))
+
 (use-package projectile  ;; dashboard dependency
   :ensure t)
 
@@ -515,6 +521,12 @@
   :init
   (progn
     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)))
+
+(use-package rjsx-mode
+  :ensure t
+  :mode (
+         ("\\.jsx\\'" . rjsx-mode)
+         (("\\.jsx$" . rjsx-mode))))
 
 (use-package rubocop
 	     :ensure t
@@ -701,7 +713,7 @@
  '(org-agenda-files
    '("~/Documents/personal/zeitplane/meine_schweren_Verpflichtungen.org"))
  '(package-selected-packages
-   '(alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rubocop rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+   '(rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rubocop rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
  '(powerline-default-separator 'curve)
  '(show-paren-mode t)
  '(tramp-syntax 'default nil (tramp)))
@@ -783,7 +795,16 @@
       (kill-ring-save (line-beginning-position)
                       (line-beginning-position (+ 1 arg)))
       (message "%d line%s copied" arg (if (= 1 arg) "" "s")))
+
 ;; optional key binding
 (global-set-key "\C-c\C-a" 'copy-line)
+
+(defun shell-command-to-pdf ()
+  "Execute to pdf."
+  (interactive)
+  (shell-command
+   "/usr/bin/pdflatex -interaction=nonstopmode /home/manuel/Documents/personal/Schriftstellerei/gypsys/gypsys.tex"))
+
+(global-set-key (kbd "C-x C-w") 'shell-command-to-pdf)
 
 ;;; init.el file ends here
