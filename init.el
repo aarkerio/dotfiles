@@ -146,9 +146,9 @@
 ;;;;;;;;;;;;;;   USE PACKAGE THEME SECTION  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; (use-package apropospriate-theme
-;;   :ensure t
-;;   :config
-;;   (load-theme 'apropospriate-light t))
+;;    :ensure t
+;;    :config
+;;    (load-theme 'apropospriate-light t))
 
 ;; (use-package majapahit-theme
 ;;	     :ensure majapahit-theme
@@ -524,9 +524,7 @@
 
 (use-package rjsx-mode
   :ensure t
-  :mode (
-         ("\\.jsx\\'" . rjsx-mode)
-         (("\\.jsx$" . rjsx-mode))))
+  :mode (("\\.jsx$" . rjsx-mode)))
 
 (use-package rubocop
 	     :ensure t
@@ -622,10 +620,6 @@
 (global-set-key (kbd "M-g") 'goto-line)    ;; M-g  'goto-line
 (global-set-key [(f7)]  'comment-region)
 (global-set-key [(shift f7)] 'uncomment-region)
-
-;; JSX mode
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . jsx-mode))
-(autoload 'jsx-mode "jsx-mode" "JSX mode" t)
 (global-set-key [(shift f5)] 'my-replace-string)
 (global-set-key [(shift f12)] 'eshell)
 (global-set-key [(C f11)] 'find-grep-dired)
