@@ -25,6 +25,8 @@
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("melpa" .        "https://melpa.org/packages/")))
 
+(setq package-check-signature nil)
+
 ;; (package-initialize)
 (add-to-list 'exec-path "/home/manuel/.yarn/bin/")
 
@@ -381,8 +383,14 @@
 
 (use-package frog-jump-buffer
   :ensure t
-    :bind
-   (([(?\s-q)] . frog-jump-buffer)))
+  :bind
+  (([(?\s-q)] . frog-jump-buffer))
+  :config
+  (progn
+    (defvar frog-jump-buffer-include-current-buffer nil)
+    (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
+                  "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*eldoc" "\\^*Shell Command"))
+    (push regexp frog-jump-buffer-ignore-buffers))))
 
 (use-package git-timemachine
   :ensure t)
@@ -707,7 +715,7 @@
  '(org-agenda-files
    '("~/Documents/personal/zeitplane/meine_schweren_Verpflichtungen.org"))
  '(package-selected-packages
-   '(rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rubocop rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+   '(vterm vscode-icon gnu-elpa-keyring-update frog-jump-buffer rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rubocop rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
  '(powerline-default-separator 'curve)
  '(show-paren-mode t)
  '(tramp-syntax 'default nil (tramp)))
