@@ -388,8 +388,8 @@
   :config
   (progn
     (defvar frog-jump-buffer-include-current-buffer nil)
-    (dolist (regexp '("TAGS" "^\\*Compile-log" "-helm\\*$" "-debug\\*$" "^\\:" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
-                  "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*eldoc" "\\^*Shell Command"))
+    (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "helm\\*$" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
+                  "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*Messages" "^\\*magit" "^\\*eldoc" "\\^*Shell Command"))
     (push regexp frog-jump-buffer-ignore-buffers))))
 
 (use-package git-timemachine
