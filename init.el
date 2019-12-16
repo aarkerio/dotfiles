@@ -388,7 +388,7 @@
   :config
   (progn
     (defvar frog-jump-buffer-include-current-buffer nil)
-    (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
+    (dolist (regexp '("TAGS" "^\\*Compile-log" "-helm\\*$" "-debug\\*$" "^\\:" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
                   "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*eldoc" "\\^*Shell Command"))
     (push regexp frog-jump-buffer-ignore-buffers))))
 
