@@ -388,8 +388,8 @@
   :config
   (progn
     (defvar frog-jump-buffer-include-current-buffer nil)
-    (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "helm\\*$" "errors\\*$" "^\\*Backtrace" "-ls\\*$"
-                  "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*Messages" "^\\*magit" "^\\*eldoc" "\\^*Shell Command"))
+    (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "helm\\*$" "errors\\*$" "^\\*Backtrace" "-ls\\*$" "^\\*dashboard"
+                  "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*Messages" "^\\*helm" "^\\*magit" "^\\*eldoc" "\\^*Shell Command"))
     (push regexp frog-jump-buffer-ignore-buffers))))
 
 (use-package git-timemachine
@@ -555,9 +555,29 @@
          ("C-r" . swiper)))
 
 (use-package tabbar   ;; tabs for emacs
-	     :ensure t
-	     :init
-	     (progn (tabbar-mode t)))
+	:ensure t
+  :bind (("M-s-<left>"  . tabbar-backward)
+         ("M-s-<right>" . tabbar-forward))
+	:init
+	(progn (tabbar-mode t))
+  :config (progn
+            (customize-set-variable 'tabbar-background-color "gray20")
+            (customize-set-variable 'tabbar-separator '(0.5))
+            (customize-set-variable 'tabbar-use-images nil)
+            (set-face-attribute 'tabbar-default nil :background "gray20" :foreground  "gray60" :distant-foreground "gray50"
+                                                    :family "Helvetica Neue" :box nil)
+            (set-face-attribute 'tabbar-unselected nil
+                                :background "gray80" :foreground "black" :box nil)
+            (set-face-attribute 'tabbar-modified nil
+                                :foreground "red4" :box nil
+                                :inherit 'tabbar-unselected)
+            (set-face-attribute 'tabbar-selected nil
+                                :background "#4090c0" :foreground "white" :box nil)
+            (set-face-attribute 'tabbar-selected-modified nil
+                                :inherit 'tabbar-selected :foreground "GoldenRod2" :box nil)
+            (set-face-attribute 'tabbar-button nil
+                                :box nil)
+           ))
 
 (use-package tide
   :config
@@ -763,9 +783,6 @@
        "User Buffer"))))
 
 (setq tabbar-buffer-groups-function 'tabbar-buffer-groups)
-
-(global-set-key [M-s-left] 'tabbar-backward)
-(global-set-key [M-s-right] 'tabbar-forward)
 
 ;; CIDER
 (global-set-key (kbd "M-s-o") 'cider-repl-clear-buffer)
