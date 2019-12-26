@@ -414,7 +414,8 @@
       (require 'helm-config)
       (setq helm-candidate-number-limit 100))
   :config
-    (setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit") (rx "*Echo")(rx "*Complet")(rx "*code")(rx "*Mini") (rx "*helm")))
+  (setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit") (rx "*Echo")(rx "*Complet")(rx "*code")(rx "*Mini") (rx "*helm"))
+        helm-ff-skip-boring-files t)
   :bind
    (([(?\s-w)] . helm-buffers-list)
     ("M-x" . helm-M-x)
@@ -423,6 +424,11 @@
     :map helm-map
     ("C-j" . helm-next-line)
     ("C-k" . helm-previous-line)))
+
+(use-package helm-ag
+  :ensure t
+  :bind
+   (([(?\s-p)] . helm-ag)))
 
 (use-package helm-files
   :bind
