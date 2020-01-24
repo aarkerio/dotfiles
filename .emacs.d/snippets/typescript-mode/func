@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: func
-# key: func
-# --
-async _function bla(cognitoId: string): Promise<any> {
-
-  return foo;
-}

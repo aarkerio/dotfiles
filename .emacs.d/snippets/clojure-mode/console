@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: console
-# key: cons
-# --
-(.log js/console (str ">>> VALUE >>>>> " value ))

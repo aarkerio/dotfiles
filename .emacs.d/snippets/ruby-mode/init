@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: init
-# key: init
-# --
-def initialize(args)
-  @args = args
-end

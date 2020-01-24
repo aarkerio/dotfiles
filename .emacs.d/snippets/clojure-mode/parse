@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: parse-int
-# key: parse
-# --
-(Integer/parseInt value)

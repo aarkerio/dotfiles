@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: tou
-# key: tou
-# --
-setTimeout(function(){ $1console.log.("Hello"); }, 2000);

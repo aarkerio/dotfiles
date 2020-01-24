@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: json
-# key: json
-# --
-(.log js/console (str ">>> VALUE >>>>> " (.stringify js/JSON value)))
