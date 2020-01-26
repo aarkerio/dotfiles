@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: bund
+# key: _bund
+# --
+<%= javascript_include_tag 'http://localhost:8080/build/bundle.js' %>

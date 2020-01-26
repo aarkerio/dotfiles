@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: debugger
+# key: bugg
+# --
+(log/info (str ">>> PARAM >>>>> " params))

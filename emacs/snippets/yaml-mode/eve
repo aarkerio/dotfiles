@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: eve
+# key: eve
+# --
+    events:
+      - http:
+          path: cards
+          method: post
+          integration: lambda-proxy
+          cors: true
+
