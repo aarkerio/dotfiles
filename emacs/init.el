@@ -1,4 +1,4 @@
-;; Manuel Montoya .emacs file 2006-2019
+;; Manuel Montoya .emacs file 2006-2020
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; -*- lexical-binding: t -*-
 ;; M-s h .  &  M-s h u  ;; Highlight and Unhighlight text
@@ -133,6 +133,8 @@
       split-width-threshold 9999     ;; split horizontal always
       scroll-conservatively 20       ;; move minimum when cursor exits view, instead of recentering
       load-prefer-newer t)           ;; Don't load outdated byte code
+
+(set-face-attribute 'region nil :background "#ffd45e")
 
 ;; Change the echo message
 (defun display-startup-echo-area-message ()
@@ -467,6 +469,24 @@
     (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
     (add-hook 'js2-mode-hook (lambda ()
                                (bind-key "M-j" 'join-line-or-lines-in-region js2-mode-map)))))
+
+(use-package lispy
+  :defer t
+  ;; :bind (:map lispy-mode-map
+  ;;             ("C-e" . nil)
+  ;;             ("/" . nil)
+  ;;             ("M-i" . nil)
+  ;;             ("M-e" . lispy-iedit)
+  ;;             ("S" . special-lispy-splice)
+  ;;             ("g" . special-lispy-goto-local)
+  ;;             ("G" . special-lispy-goto))
+  :init
+  (dolist (hook '(emacs-lisp-mode-hook
+                  lisp-interaction-mode-hook
+                  lisp-mode-hook
+                  scheme-mode-hook
+                  clojure-mode-hook))
+    (add-hook hook (lambda () (lispy-mode 1)))))
 
 (use-package magit    ;; git magic in Emacs
   :ensure t
@@ -847,4 +867,29 @@
 
 (global-set-key (kbd "C-x .") 'shell-command-to-pdf)
 
+;; after list-buffers is called, switch to it
+(defadvice list-buffers (after jc-switch-to-other-win)
+  (if (not (equalp (buffer-name (current-buffer))
+                   "*Buffer List*"))
+      (other-window 1))
+  (goto-char (+ 4 (point))))
+
+;; emacs24 doesn't recognize Buffer-menu-sort-column so we do this
+;; nonsense: after list-buffers is called and we've switched to it,
+;; check whether the buffer matches what's stored in
+;; jc-buffer-menu. If it doesn't match, it means it's new, so call
+;; Buffer-menu-sort and update jc-buffer-menu so we don't sort again
+;; on subsequent calls.
+(when (>= emacs-major-version 24)
+  (setq jc-buffer-menu nil)
+  (defadvice list-buffers (after jc-buffer-menu-sort last)
+    (when (not (equal jc-buffer-menu (current-buffer)))
+      (setq jc-buffer-menu (current-buffer))
+      ;; for debugging:
+      ;;(message "sorting!")
+      (Buffer-menu-sort 5))))
+(ad-activate 'list-buffers)
+
 ;;; init.el file ends here
+
+

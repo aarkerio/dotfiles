@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: debugger
+# name: convert->int
 # key: int
 # --
 (Integer/parseInt %)
