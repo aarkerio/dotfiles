@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: key
+# key: ke
+# --
+^{:key (:id som)}

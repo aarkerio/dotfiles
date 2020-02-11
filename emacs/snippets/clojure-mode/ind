@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: indexed map
+# key: ind
+# --
+(map-indexed #(assoc {} %1 %2) '(1 2 3 4))

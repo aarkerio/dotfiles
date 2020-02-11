@@ -254,10 +254,13 @@
 (use-package clojurescript-mode
   :ensure t)
 
+(global-prettify-symbols-mode +1)
+
 (use-package clojure-mode
   :ensure t
   :mode (("\\.edn$"  . clojure-mode)
-         ("\\.clj$"  . clojure-mode))
+         ("\\.clj$"  . clojure-mode)
+         ("\\.cljs$"  . clojure-mode))
   :bind (("C-c d f" . cider-code)
          ("C-c d g" . cider-grimoire)
          ("C-c d w" . cider-grimoire-web)
@@ -265,8 +268,8 @@
          ("C-c d d" . dash-at-point))
   :init
   (defconst clojure--prettify-symbols-alist
-    '(("fn"   . ?λ)
-      ("__"   . ?⁈)))
+    '(("__"   . ?⁈)
+      ("fn"   . ?λ)))
   :config
     (progn
       (setq clojure-align-forms-automatically t)
@@ -301,6 +304,9 @@
         (interactive)
         (cider-eval-last-sexp '(1)))
 
+			(add-hook 'clojure-mode-hook
+            (lambda ()
+              (push clojure--prettify-symbols-alist prettify-symbols-alist)))
       (add-hook 'clojure-mode-hook 'global-prettify-symbols-mode)
       (add-hook 'clojure-mode-hook 'hs-minor-mode)))
 
@@ -470,24 +476,6 @@
     (add-hook 'js2-mode-hook (lambda ()
                                (bind-key "M-j" 'join-line-or-lines-in-region js2-mode-map)))))
 
-(use-package lispy
-  :defer t
-  ;; :bind (:map lispy-mode-map
-  ;;             ("C-e" . nil)
-  ;;             ("/" . nil)
-  ;;             ("M-i" . nil)
-  ;;             ("M-e" . lispy-iedit)
-  ;;             ("S" . special-lispy-splice)
-  ;;             ("g" . special-lispy-goto-local)
-  ;;             ("G" . special-lispy-goto))
-  :init
-  (dolist (hook '(emacs-lisp-mode-hook
-                  lisp-interaction-mode-hook
-                  lisp-mode-hook
-                  scheme-mode-hook
-                  clojure-mode-hook))
-    (add-hook hook (lambda () (lispy-mode 1)))))
-
 (use-package magit    ;; git magic in Emacs
   :ensure t
   :bind (([(shift f6)] . magit-status)
@@ -556,6 +544,14 @@
 (use-package prettier-js
   :hook ((js2-mode . prettier-js-mode)
          (rjsx-mode . prettier-js-mode)))
+
+(use-package prettify-symbols-mode
+	:commands (turn-on-pretty-mode global-prettify-symbols-mode)
+  :bind ("C-c <C-return>" . prettify-symbols-mode)
+  :config
+	(progn
+		(setq prettify-symbols-unprettify-at-point 'right-edge)
+    (setq inhibit-compacting-font-caches t)))
 
 (use-package projectile  ;; dashboard dependency
   :ensure t)
