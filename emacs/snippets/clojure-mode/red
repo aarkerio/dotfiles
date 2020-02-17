@@ -2,4 +2,4 @@
 # name: reduce
 # key: red
 # --
-(reduce #(str %) coll)
+(reduce #(str %) oiv coll)

@@ -259,8 +259,7 @@
 (use-package clojure-mode
   :ensure t
   :mode (("\\.edn$"  . clojure-mode)
-         ("\\.clj$"  . clojure-mode)
-         ("\\.cljs$"  . clojure-mode))
+         ("\\.clj$"  . clojure-mode))
   :bind (("C-c d f" . cider-code)
          ("C-c d g" . cider-grimoire)
          ("C-c d w" . cider-grimoire-web)
