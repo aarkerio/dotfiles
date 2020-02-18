@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: default_arguments
+# key: defa
+# --
+(defn foo
+  ([s] (foo s 10))
+  ([s base] (Integer/parseInt s base)))

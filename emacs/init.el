@@ -844,15 +844,21 @@
 
 (global-set-key (kbd "C-x K")         'kill-buffer-and-window)
 
-(defun copy-line (arg)
-      "Copy lines (as many as prefix argument) in the kill ring"
-      (interactive "p")
-      (kill-ring-save (line-beginning-position)
-                      (line-beginning-position (+ 1 arg)))
-      (message "%d line%s copied" arg (if (= 1 arg) "" "s")))
+;; defadvice: monkey patching on elisp
+(defadvice kill-region (before slick-cut activate compile)   ;; C-w kills the current line
+  "When called interactively with no active region, kill a single line instead."
+  (interactive
+   (if mark-active
+       (list (region-beginning) (region-end))
+     (list (line-beginning-position) (line-beginning-position 2)))))
 
-;; optional key binding
-(global-set-key "\C-c\C-a" 'copy-line)
+(defadvice kill-ring-save (before slick-copy activate compile)   ;; M-w copies the current line
+  "When called interactively with no active region, copy a single line instead."
+  (interactive
+   (if mark-active
+       (list (region-beginning) (region-end))
+     (message "Copied line")
+     (list (line-beginning-position) (line-beginning-position 2)))))
 
 (defun shell-command-to-pdf ()
   "Execute to pdf."

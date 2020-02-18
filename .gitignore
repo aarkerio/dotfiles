@@ -6,3 +6,4 @@ texput.log
 emacs/elpa
 emacs/recentf
 emacs/transient/history.el
+emacs/org-clock-save.el
