@@ -1,2 +1,26 @@
 irb
 bash
+z3
+bash
+CH
+cd ..
+cd ..
+cd
+cd entwicklung/
+ll
+ls
+cd chipotle
+ll
+ls
+cd lisp/
+ls
+ls
+cd ZentaurLMS
+lein with-profile dev run
+apt search ispell
+apt search ispell english
+sudo apt install ibritish-hug 
+sudo apt install ibritish-hug
+sudo apt install hunspell-en-gb
+qVorbereitung zum Entpacken von .../hunspell-en-gb_1%3a6.2.0-1_all.deb ...
+sudo apt install ibritish-large

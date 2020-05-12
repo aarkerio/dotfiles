@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: load-core
+# key: cor
+# --
+(clojure.core/refer-clojure)

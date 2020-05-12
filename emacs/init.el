@@ -26,7 +26,7 @@
                          ("melpa" .        "https://melpa.org/packages/")))
 
 (setq package-check-signature nil)
-
+(setq load-prefer-newer t)  ;; load newer
 ;; (package-initialize)
 (add-to-list 'exec-path "/home/manuel/.yarn/bin/")
 
@@ -44,7 +44,7 @@
 ;; (bind-key "C-x C-b" 'ibuffer)
 
 ;; use trash
-(setq delete-by-moving-to-trash t)
+(setq delete-by-moving-to-trash t)  ;; look in ~/.local/share/Trash/files/
 
 ;; disable garbage collection when minibuffer is active
 (defun my-minibuffer-setup-hook ()
@@ -228,25 +228,52 @@
         '("^\\*helm\\b"
           "^\\*swiper\\*$")))
 
-(use-package cider
+;;  CLOJURE BLOCK STARTS
+
+;; (use-package cider
+;;   :ensure t
+;;   :pin melpa-stable
+;;   :bind (("C-x f" . cider-namespace-refresh)
+;;          ("C-x C-d" . cider-connect-clj)) ;; C-c C-t p = run all tests, C-c C-t n = current NS
+;;   :config
+;;   (progn
+;;     (flycheck-clojure-setup)
+;;     (setq nrepl-hide-special-buffers t)
+;;     (setq cider-popup-stacktraces-in-repl nil)
+;;     (setq cider-repl-history-file "~/.emacs.d/nrepl-history")
+;;     (setq cider-repl-pop-to-buffer-on-connect nil)
+;;     (setq cider-repl-use-pretty-printing t)
+;;     (setq cider-show-error-buffer 'only-in-repl)
+;;     (setq cider-refresh-before-fn "reloaded.repl/suspend")
+;;     (setq cider-refresh-after-fn "reloaded.repl/resume")
+;;     (setq cider-cljs-lein-repl "(do (reloaded.repl/go) (user/cljs-repl))")))
+
+(use-package lsp-mode
   :ensure t
-  :pin melpa-stable
-  :bind (("C-x f" . cider-namespace-refresh)
-         ("C-x C-d" . cider-jack-in))
+  :hook ((clojure-mode . lsp)
+         (clojurec-mode . lsp)
+         (clojurescript-mode . lsp))
   :config
-  (progn
-    (flycheck-clojure-setup)
-    (setq nrepl-hide-special-buffers t)
-    (setq cider-popup-stacktraces-in-repl t)
-    (setq cider-repl-history-file "~/.emacs.d/nrepl-history")
-    (setq cider-repl-pop-to-buffer-on-connect nil)
-    (setq cider-auto-select-error-buffer nil)
-    (setq cider-prompt-save-file-on-load nil)
-    (setq cider-repl-display-help-banner nil)
-    (setq cider-repl-use-pretty-printing t)
-    (setq cider-refresh-before-fn "reloaded.repl/suspend")
-    (setq cider-refresh-after-fn "reloaded.repl/resume")
-    (setq cider-cljs-lein-repl "(do (reloaded.repl/go) (user/cljs-repl))")))
+  ;; add paths to your local installation of project mgmt tools, like lein
+  (setenv "PATH" (concat
+                   "/usr/bin" path-separator
+                   (getenv "PATH")))
+  (dolist (m '(clojure-mode
+               clojurec-mode
+               clojurescript-mode
+               clojurex-mode))
+     (add-to-list 'lsp-language-id-configuration `(,m . "clojure")))
+  (setq lsp-enable-indentation nil
+        lsp-clojure-server-command '("bash" "-c" "clojure-lsp")))
+
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
+
+(use-package company-lsp
+  :ensure t
+  :commands company-lsp)
+
 
 (use-package clojure-snippets
   :ensure t)
@@ -309,6 +336,8 @@
       (add-hook 'clojure-mode-hook 'global-prettify-symbols-mode)
       (add-hook 'clojure-mode-hook 'hs-minor-mode)))
 
+;;  CLOJURE BLOCK ENDS
+
 (use-package col-highlight    ;; Column flash
 	:ensure t
 	:bind
@@ -351,7 +380,7 @@
   :init
   (dired-quick-sort-setup))
 
-(use-package dired-ranger
+(use-package dired-ranger   ;; VIM like file manager
   :ensure t
   :bind (:map dired-mode-map
               ("W" . dired-ranger-copy)
@@ -383,9 +412,10 @@
   :init
   (add-hook 'after-init-hook 'global-flycheck-mode)
   :config
-  (eval-after-load 'flycheck
-    '(setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages))
-  (add-hook 'after-init-hook #'global-flycheck-mode))
+  (flycheck-clojure-setup))
+
+(use-package flycheck-pos-tip :ensure t
+  :after flycheck)
 
 (use-package flycheck-clj-kondo
   :ensure t)
@@ -471,6 +501,7 @@
          ("C-M-h" . backward-kill-word))
   :config
   (progn
+    (setq js2-include-node-externs t)
     (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
     (add-hook 'js2-mode-hook (lambda ()
                                (bind-key "M-j" 'join-line-or-lines-in-region js2-mode-map)))))
@@ -509,6 +540,7 @@
           (setq org-todo-keywords
                 '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "STAGING" "DONE" "CANCELED")))
           (setq org-clock-persist 'history)
+          (setq org-support-shift-select 'always)
           (setq org-agenda-custom-commands
                 '(("d" "Daily agenda and all TODOs"
                    ((tags "PRIORITY=\"A\""
@@ -612,28 +644,71 @@
             (set-face-attribute 'tabbar-selected-modified nil
                                 :inherit 'tabbar-selected :foreground "GoldenRod2" :box nil)
             (set-face-attribute 'tabbar-button nil
-                                :box nil)
-           ))
+                                :box nil)))
 
-;; (use-package tide
-;;   :config
-;;   (progn
-;;     (add-hook 'typescript-mode-hook #'setup-tide-mode)
-;;     (add-hook 'js2-mode-hook #'setup-tide-mode)))
+(use-package js2-mode
+  :mode "\\.js\\'"
+  :config
+  (customize-set-variable 'js2-include-node-externs t))
 
-(defun setup-tide-mode ()
-   (interactive)
-   (tide-setup)
-   (flycheck-mode +1)
-   (setq flycheck-check-syntax-automatically '(save mode-enabled))
-   (flycheck-add-next-checker 'typescript-tide '(t . typescript-tslint) 'append)
-   (eldoc-mode +1)
-   (company-mode +1))
+(use-package tide                       ; https://github.com/ananthakumaran/tide
+  :init
+  (defun setup-tide-mode ()
+    (interactive)
+    (tide-setup)
+    (flycheck-mode +1)
+    ;; (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    ;; company is an optional dependency. You have to
+    ;; install it separately via package-install
+    ;; `M-x package-install [ret] company`
+    (company-mode +1))
 
-;; TypeScript
-(use-package typescript-mode
-  :mode (("\\.ts\\'" . typescript-mode)
-         ("\\.tsx\\'" . typescript-mode)))
+  (defun my/setup-tsx-mode ()
+    (when (string-equal "tsx" (file-name-extension buffer-file-name))
+      (setup-tide-mode)))
+
+  (defun my/setup-jsx-mode ()
+    (when (string-equal "jsx" (file-name-extension buffer-file-name))
+      (setup-tide-mode)))
+
+  (add-hook 'typescript-mode-hook #'setup-tide-mode)
+  (add-hook 'js2-mode-hook #'setup-tide-mode)
+  (add-hook 'web-mode-hook #'my/setup-tsx-mode)
+  (add-hook 'rjsx-mode-hook #'my/setup-jsx-mode)
+  :requires flycheck
+  :config
+  (add-to-list 'company-backends 'company-tide)
+  ;; aligns annotation to the right hand side
+  ;; (setq company-tooltip-align-annotations t)
+
+  ;; formats the buffer before saving
+  ;; (add-hook 'before-save-hook 'tide-format-before-save)
+
+  (flycheck-add-next-checker 'javascript-eslint 'javascript-tide 'append)
+  (flycheck-add-next-checker 'javascript-eslint 'jsx-tide 'append))
+
+(use-package rjsx-mode
+  :defer t)
+
+(use-package web-mode
+  :mode ("\\.html?\\'"
+         "\\.phtml\\'"
+         "\\.php\\'"
+         "\\.inc\\'"
+         "\\.tpl\\'"
+         "\\.jsp\\'"
+         "\\.as[cp]x\\'"
+         "\\.erb\\'"
+         "\\.mustache\\'"
+         "\\.djhtml\\'"
+         "\\.jsx\\'"
+         "\\.tsx\\'")
+  :config
+  ;; configure jsx-tide checker to run after your default jsx checker
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
+  (flycheck-add-mode 'typescript-tslint 'web-mode))
 
 (use-package undo-tree
   :ensure t)
@@ -765,16 +840,75 @@
  '(cider-show-error-buffer nil)
  '(cider-use-tooltips t)
  '(column-number-mode t)
+ '(compilation-message-face 'default)
+ '(cua-global-mark-cursor-color "#2aa198")
+ '(cua-normal-cursor-color "#657b83")
+ '(cua-overwrite-cursor-color "#b58900")
+ '(cua-read-only-cursor-color "#859900")
  '(custom-safe-themes
-   '("a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
+   '("c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "eeb23ebf4a97b95a85f6f5e6b8524a9854da008f494828f0e78693675d6fc9ca" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
+ '(fci-rule-color "#eee8d5")
  '(flycheck-typescript-tslint-config "~/entwicklung/chipotle/node/tslint.json")
+ '(helm-ff-lynx-style-map t)
+ '(highlight-changes-colors '("#d33682" "#6c71c4"))
+ '(highlight-symbol-colors
+   '("#efe4da49afb1" "#cfc4e1acd08b" "#fe52c9e6b34e" "#dbb6d3c2dcf3" "#e183dee0b053" "#f944cc6dae47" "#d35fdac4e069"))
+ '(highlight-symbol-foreground-color "#586e75")
+ '(highlight-tail-colors
+   '(("#eee8d5" . 0)
+     ("#b3c34d" . 20)
+     ("#6ccec0" . 30)
+     ("#74adf5" . 50)
+     ("#e1af4b" . 60)
+     ("#fb7640" . 70)
+     ("#ff699e" . 85)
+     ("#eee8d5" . 100)))
+ '(hl-bg-colors
+   '("#e1af4b" "#fb7640" "#ff6849" "#ff699e" "#8d85e7" "#74adf5" "#6ccec0" "#b3c34d"))
+ '(hl-fg-colors
+   '("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3"))
+ '(hl-paren-colors '("#2aa198" "#b58900" "#268bd2" "#6c71c4" "#859900"))
+ '(nrepl-message-colors
+   '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(org-agenda-files
    '("~/Documents/personal/zeitplane/meine_schweren_Verpflichtungen.org"))
  '(package-selected-packages
-   '(flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rubocop rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+   '(cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rubocop rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+ '(pos-tip-background-color "#eee8d5")
+ '(pos-tip-foreground-color "#586e75")
  '(powerline-default-separator 'curve)
  '(show-paren-mode t)
- '(tramp-syntax 'default nil (tramp)))
+ '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#657b83" 0.2))
+ '(tabbar-background-color "gray20")
+ '(tabbar-separator '(0.5))
+ '(tabbar-use-images nil)
+ '(term-default-bg-color "#fdf6e3")
+ '(term-default-fg-color "#657b83")
+ '(tramp-syntax 'default nil (tramp))
+ '(vc-annotate-background nil)
+ '(vc-annotate-background-mode nil)
+ '(vc-annotate-color-map
+   '((20 . "#dc322f")
+     (40 . "#cb4366eb20b4")
+     (60 . "#c1167942154f")
+     (80 . "#b58900")
+     (100 . "#a6ae8f7c0000")
+     (120 . "#9ed892380000")
+     (140 . "#96be94cf0000")
+     (160 . "#8e5397440000")
+     (180 . "#859900")
+     (200 . "#77679bfc4635")
+     (220 . "#6d449d465bfd")
+     (240 . "#5fc09ea47092")
+     (260 . "#4c68a01784aa")
+     (280 . "#2aa198")
+     (300 . "#303498e7affc")
+     (320 . "#2fa1947cbb9b")
+     (340 . "#2c879008c736")
+     (360 . "#268bd2")))
+ '(vc-annotate-very-old-color nil)
+ '(weechat-color-list
+   '(unspecified "#fdf6e3" "#eee8d5" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900" "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#657b83" "#839496")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -891,6 +1025,48 @@
       (Buffer-menu-sort 5))))
 (ad-activate 'list-buffers)
 
-;;; init.el file ends here
+(defun org-make-olist (arg)
+  (interactive "P")
+  (let ((n (or arg 1)))
+    (when (region-active-p)
+      (setq n (count-lines (region-beginning)
+                           (region-end)))
+      (goto-char (region-beginning)))
+    (dotimes (i n)
+      (beginning-of-line)
+      (insert (concat (number-to-string (1+ i)) ". "))
+      (forward-line))
+    (beginning-of-line)))
 
+;; SMARTER ANFANG DER LINIE
+
+(defun smarter-move-beginning-of-line (arg)
+  "Move point back to indentation of beginning of line.
+
+Move point to the first non-whitespace character on this line.
+If point is already there, move to the beginning of the line.
+Effectively toggle between the first non-whitespace character and
+the beginning of the line.
+
+If ARG is not nil or 1, move forward ARG - 1 lines first.  If
+point reaches the beginning or end of the buffer, stop there."
+  (interactive "^p")
+  (setq arg (or arg 1))
+
+  ;; Move lines first
+  (when (/= arg 1)
+    (let ((line-move-visual nil))
+      (forward-line (1- arg))))
+
+  (let ((orig-point (point)))
+    (back-to-indentation)
+    (when (= orig-point (point))
+      (move-beginning-of-line 1))))
+
+;; remap C-a to `smarter-move-beginning-of-line'
+(global-set-key [remap move-beginning-of-line]
+                'smarter-move-beginning-of-line)
+
+(global-set-key (kbd "C-a") 'smarter-move-beginning-of-line) ;
+;;; init.el file ends here
 

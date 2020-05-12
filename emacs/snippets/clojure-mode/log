@@ -2,4 +2,4 @@
 # name: logger
 # key: log
 # --
-(log/info (str ">>> PARAM >>>>> " params))
+(log/info (str ">>> PARAMS >>>>> " params))
