@@ -16,3 +16,4 @@ emacs/bookmarks
 emacs/ede-projects.el
 emacs/eshell/lastdir
 emacs/recentf~
+emacs/eshell/*

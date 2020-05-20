@@ -24,3 +24,22 @@ sudo apt install ibritish-hug
 sudo apt install hunspell-en-gb
 qVorbereitung zum Entpacken von .../hunspell-en-gb_1%3a6.2.0-1_all.deb ...
 sudo apt install ibritish-large
+sudo apt-get install fzf
+fzf 
+fzf --help
+find * -type f | fzf > selected
+APT
+sudo apt-get update
+sudo apt dist-upgrade7
+sudo apt dist-upgrade
+whiuch sudo
+which sudo
+which lsp-mode
+which eshell/sudo
+dsfdsf
+dsfdsf
+jac
+ls
+ls
+ls -la
+sudo ls
