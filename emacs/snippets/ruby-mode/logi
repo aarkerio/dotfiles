@@ -2,4 +2,4 @@
 #group: general
 # key: logi
 # --
-logger.info "${Text here...}"
+logger.info " >>>>  params >>>  #{params.inspect}"

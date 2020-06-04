@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: deconstruct
+# key: dec
+# --
+{:keys [subject-id level-id] :or {subject-id 1 level-id 1}}
