@@ -3,6 +3,7 @@
 ;;; -*- lexical-binding: t -*-
 ;; M-s h .  &  M-s h u  ;; Highlight and Unhighlight text
 
+(setq create-lockfiles nil)
 
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
@@ -746,7 +747,19 @@
 
 (use-package undo-tree
   :ensure t
-  :bind (("C-*" . undo-tree-redo)))
+  :init
+  (setq undo-limit 78643200)
+  (setq undo-outer-limit 104857600)
+  (setq undo-strong-limit 157286400)
+  (setq undo-tree-mode-lighter " UN")
+  (setq undo-tree-auto-save-history t)
+  (setq undo-tree-enable-undo-in-region nil)
+  (setq undo-tree-history-directory-alist '(("." . "~/emacs.d/undo")))
+ (add-hook 'undo-tree-visualizer-mode-hook (lambda ()
+                                              (undo-tree-visualizer-selection-mode)
+                                              (setq display-line-numbers nil)))
+  :config
+  (global-undo-tree-mode 1))
 
 (use-package uniquify   ;; Display dir if two files have the same name
 	     :init
@@ -788,8 +801,8 @@
 ;;; backup/autosave
 (defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
 (setq backup-directory-alist '(("." . "~/.emacs.d/autosave/")))
-(setq auto-save-list-file-prefix autosave-dir)
-(setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
+(setq auto-save-file-name-transforms
+  `((".*" "~/.emacs.d/autosave/" t)))
 
 (global-set-key (kbd "M-g") 'goto-line)    ;; M-g  'goto-line
 (global-set-key [(f7)]  'comment-region)
@@ -1111,5 +1124,24 @@
   (set-mark (line-beginning-position)))
 
 (global-set-key (kbd "C-x o") 'select-current-line)
+
+;; Put backup files neatly away
+(let ((backup-dir "~/tmp/emacs/backups")
+      (auto-saves-dir "~/tmp/emacs/auto-saves/"))
+  (dolist (dir (list backup-dir auto-saves-dir))
+    (when (not (file-directory-p dir))
+      (make-directory dir t)))
+  (setq backup-directory-alist `(("." . ,backup-dir))
+        auto-save-file-name-transforms `((".*" ,auto-saves-dir t))
+        auto-save-list-file-prefix (concat auto-saves-dir ".saves-")
+        tramp-backup-directory-alist `((".*" . ,backup-dir))
+        tramp-auto-save-directory auto-saves-dir))
+
+(setq backup-by-copying t    ; Don't delink hardlinks
+      delete-old-versions t  ; Clean up the backups
+      version-control t      ; Use version numbers on backups,
+      kept-new-versions 5    ; keep some new versions
+      kept-old-versions 2)   ; and some old ones, too
+
 
 ;;; init.el file ends here
