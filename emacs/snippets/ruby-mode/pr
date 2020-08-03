@@ -1,0 +1,5 @@
+#name : print
+#group: Rails
+# key: pr
+# --
+p " ### VAL >>>>> #{pa.inspect}"

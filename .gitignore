@@ -17,3 +17,5 @@ emacs/ede-projects.el
 emacs/eshell/lastdir
 emacs/recentf~
 emacs/eshell/*
+emacs/auto-save-list/
+emacs/autosave/

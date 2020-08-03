@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: funk
+# key: funk
+# --
+const funcES6 = (x: any, y: any):any  => { return x * y };

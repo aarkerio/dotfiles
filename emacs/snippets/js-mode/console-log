@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: console-log
-# key: sole
-# --
-console.log("  ############  :  >>>> " + JSON.stringify(da));

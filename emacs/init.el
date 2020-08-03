@@ -1,4 +1,4 @@
-;; Manuel Montoya .emacs file 2006-2020
+; Manuel Montoya init.el file 2006-2020
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; -*- lexical-binding: t -*-
 ;; M-s h .  &  M-s h u  ;; Highlight and Unhighlight text
@@ -26,10 +26,20 @@
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("melpa" .        "https://melpa.org/packages/")))
 
+(setq recentf-max-saved-items 100)
+(run-at-time nil (* 5 60) 'recentf-save-list)
 (setq package-check-signature nil)
 (setq load-prefer-newer t)  ;; load newer
 ;; (package-initialize)
+
+;; (setq exec-path (append '("PATH1" "PATH2")
+;;                         exec-path))
+
+(exec-path-from-shell-copy-env "GEM_PATH")
+(exec-path-from-shell-copy-env "PATH")
+
 (add-to-list 'exec-path "/home/manuel/.yarn/bin/")
+(add-to-list 'exec-path "/home/manuel/.rvm/gems/default/bin")
 
 (add-to-list 'auto-mode-alist '("\\.srvm\\'" . sr-virtual-mode))
 
@@ -241,7 +251,7 @@
     (flycheck-clojure-setup)
     (setq nrepl-hide-special-buffers t)
     (setq cider-popup-stacktraces-in-repl nil)
-    (setq cider-repl-history-file "~/.emacs.d/nrepl-history")
+    (setq cider-repl-history-file "~/.config/emacs/nrepl-history")
     (setq cider-repl-pop-to-buffer-on-connect nil)
     (setq cider-repl-use-pretty-printing t)
     (setq cider-show-error-buffer nil)
@@ -436,6 +446,7 @@
          '(typescript-tslint
            css-csslint
            emacs-lisp
+           ruby-rubocop
            haml
            json-jsonlint
            yaml-jsyaml))
@@ -465,12 +476,22 @@
   :ensure t
   :bind
   (([(?\s-q)] . frog-jump-buffer))
+	:init
+	(setq frog-jump-buffer-posframe-parameters '((left-fringe . 5)
+																							 (right-fringe . 5)
+																							 (internal-border-width . 5)
+																							 (internal-border . "#6ba499")
+																							 (internal-border-color . "#6ba499")
+																							 (background-color . "#eee8d5")
+                                               (background . "#eee8d5")))
   :config
   (progn
-    (defvar frog-jump-buffer-include-current-buffer nil)
     (dolist (regexp '("TAGS" "^\\*Compile-log" "-debug\\*$" "^\\:" "helm\\*$" "errors\\*$" "^\\*Backtrace" "-ls\\*$" "^\\*dashboard"
                   "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*Messages" "*cider-error*" "^\\*helm" "^\\*magit" "^\\*eldoc" "\\^*Shell Command"))
     (push regexp frog-jump-buffer-ignore-buffers))))
+
+(use-package posframe
+  :ensure t)
 
 (use-package git-timemachine
   :ensure t)
@@ -480,27 +501,64 @@
           ("\\.graphql\\'" . graphql-mode))
   :ensure t)
 
+;; (use-package helm
+;;   :ensure t
+;;   :init
+;;     (progn
+;;       (helm-mode 1)
+;;       (require 'helm-config)
+;;       (setq helm-candidate-number-limit 100)
+;;       (customize-set-variable 'helm-ff-lynx-style-map t)
+;;       (define-key helm-map (kbd "<left>") 'helm-previous-source)
+;;       (define-key helm-map (kbd "<right>") 'helm-next-source))
+;;   :config
+;;   (setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit") (rx "*Echo")(rx "*Complet")(rx "*code")(rx "*Mini") (rx "*helm"))
+;;         helm-ff-skip-boring-files t)
+;;   :bind
+;;    (([(?\s-w)] . helm-buffers-list)
+;;     ("M-x" . helm-M-x)
+;;     ("C-x C-f" . 'helm-find-files)
+;;     ("C-x l" . helm-recentf)
+;;     :map helm-map
+;;     ("C-j" . helm-next-line)
+;;     ("C-k" . helm-previous-line)))
+
 (use-package helm
   :ensure t
-  :init
-    (progn
-      (helm-mode 1)
-      (require 'helm-config)
-      (setq helm-candidate-number-limit 100)
-      (customize-set-variable 'helm-ff-lynx-style-map t)
-      (define-key helm-map (kbd "<left>") 'helm-previous-source)
-      (define-key helm-map (kbd "<right>") 'helm-next-source))
-  :config
-  (setq helm-boring-buffer-regexp-list (list (rx "*scratch") (rx "*Messages") (rx "*magit") (rx "*Echo")(rx "*Complet")(rx "*code")(rx "*Mini") (rx "*helm"))
-        helm-ff-skip-boring-files t)
   :bind
-   (([(?\s-w)] . helm-buffers-list)
-    ("M-x" . helm-M-x)
-    ("C-x C-f" . helm-find-files)
-    ("C-x l" . helm-recentf)
-    :map helm-map
-    ("C-j" . helm-next-line)
-    ("C-k" . helm-previous-line)))
+  ("C-x C-f" . 'helm-find-files)
+  ("C-x C-b" . 'helm-buffers-list)
+  ("C-x l" . 'helm-recentf)
+  ("M-x" . 'helm-M-x)
+  :config
+  (defun daedreth/helm-hide-minibuffer ()
+    (when (with-helm-buffer helm-echo-input-in-header-line)
+      (let ((ov (make-overlay (point-min) (point-max) nil nil t)))
+        (overlay-put ov 'window (selected-window))
+        (overlay-put ov 'face
+                     (let ((bg-color (face-background 'default nil)))
+                       `(:background ,bg-color :foreground ,bg-color)))
+        (setq-local cursor-type nil))))
+  (add-hook 'helm-minibuffer-set-up-hook 'daedreth/helm-hide-minibuffer)
+  (setq helm-autoresize-max-height 0
+        helm-autoresize-min-height 40
+        helm-M-x-fuzzy-match t
+        helm-buffers-fuzzy-matching t
+        helm-recentf-fuzzy-match t
+        helm-semantic-fuzzy-match t
+        helm-imenu-fuzzy-match t
+        helm-split-window-in-side-p nil
+        helm-move-to-line-cycle-in-source nil
+        helm-ff-search-library-in-sexp t
+        helm-scroll-amount 8
+        helm-echo-input-in-header-line t)
+  :init
+  (helm-mode 1))
+
+(require 'helm-config)
+(helm-autoresize-mode 1)
+(define-key helm-find-files-map (kbd "C-b") 'helm-find-files-up-one-level)
+(define-key helm-find-files-map (kbd "C-f") 'helm-execute-persistent-action)
 
 (use-package helm-ag  ;; search a pattern in files and buffers
   :ensure t
@@ -541,9 +599,17 @@
     (add-hook 'js2-mode-hook (lambda ()
                                (bind-key "M-j" 'join-line-or-lines-in-region js2-mode-map)))))
 
+(use-package vue-mode
+  :mode "\\.vue$"
+  :config
+	(progn
+		(add-to-list 'mmm-save-local-variables '(syntax-ppss-table buffer))
+		(setq mmm-submode-decoration-level 0)))
+
 (use-package magit    ;; git magic in Emacs
   :ensure t
   :bind (([(shift f6)] . magit-status)
+         ("C-9" . magit-log-buffer-file)
          ("C-c m b" . magit-blame)
          ("C-c m q" . magit-blame-quit)))
 
@@ -589,9 +655,12 @@
                               (org-agenda-overriding-header "ALL normal priority tasks:"))))
                    ((org-agenda-compact-blocks t)))))
           (setq org-agenda-files
-                '("~/Documents/personal/zeitplane/meine_schweren_Verpflichtungen.org"))
+                '("~/entwicklung/chipotle/rdigital/notes/resolvedigi.org"))
           (org-clock-persistence-insinuate)
           )
+  :bind  (("C-ñ" . org-todo)
+          ("M-o p" . org-insert-heading)
+          ("M-o l" . org-insert-subheading))
   :mode (("\\.org$" . org-mode)))
 
 (use-package org-bullets  ;; for org-mode
@@ -604,12 +673,6 @@
 	     :ensure t
 	     :config
 	     (popwin-mode 1))
-
-;; prettier-emacs: minor-mode to prettify javascript files on save
-;; https://github.com/prettier/prettier-emacs
-(use-package prettier-js
-  :hook ((js2-mode . prettier-js-mode)
-         (rjsx-mode . prettier-js-mode)))
 
 (use-package prettify-symbols-mode
 	:commands (turn-on-pretty-mode global-prettify-symbols-mode)
@@ -636,12 +699,6 @@
 (use-package rjsx-mode
   :ensure t
   :mode (("\\.jsx$" . rjsx-mode)))
-
-(use-package rubocop
-	     :ensure t
-	     :defer t
-	     :bind
-	     (([(M f12)] . rubocop-check-current-file)))
 
 (use-package smart-mode-line-powerline-theme
   :ensure t
@@ -729,19 +786,13 @@
 
 (use-package web-mode
   :mode ("\\.html?\\'"
-         "\\.phtml\\'"
-         "\\.php\\'"
          "\\.inc\\'"
          "\\.tpl\\'"
-         "\\.jsp\\'"
-         "\\.as[cp]x\\'"
          "\\.erb\\'"
-         "\\.mustache\\'"
-         "\\.djhtml\\'"
-         "\\.jsx\\'"
-         "\\.tsx\\'")
+         "\\.liquid\\'")
   :config
   ;; configure jsx-tide checker to run after your default jsx checker
+  (add-hook 'web-mode-hook #'lsp!)
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   (flycheck-add-mode 'typescript-tslint 'web-mode))
 
@@ -799,10 +850,10 @@
 ;;;;;;;;;;;;;;   USE PACKAGE SECTION ENDS   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; backup/autosave
-(defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
-(setq backup-directory-alist '(("." . "~/.emacs.d/autosave/")))
+(defvar autosave-dir (expand-file-name "~/.config/emacs/autosave/"))
+(setq backup-directory-alist '(("." . "~/.config/emacs/autosave/")))
 (setq auto-save-file-name-transforms
-  `((".*" "~/.emacs.d/autosave/" t)))
+  `((".*" "~/.config/emacs/autosave/" t)))
 
 (global-set-key (kbd "M-g") 'goto-line)    ;; M-g  'goto-line
 (global-set-key [(f7)]  'comment-region)
@@ -860,7 +911,7 @@
 
 ;; gets the path and file name
 (defun show-file-name ()
-  "Show the full path file name in the minibuffer."
+  "Show the full path file current buffer name in the minibuffer."
   (interactive)
   (message (buffer-file-name))
   (kill-new (file-truename buffer-file-name)))
@@ -894,34 +945,33 @@
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
  '(custom-safe-themes
-   '("c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "eeb23ebf4a97b95a85f6f5e6b8524a9854da008f494828f0e78693675d6fc9ca" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
+	 '("c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "eeb23ebf4a97b95a85f6f5e6b8524a9854da008f494828f0e78693675d6fc9ca" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(fci-rule-color "#eee8d5")
  '(flycheck-typescript-tslint-config "~/entwicklung/chipotle/node/tslint.json")
  '(helm-ff-lynx-style-map t)
  '(highlight-changes-colors '("#d33682" "#6c71c4"))
  '(highlight-symbol-colors
-   '("#efe4da49afb1" "#cfc4e1acd08b" "#fe52c9e6b34e" "#dbb6d3c2dcf3" "#e183dee0b053" "#f944cc6dae47" "#d35fdac4e069"))
+	 '("#efe4da49afb1" "#cfc4e1acd08b" "#fe52c9e6b34e" "#dbb6d3c2dcf3" "#e183dee0b053" "#f944cc6dae47" "#d35fdac4e069"))
  '(highlight-symbol-foreground-color "#586e75")
  '(highlight-tail-colors
-   '(("#eee8d5" . 0)
-     ("#b3c34d" . 20)
-     ("#6ccec0" . 30)
-     ("#74adf5" . 50)
-     ("#e1af4b" . 60)
-     ("#fb7640" . 70)
-     ("#ff699e" . 85)
-     ("#eee8d5" . 100)))
+	 '(("#eee8d5" . 0)
+		 ("#b3c34d" . 20)
+		 ("#6ccec0" . 30)
+		 ("#74adf5" . 50)
+		 ("#e1af4b" . 60)
+		 ("#fb7640" . 70)
+		 ("#ff699e" . 85)
+		 ("#eee8d5" . 100)))
  '(hl-bg-colors
-   '("#e1af4b" "#fb7640" "#ff6849" "#ff699e" "#8d85e7" "#74adf5" "#6ccec0" "#b3c34d"))
+	 '("#e1af4b" "#fb7640" "#ff6849" "#ff699e" "#8d85e7" "#74adf5" "#6ccec0" "#b3c34d"))
  '(hl-fg-colors
-   '("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3"))
+	 '("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3"))
  '(hl-paren-colors '("#2aa198" "#b58900" "#268bd2" "#6c71c4" "#859900"))
+ '(js2-include-node-externs t)
  '(nrepl-message-colors
-   '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
- '(org-agenda-files
-   '("~/Documents/personal/zeitplane/meine_schweren_Verpflichtungen.org"))
+	 '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(package-selected-packages
-   '(comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rubocop rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+	 '(posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(powerline-default-separator 'curve)
@@ -936,27 +986,27 @@
  '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
-   '((20 . "#dc322f")
-     (40 . "#cb4366eb20b4")
-     (60 . "#c1167942154f")
-     (80 . "#b58900")
-     (100 . "#a6ae8f7c0000")
-     (120 . "#9ed892380000")
-     (140 . "#96be94cf0000")
-     (160 . "#8e5397440000")
-     (180 . "#859900")
-     (200 . "#77679bfc4635")
-     (220 . "#6d449d465bfd")
-     (240 . "#5fc09ea47092")
-     (260 . "#4c68a01784aa")
-     (280 . "#2aa198")
-     (300 . "#303498e7affc")
-     (320 . "#2fa1947cbb9b")
-     (340 . "#2c879008c736")
-     (360 . "#268bd2")))
+	 '((20 . "#dc322f")
+		 (40 . "#cb4366eb20b4")
+		 (60 . "#c1167942154f")
+		 (80 . "#b58900")
+		 (100 . "#a6ae8f7c0000")
+		 (120 . "#9ed892380000")
+		 (140 . "#96be94cf0000")
+		 (160 . "#8e5397440000")
+		 (180 . "#859900")
+		 (200 . "#77679bfc4635")
+		 (220 . "#6d449d465bfd")
+		 (240 . "#5fc09ea47092")
+		 (260 . "#4c68a01784aa")
+		 (280 . "#2aa198")
+		 (300 . "#303498e7affc")
+		 (320 . "#2fa1947cbb9b")
+		 (340 . "#2c879008c736")
+		 (360 . "#268bd2")))
  '(vc-annotate-very-old-color nil)
  '(weechat-color-list
-   '(unspecified "#fdf6e3" "#eee8d5" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900" "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#657b83" "#839496")))
+	 '(unspecified "#fdf6e3" "#eee8d5" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900" "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#657b83" "#839496")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -1124,24 +1174,5 @@
   (set-mark (line-beginning-position)))
 
 (global-set-key (kbd "C-x o") 'select-current-line)
-
-;; Put backup files neatly away
-(let ((backup-dir "~/tmp/emacs/backups")
-      (auto-saves-dir "~/tmp/emacs/auto-saves/"))
-  (dolist (dir (list backup-dir auto-saves-dir))
-    (when (not (file-directory-p dir))
-      (make-directory dir t)))
-  (setq backup-directory-alist `(("." . ,backup-dir))
-        auto-save-file-name-transforms `((".*" ,auto-saves-dir t))
-        auto-save-list-file-prefix (concat auto-saves-dir ".saves-")
-        tramp-backup-directory-alist `((".*" . ,backup-dir))
-        tramp-auto-save-directory auto-saves-dir))
-
-(setq backup-by-copying t    ; Don't delink hardlinks
-      delete-old-versions t  ; Clean up the backups
-      version-control t      ; Use version numbers on backups,
-      kept-new-versions 5    ; keep some new versions
-      kept-old-versions 2)   ; and some old ones, too
-
 
 ;;; init.el file ends here
