@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: case
+# key: case
+# --
+case n
+when 0
+  puts 'You typed zero'
+when 3, 5, 7
+  puts 'n is a prime number'
+when 4, 6, 8
+  puts 'n is an even number'
+else
+  puts 'Only single-digit numbers are allowed'
+end

@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: switch
+# key: sw
+# --
+switch (var) {
+  case 3:
+    alert( 'Too small' );
+    break;
+  case 4:
+    alert( 'Exactly!' );
+    break;
+  default:
+    alert( "I don't know such values" );
+}
