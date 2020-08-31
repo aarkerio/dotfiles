@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: reduce
+# key: red
+# --
+%w{ cat sheep bear }.reduce('kk') do |acc, word|
+   p " acc >>>> #{acc}" # kk only the first loop
+   acc.length > word.length ? "#{acc}-#{word}" : word
+end

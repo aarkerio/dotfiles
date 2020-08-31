@@ -1,0 +1,4 @@
+#name : vcr
+# key: vcr
+# --
+VCR.use_cassette("shop-webhook-setup-6040205", record: :new_episodes) do

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: each-w-idx
+# key: idx
+# --
+enum.each_with_index do |itm, idx|
+  hashing[itm] = idx
+end

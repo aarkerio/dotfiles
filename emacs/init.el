@@ -155,8 +155,7 @@
 			    "/home/manuel/"
 			    "/home/mmontoya/"))
 
-(setq default-directory (concat home-directory "entwicklung/chipotle/fondeadora/"))
-
+(setq default-directory (concat home-directory "entwicklung/chipotle/rdigital/"))
 
 ;; (load (concat home-directory "elisp/myfunctions"))
 
@@ -200,10 +199,17 @@
   :defer t
   :ensure t)
 
-(use-package exec-path-from-shell
-	     :ensure t)
+(use-package eglot  ;;  Sophisticated document creation
+  :defer t
+  :ensure t
+  :config
+  (define-derived-mode genehack-vue-mode web-mode "ghVue"
+    "A major mode derived from web-mode, for editing .vue files with LSP support.")
+  (add-to-list 'auto-mode-alist '("\\.vue\\'" . genehack-vue-mode))
+  (add-hook 'genehack-vue-mode-hook #'eglot-ensure)
+  (add-to-list 'eglot-server-programs '(genehack-vue-mode "vls")))
 
-(use-package page-break-lines
+(use-package exec-path-from-shell
 	     :ensure t)
 
 (use-package dashboard  ;; An extensible emacs startup screen showing you what’s most important.
@@ -490,9 +496,6 @@
                   "stderr\\*$" "^\\*Flymake" "^\\*vc" "^\\*Warnings" "^\\*Messages" "*cider-error*" "^\\*helm" "^\\*magit" "^\\*eldoc" "\\^*Shell Command"))
     (push regexp frog-jump-buffer-ignore-buffers))))
 
-(use-package posframe
-  :ensure t)
-
 (use-package git-timemachine
   :ensure t)
 
@@ -535,10 +538,11 @@
     (when (with-helm-buffer helm-echo-input-in-header-line)
       (let ((ov (make-overlay (point-min) (point-max) nil nil t)))
         (overlay-put ov 'window (selected-window))
-        (overlay-put ov 'face
-                     (let ((bg-color (face-background 'default nil)))
-                       `(:background ,bg-color :foreground ,bg-color)))
-        (setq-local cursor-type nil))))
+        ;; (overlay-put ov 'face
+        ;:             (let ((bg-color (face-background 'default nil)))
+        ;;               `(:background ,bg-color :foreground ,bg-color)))
+        ;; (setq-local cursor-type nil)
+				)))
   (add-hook 'helm-minibuffer-set-up-hook 'daedreth/helm-hide-minibuffer)
   (setq helm-autoresize-max-height 0
         helm-autoresize-min-height 40
@@ -667,6 +671,9 @@
   :ensure t)
 
 (use-package page-break-lines ;; dashboard dependency
+  :ensure t)
+
+(use-package posframe
   :ensure t)
 
 (use-package popwin ;; popwin
@@ -971,7 +978,7 @@
  '(nrepl-message-colors
 	 '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(package-selected-packages
-	 '(posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+	 '(eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(powerline-default-separator 'curve)
@@ -1174,5 +1181,30 @@
   (set-mark (line-beginning-position)))
 
 (global-set-key (kbd "C-x o") 'select-current-line)
+
+
+
+(add-to-list 'load-path "~/.config/emacs/elpa/emacs-solargraph")
+
+(require 'solargraph)
+(require 'ac-solargraph)
+
+(defun ruby-mode-hook ()
+  (autoload 'ruby-mode "ruby-mode" nil t)
+  (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("Rakefile" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.ru\\'" . ruby-mode))
+  (add-hook 'ruby-mode-hook '(lambda ()
+                               (setq ruby-deep-arglist t)
+                               (setq ruby-deep-indent-paren nil)
+                               (setq c-tab-always-indent nil)
+                               (require 'inf-ruby)
+                               (require 'ruby-compilation)
+                               (define-key ruby-mode-map (kbd "M-i") 'solargraph:complete)
+                               (define-key ruby-mode-map (kbd "M-i") 'ac-solargraph:complete)
+                               (define-key ruby-mode-map (kbd "M-r" 'run-rails-test-or-ruby-buffer)))))
 
 ;;; init.el file ends here
