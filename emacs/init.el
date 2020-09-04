@@ -27,7 +27,11 @@
                          ("melpa" .        "https://melpa.org/packages/")))
 
 (setq recentf-max-saved-items 100)
-(run-at-time nil (* 5 60) 'recentf-save-list)
+(run-at-time nil (* 5 60)
+             (lambda ()
+               (let ((save-silently t))
+                 (recentf-save-list))))
+
 (setq package-check-signature nil)
 (setq load-prefer-newer t)  ;; load newer
 ;; (package-initialize)
@@ -599,6 +603,7 @@
   :config
   (progn
     (setq js2-include-node-externs t)
+    (add-hook 'js2-mode-hook 'hs-minor-mode)
     (add-hook 'js2-mode-hook (lambda () (setq js2-basic-offset 2)))
     (add-hook 'js2-mode-hook (lambda ()
                                (bind-key "M-j" 'join-line-or-lines-in-region js2-mode-map)))))
@@ -607,6 +612,7 @@
   :mode "\\.vue$"
   :config
 	(progn
+    (add-hook 'vue-mode-hook 'hs-minor-mode)
 		(add-to-list 'mmm-save-local-variables '(syntax-ppss-table buffer))
 		(setq mmm-submode-decoration-level 0)))
 
@@ -952,33 +958,33 @@
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
  '(custom-safe-themes
-	 '("c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "eeb23ebf4a97b95a85f6f5e6b8524a9854da008f494828f0e78693675d6fc9ca" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
+   '("c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "eeb23ebf4a97b95a85f6f5e6b8524a9854da008f494828f0e78693675d6fc9ca" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(fci-rule-color "#eee8d5")
  '(flycheck-typescript-tslint-config "~/entwicklung/chipotle/node/tslint.json")
  '(helm-ff-lynx-style-map t)
  '(highlight-changes-colors '("#d33682" "#6c71c4"))
  '(highlight-symbol-colors
-	 '("#efe4da49afb1" "#cfc4e1acd08b" "#fe52c9e6b34e" "#dbb6d3c2dcf3" "#e183dee0b053" "#f944cc6dae47" "#d35fdac4e069"))
+   '("#efe4da49afb1" "#cfc4e1acd08b" "#fe52c9e6b34e" "#dbb6d3c2dcf3" "#e183dee0b053" "#f944cc6dae47" "#d35fdac4e069"))
  '(highlight-symbol-foreground-color "#586e75")
  '(highlight-tail-colors
-	 '(("#eee8d5" . 0)
-		 ("#b3c34d" . 20)
-		 ("#6ccec0" . 30)
-		 ("#74adf5" . 50)
-		 ("#e1af4b" . 60)
-		 ("#fb7640" . 70)
-		 ("#ff699e" . 85)
-		 ("#eee8d5" . 100)))
+   '(("#eee8d5" . 0)
+     ("#b3c34d" . 20)
+     ("#6ccec0" . 30)
+     ("#74adf5" . 50)
+     ("#e1af4b" . 60)
+     ("#fb7640" . 70)
+     ("#ff699e" . 85)
+     ("#eee8d5" . 100)))
  '(hl-bg-colors
-	 '("#e1af4b" "#fb7640" "#ff6849" "#ff699e" "#8d85e7" "#74adf5" "#6ccec0" "#b3c34d"))
+   '("#e1af4b" "#fb7640" "#ff6849" "#ff699e" "#8d85e7" "#74adf5" "#6ccec0" "#b3c34d"))
  '(hl-fg-colors
-	 '("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3"))
+   '("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3"))
  '(hl-paren-colors '("#2aa198" "#b58900" "#268bd2" "#6c71c4" "#859900"))
  '(js2-include-node-externs t)
  '(nrepl-message-colors
-	 '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
+   '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(package-selected-packages
-	 '(eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+   '(doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(powerline-default-separator 'curve)
@@ -993,27 +999,27 @@
  '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
-	 '((20 . "#dc322f")
-		 (40 . "#cb4366eb20b4")
-		 (60 . "#c1167942154f")
-		 (80 . "#b58900")
-		 (100 . "#a6ae8f7c0000")
-		 (120 . "#9ed892380000")
-		 (140 . "#96be94cf0000")
-		 (160 . "#8e5397440000")
-		 (180 . "#859900")
-		 (200 . "#77679bfc4635")
-		 (220 . "#6d449d465bfd")
-		 (240 . "#5fc09ea47092")
-		 (260 . "#4c68a01784aa")
-		 (280 . "#2aa198")
-		 (300 . "#303498e7affc")
-		 (320 . "#2fa1947cbb9b")
-		 (340 . "#2c879008c736")
-		 (360 . "#268bd2")))
+   '((20 . "#dc322f")
+     (40 . "#cb4366eb20b4")
+     (60 . "#c1167942154f")
+     (80 . "#b58900")
+     (100 . "#a6ae8f7c0000")
+     (120 . "#9ed892380000")
+     (140 . "#96be94cf0000")
+     (160 . "#8e5397440000")
+     (180 . "#859900")
+     (200 . "#77679bfc4635")
+     (220 . "#6d449d465bfd")
+     (240 . "#5fc09ea47092")
+     (260 . "#4c68a01784aa")
+     (280 . "#2aa198")
+     (300 . "#303498e7affc")
+     (320 . "#2fa1947cbb9b")
+     (340 . "#2c879008c736")
+     (360 . "#268bd2")))
  '(vc-annotate-very-old-color nil)
  '(weechat-color-list
-	 '(unspecified "#fdf6e3" "#eee8d5" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900" "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#657b83" "#839496")))
+   '(unspecified "#fdf6e3" "#eee8d5" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900" "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#657b83" "#839496")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -1182,8 +1188,6 @@
 
 (global-set-key (kbd "C-x o") 'select-current-line)
 
-
-
 (add-to-list 'load-path "~/.config/emacs/elpa/emacs-solargraph")
 
 (require 'solargraph)
@@ -1194,17 +1198,15 @@
   (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
   (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
   (add-to-list 'auto-mode-alist '("Rakefile" . ruby-mode))
+  (add-to-list 'auto-mode-alist '("\\.pryrc\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.rake\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
   (add-to-list 'auto-mode-alist '("\\.ru\\'" . ruby-mode))
+  (add-hook 'ruby-mode-hook 'hs-minor-mode)
   (add-hook 'ruby-mode-hook '(lambda ()
                                (setq ruby-deep-arglist t)
                                (setq ruby-deep-indent-paren nil)
-                               (setq c-tab-always-indent nil)
-                               (require 'inf-ruby)
-                               (require 'ruby-compilation)
-                               (define-key ruby-mode-map (kbd "M-i") 'solargraph:complete)
-                               (define-key ruby-mode-map (kbd "M-i") 'ac-solargraph:complete)
-                               (define-key ruby-mode-map (kbd "M-r" 'run-rails-test-or-ruby-buffer)))))
+                               (setq c-tab-always-indent nil))))
 
+(ruby-mode-hook)
 ;;; init.el file ends here

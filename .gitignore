@@ -19,3 +19,5 @@ emacs/recentf~
 emacs/eshell/*
 emacs/auto-save-list/
 emacs/autosave/
+emacs/.mc-lists.el
+emacs/request/

@@ -1,0 +1,4 @@
+#name : frozen lit
+# key: fro
+# --
+# frozen_string_literal: true
