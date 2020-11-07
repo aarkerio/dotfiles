@@ -21,3 +21,8 @@ emacs/auto-save-list/
 emacs/autosave/
 emacs/.mc-lists.el
 emacs/request/
+emacs/amx-items
+emacs/flycheck_init.el
+emacs/snippets/ruby-mode/IO
+emacs/org-clock-save.el
+emacs/transient/history.el

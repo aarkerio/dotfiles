@@ -2,7 +2,7 @@
 Pry.editor = 'enw'
 
 # === PROMPT ===
-Pry.config.prompt = Pry::Prompt.new(
+ Pry.config.prompt = Pry::Prompt.new(
   'custom',
   'my custom prompt',
   [proc { |obj, nest_level, _| "#{obj}:#{nest_level}> " }]
@@ -29,6 +29,7 @@ Pry.commands.alias_command 's', 'step' rescue nil
 Pry.commands.alias_command 'n', 'next' rescue nil
 Pry.commands.alias_command 'f', 'finish' rescue nil
 Pry.commands.alias_command 'l', 'whereami' rescue nil
+Pry.commands.alias_command 'webh', 'ShopifyAPI::Webhook.all' rescue nil
 
 # === Listing config ===
 # Better colors - by default the headings for methods are too
@@ -75,11 +76,11 @@ end
 
 # === CUSTOM COMMANDS ===
 default_command_set = Pry::CommandSet.new do
-  command "sql", "Send sql over AR." do |query|
+  command 'sql', 'Send sql over AR.' do |query|
     if ENV['RAILS_ENV'] || defined?(Rails)
       pp ActiveRecord::Base.connection.select_all(query)
     else
-      pp "No rails env defined"
+      pp 'No rails env defined'
     end
   end
 end
@@ -102,25 +103,34 @@ end
 # === COLOR CUSTOMIZATION ===
 # Everything below this line is for customizing colors, you have to use the ugly
 # color codes, but such is life.
-CodeRay.scan("example", :ruby).term # just to load necessary files
-# Token colors pulled from: https://github.com/rubychan/coderay/blob/master/lib/coderay/encoders/terminal.rb
+CodeRay.scan('example', :ruby).term # just to load necessary files
 
-$LOAD_PATH << File.dirname(File.realpath(__FILE__))
+TERM_TOKEN_COLORS = {
+       symbol: '1;31' # will make symbols bolded and light red on my terminal
+}
 
-# In CodeRay >= 1.1.0 token colors are defined as pre-escaped ANSI codes
-if Gem::Version.new(CodeRay::VERSION) >= Gem::Version.new('1.1.0')
-  require 'escaped_colors'
-else
-  require 'unescaped_colors'
-end
+CUSTOM_COLORS = {
+  constant: '1;34',       # Bold Midnight Blue #191970
+#  class_variable: '1;34',
+  symbol: '1;31' # will make symbols bolded and light red on my terminal
+}
 
-module CodeRay
-  module Encoders
-    class Terminal < Encoder
-      # override old colors
-      TERM_TOKEN_COLORS.each_pair do |key, value|
-        TOKEN_COLORS[key] = value
-      end
-    end
+colors = if (CodeRay::Encoders::Terminal::TOKEN_COLORS rescue nil)
+         # CodeRay 1.0.0
+         CodeRay::Encoders::Terminal::TOKEN_COLORS
+       else
+         # CodeRay 0.9
+         begin
+           require 'coderay/encoders/term'
+           CodeRay::Encoders::Term::TOKEN_COLORS
+         rescue
+           nil
+         end
+       end
+
+if colors
+  CUSTOM_COLORS.each_pair do |key, value|
+   colors[key] = value
   end
 end
+
