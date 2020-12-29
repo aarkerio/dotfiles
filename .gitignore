@@ -26,3 +26,4 @@ emacs/flycheck_init.el
 emacs/snippets/ruby-mode/IO
 emacs/org-clock-save.el
 emacs/transient/history.el
+emacs/session*

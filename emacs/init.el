@@ -37,8 +37,10 @@
 (setq load-prefer-newer t)  ;; load newer
 ;; (package-initialize)
 
-;; (setq exec-path (append '("PATH1" "PATH2")
-;;                         exec-path))
+(setq display-fill-column-indicator-column 90)
+
+(global-highlight-indentation-mode t)
+;; (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode)
 
 (exec-path-from-shell-copy-env "GEM_PATH")
 (exec-path-from-shell-copy-env "PATH")
@@ -164,9 +166,7 @@
 (defun display-startup-echo-area-message ()
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
 
-(setq home-directory (if (string= (system-name) "pav23") ;; laptop or desktop ?
-			    "/home/manuel/"
-			    "/home/mmontoya/"))
+(setq home-directory "/home/manuel/")
 
 (setq default-directory (concat home-directory "entwicklung/chipotle/rdigital/"))
 
@@ -468,8 +468,9 @@
   :defer 1
   :init (setq
          flycheck-checkers
-         '(typescript-tslint
-           css-csslint
+         '(
+           ;; typescript-tslint
+           ;; css-csslint
            emacs-lisp
            ruby-rubocop
            haml
@@ -765,7 +766,7 @@
     (when (string-equal "jsx" (file-name-extension buffer-file-name))
       (setup-tide-mode)))
 
-  (add-hook 'typescript-mode-hook #'setup-tide-mode)
+  ;; (add-hook 'typescript-mode-hook #'setup-tide-mode)
   (add-hook 'js2-mode-hook #'setup-tide-mode)
   (add-hook 'web-mode-hook #'my/setup-tsx-mode)
   (add-hook 'rjsx-mode-hook #'my/setup-jsx-mode)
@@ -794,7 +795,8 @@
   ;; configure jsx-tide checker to run after your default jsx checker
   (add-hook 'web-mode-hook #'lsp!)
   (flycheck-add-mode 'javascript-eslint 'web-mode)
-  (flycheck-add-mode 'typescript-tslint 'web-mode))
+  ;; (flycheck-add-mode 'typescript-tslint 'web-mode)
+  )
 
 (use-package undo-tree
   :ensure t

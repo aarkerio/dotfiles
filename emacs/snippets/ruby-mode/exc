@@ -1,0 +1,8 @@
+#name: rescue StandardError
+# key: resc
+# --
+begin
+  do_something()
+rescue StandardError => e
+  Rails.logger.debug "#### Caught exception #{e}!"
+end

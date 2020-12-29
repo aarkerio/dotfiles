@@ -1,0 +1,4 @@
+#name : migration
+# key: mig
+# --
+t.integer :level, null: false, default: 1, :uurlid, unique: true
