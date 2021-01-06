@@ -943,7 +943,7 @@
    '("c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "eeb23ebf4a97b95a85f6f5e6b8524a9854da008f494828f0e78693675d6fc9ca" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(display-fill-column-indicator t)
  '(fci-rule-color "#eee8d5")
- '(fill-column 120)
+ '(fill-column 100)
  '(flycheck-typescript-tslint-config "~/entwicklung/chipotle/node/tslint.json")
  '(global-display-fill-column-indicator-mode t)
  '(helm-ff-lynx-style-map t)
