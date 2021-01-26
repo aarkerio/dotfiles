@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: ternary
+# key: tern
+# --
+let canDrive = age > 16 ? 'yes' : 'no';
