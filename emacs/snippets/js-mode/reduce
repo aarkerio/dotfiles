@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: reduce
+# key: red
+# --
+[1, 2, 3, 4].reduce((acc, elm) => acc + elm);

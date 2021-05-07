@@ -14,7 +14,7 @@
 
 ;; Add melpa package source when using package list
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-(add-to-list 'package-archives '("mermalade" . "https://marmalade-repo.org/packages/") t)
+;; (add-to-list 'package-archives '("mermalade" . "https://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/")  t)
 
@@ -23,7 +23,7 @@
                              (setq gc-cons-threshold 800000)))  ;; Better Garbage Collection
 
 (setq package-archives '(("gnu" .          "https://elpa.gnu.org/packages/")
-                         ("marmalade" .    "https://marmalade-repo.org/packages/")
+                         ;; ("marmalade" .    "https://marmalade-repo.org/packages/")
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("melpa" .        "https://melpa.org/packages/")))
 
@@ -37,7 +37,7 @@
 (setq load-prefer-newer t)  ;; load newer
 ;; (package-initialize)
 
-(exec-path-from-shell-copy-env "GEM_PATH")
+;;(exec-path-from-shell-copy-env "GEM_PATH")
 (exec-path-from-shell-copy-env "PATH")
 
 (add-to-list 'exec-path "/home/manuel/.rvm/gems/ruby-2.5.7/bin")
@@ -614,7 +614,7 @@
   :ensure t
   :bind
   ( ;; Multiple continum lines
-    ([f8] . mc/edit-lines)
+    ([(super shift f10)] . mc/edit-lines)
     ;; Multiple cursors not based on continuous lines
     ;;(("C->") . mc/mark-next-like-this)
     ;;(("C-<") . mc/mark-previous-like-this)

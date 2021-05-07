@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: map
+# key: map
+# --
+const map1 = array1.map(x => x * 2);
