@@ -1,4 +1,4 @@
-; Manuel Montoya init.el file 2006-2020
+; Manuel Montoya init.el file 2006-2021
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; -*- lexical-binding: t -*-
@@ -12,22 +12,22 @@
 ;; You may delete these explanatory comments.
 (require 'package)
 
-;; Add melpa package source when using package list
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-;; (add-to-list 'package-archives '("mermalade" . "https://marmalade-repo.org/packages/") t)
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/")  t)
-
 (defconst d/emacs-start-time (current-time))
 (add-hook 'after-init-hook (lambda ()
                              (setq gc-cons-threshold 800000)))  ;; Better Garbage Collection
 
-(setq package-archives '(("gnu" .          "https://elpa.gnu.org/packages/")
-                         ;; ("marmalade" .    "https://marmalade-repo.org/packages/")
-                         ("melpa-stable" . "https://stable.melpa.org/packages/")
-                         ("melpa" .        "https://melpa.org/packages/")))
+(setq package-archives '(("melpa-stable" . "https://stable.melpa.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")
+                         ("marmalade" . "https://marmalade-repo.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("gnu" . "https://elpa.gnu.org/packages/")
+                         ("elpy" . "https://jorgenschaefer.github.io/packages/")))
+
+;; (load (concat home-directory ".config/emacs/mylibs/col-highlight.el"))
 
 (setq recentf-max-saved-items 100)
+(setq next-line-add-newlines t)
+
 (run-at-time nil (* 5 60)
              (lambda ()
                (let ((save-silently t))
@@ -37,17 +37,13 @@
 (setq load-prefer-newer t)  ;; load newer
 ;; (package-initialize)
 
-;;(exec-path-from-shell-copy-env "GEM_PATH")
-(exec-path-from-shell-copy-env "PATH")
-
-(add-to-list 'exec-path "/home/manuel/.rvm/gems/ruby-2.5.7/bin")
-(add-to-list 'exec-path "/home/manuel/.yarn/bin/")
-(add-to-list 'exec-path "/home/manuel/.rvm/gems/default/bin")
-
-(add-to-list 'auto-mode-alist '("\\.srvm\\'" . sr-virtual-mode))
-
 (require 'recentf)
 (recentf-mode 1)
+
+(add-to-list 'load-path "~/.emacs.d/mylibs/")
+
+(require 'col-highlight)
+(global-set-key (kbd "C-<escape>") 'col-highlight-flash)
 
 ;; Turn off mouse interface early in startup to avoid momentary display
 ;; (when (fboundp 'menu-bar-mode) (menu-bar-mode 0))
@@ -161,11 +157,8 @@
 (defun display-startup-echo-area-message ()
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
 
-(setq home-directory "/home/manuel/")
-
+(setq home-directory "/home/mmontoya/")
 (setq default-directory (concat home-directory "entwicklung/chipotle/rdigital/"))
-
-;; (load (concat home-directory "elisp/myfunctions"))
 
 ;;;;;;;;;;;;;;   USE PACKAGE THEME SECTION  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -294,9 +287,6 @@
 (use-package clojure-snippets
   :ensure t)
 
-(use-package clojurescript-mode
-  :ensure t)
-
 (global-prettify-symbols-mode +1)
 
 (use-package clojure-mode
@@ -353,11 +343,6 @@
       (add-hook 'clojure-mode-hook 'hs-minor-mode)))
 
 ;;  CLOJURE BLOCK ENDS
-
-(use-package col-highlight    ;; Column flash
-	:ensure t
-	:bind
-	([(C-escape)] . col-highlight-flash))
 
 (use-package company  ;; Company is a text completion framework for Emacs.
   :ensure t
@@ -813,7 +798,8 @@
 		     uniquify-ignore-buffers-re "^\\*")))
 
 (use-package pug-mode
-  :mode ("\\.vue\\'" . pug-mode))
+  :mode ("\\.vue\\'" . pug-mode)
+  :config (add-hook 'vue-mode-hook #'lsp))
 
 (use-package web-mode
   :ensure t
@@ -856,6 +842,7 @@
 (global-set-key [(shift f5)] 'my-replace-string)
 (global-set-key [(shift f12)] 'eshell)
 (global-set-key [(C f11)] 'find-grep-dired)
+(global-set-key	[(C-escape)] 'col-highlight-flash)
 
 ;; Flyspell
 (autoload 'flyspell-mode "flyspell" "On-the-fly spelling checker." t)
@@ -969,7 +956,7 @@
  '(nrepl-message-colors
    '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(package-selected-packages
-   '(amx nurumacs dired-subtree dired-icon vue-html-mode mmm-mode company-lsp lsp-mode doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+   '(smooth-scrolling color-theme-sanityinc-solarized amx nurumacs dired-subtree dired-icon vue-html-mode mmm-mode company-lsp lsp-mode doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(powerline-default-separator 'curve)
@@ -1092,7 +1079,7 @@
   "Execute to pdf."
   (interactive)
   (shell-command
-   "/usr/bin/pdflatex -interaction=nonstopmode /home/manuel/Documents/personal/Schriftstellerei/gypsys/gypsys.tex"))
+   "/usr/bin/pdflatex -interaction=nonstopmode /home/mmontoya/Documents/personal/Schriftstellerei/gypsys/gypsys.tex"))
 
 (global-set-key (kbd "C-x .") 'shell-command-to-pdf)
 
