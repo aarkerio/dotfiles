@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: record_episodes
+# key: rec
+# --
+, record: :new_episodes
