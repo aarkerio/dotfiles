@@ -26,7 +26,7 @@
 ;; (load (concat home-directory ".config/emacs/mylibs/col-highlight.el"))
 
 (setq recentf-max-saved-items 100)
-(setq next-line-add-newlines t)
+(setq mode-require-final-newline t)
 
 (run-at-time nil (* 5 60)
              (lambda ()
@@ -157,7 +157,7 @@
 (defun display-startup-echo-area-message ()
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
 
-(setq home-directory "/home/mmontoya/")
+(setq home-directory "/home/manuel/")
 (setq default-directory (concat home-directory "entwicklung/chipotle/rdigital/"))
 
 ;;;;;;;;;;;;;;   USE PACKAGE THEME SECTION  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
