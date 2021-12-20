@@ -1,0 +1,110 @@
+* {
+	border: none;
+	border-radius: 0;
+	font-family: "Noto Sans", Roboto, Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	min-height: 0;
+	color: rgba(253,246,227 , 1);
+}
+
+window#waybar {
+	background: rgba(  0, 16, 20, 0.8);
+	border-top: 2px solid rgba(100, 114, 125, 0.5);
+}
+
+/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+#workspaces button {
+	padding: 0 5px;
+	background: transparent;
+	border-top: 2px solid rgba(238,232,213, 0.3);
+}
+
+#workspaces button.focused {
+	border-top: 2px solid rgba(238,232,213, 1);
+}
+
+#mode {
+	background: rgba(  0, 43, 54, 0.8);
+	border-top: 2px rgba(238,232,213, 0.8);
+}
+
+#clock, #battery, #cpu, #memory, #backlight, #network, #pulseaudio, #custom-playerctl, #mode, #idle_inhibitor {
+	padding: 0 10px;
+	margin: 0 5px;
+}
+
+#clock {
+	background: rgba(217, 20, 187, 0.9);
+}
+
+#battery {
+	background-color: rgba(20, 217, 52, 0.9);
+}
+
+#battery.charging {
+	background-color: rgba(255, 170, 0, 0.5);
+}
+
+@keyframes blink {
+	to {
+		background-color: rgba(  0, 16, 20, 0.8);
+	}
+}
+
+#battery.warning:not(.charging) {
+	background-color: rgba(181,137,  0, 0.8);
+}
+
+#battery.warning {
+	background-color: rgba(220, 50, 47, 0.8);
+}
+
+#battery.critical:not(.charging) {
+	background: rgba(220, 50, 47, 0.8);
+	animation-name: blink;
+	animation-duration: 0.5s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+}
+
+#battery.critical:not(.charging) {
+	background: rgba(220, 50, 47, 0.5);
+}
+
+#cpu {
+	background: rgba(211, 54,130, 0.8);
+}
+
+#memory {
+	background: rgba( 42,161,152, 0.8);
+}
+
+#backlight {
+	background: rgba(131,148,150, 0.8);
+}
+
+#network {
+	background: rgba( 38,139,210 , 0.8);
+}
+
+#network.disconnected {
+	background: rgba( 38,139,210 , 0.5);
+}
+
+#pulseaudio {
+	background: rgba(181,137,  0, 0.8);
+}
+
+#pulseaudio.muted {
+	background: rgba(181,137,  0, 0.5);
+}
+
+#tray {
+	padding: 0 5px;
+	margin: 0;
+}
+
+#idle_inhibitor {
+	background: rgba(101,123,131, 0.5);
+}

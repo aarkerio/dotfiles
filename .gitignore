@@ -28,3 +28,7 @@ emacs/org-clock-save.el
 emacs/transient/history.el
 emacs/session*
 emacs/.cache/
+emacs/%backup%~
+emacs/quelpa/
+emacs/tramp
+

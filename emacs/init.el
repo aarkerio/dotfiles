@@ -1,4 +1,4 @@
-; Manuel Montoya init.el file 2006-2021
+;; Manuel Montoya init.el file 2006-2021
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; -*- lexical-binding: t -*-
@@ -23,8 +23,6 @@
                          ("gnu" . "https://elpa.gnu.org/packages/")
                          ("elpy" . "https://jorgenschaefer.github.io/packages/")))
 
-;; (load (concat home-directory ".config/emacs/mylibs/col-highlight.el"))
-
 (setq recentf-max-saved-items 100)
 (setq mode-require-final-newline t)
 
@@ -35,15 +33,25 @@
 
 (setq package-check-signature nil)
 (setq load-prefer-newer t)  ;; load newer
-;; (package-initialize)
+(package-initialize)
 
 (require 'recentf)
 (recentf-mode 1)
 
-(add-to-list 'load-path "~/.emacs.d/mylibs/")
+(add-hook 'after-init-hook #'global-flycheck-mode)
+(add-to-list 'load-path "~/.config/emacs/mylibs/")
 
 (require 'col-highlight)
 (global-set-key (kbd "C-<escape>") 'col-highlight-flash)
+
+;; Vue stuff
+(require 'eglot)
+(require 'web-mode)
+(define-derived-mode genehack-vue-mode web-mode "ghVue"
+  "A major mode derived from web-mode, for editing .vue files with LSP support.")
+(add-to-list 'auto-mode-alist '("\\.vue\\'" . genehack-vue-mode))
+(add-hook 'genehack-vue-mode-hook #'eglot-ensure)
+(add-to-list 'eglot-server-programs '(genehack-vue-mode "vls"))
 
 ;; Turn off mouse interface early in startup to avoid momentary display
 ;; (when (fboundp 'menu-bar-mode) (menu-bar-mode 0))
@@ -66,6 +74,9 @@
 (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
 (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
 
+(require 'rvm)
+(rvm-use-default) ;; use
+
 ;; disable confirmation if a file or buffer does not exist when you
 ;; use C-x C-f or C-x b
 (setq confirm-nonexistent-file-or-buffer nil)
@@ -79,14 +90,6 @@
 (windmove-default-keybindings 'super)   ; bind windmove to s-{arrows}
 
 (fset 'yes-or-no-p 'y-or-n-p)  ;; change all prompts to y or n
-
-(use-package amx
-  :demand t
-  :bind
-  ("M-x" . amx))
-
-(use-package smooth-scrolling
-  :demand t)
 
 (defun acg-initial-buffer-choice ()
   (if (get-buffer "*scratch*")
@@ -142,7 +145,7 @@
       user-mail-address "mmontoya@gmail.com"
       user-full-name "Manuel Montoya"
       save-interprogram-paste-before-kill t
-      inhibit-splash-screen t         ;; Disable splash screen
+      inhibit-splash-screen t         ;; Begrüßungsbildschirm deaktivieren
       visible-bell t                  ;; Flashes on error
       TeX-PDF-mode t                  ;; PDF mode (rather than DVI-mode)
       standard-indent 2
@@ -153,23 +156,27 @@
 
 (set-face-attribute 'region nil :background "#ffd45e")
 
-;; Change the echo message
+;; Ändern Sie die Echonachricht
 (defun display-startup-echo-area-message ()
   (message "Herrlicher Mann ist bereit, einen erstaunlichen Job zu liefern!"))
 
 (setq home-directory "/home/manuel/")
 (setq default-directory (concat home-directory "entwicklung/chipotle/rdigital/"))
 
-;;;;;;;;;;;;;;   USE PACKAGE THEME SECTION  ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;   VERWENDEN SIE PAKET ABSCHNITT BEGINNT   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (use-package apropospriate-theme
-;;    :ensure t
-;;    :config
-;;    (load-theme 'apropospriate-light t))
+(use-package amx
+  :demand t
+  :bind
+  ("M-x" . amx))
 
-;; (use-package majapahit-theme
-;;	     :ensure majapahit-theme
-;;	     :config (load-theme 'majapahit-light t))
+(use-package smooth-scrolling
+  :demand t)
+
+(use-package rvm
+  :ensure t
+  :config
+  (rvm-use-default))
 
 (use-package solarized-theme
   :ensure t
@@ -179,8 +186,6 @@
   (setq solarized-scale-org-headlines nil)
   (setq solarized-high-contrast-mode-line t)
   (load-theme 'solarized-light t))
-
-;;;;;;;;;;;;;;   USE PACKAGE SECTION STARTS   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package ace-jump-buffer
   :bind
@@ -255,6 +260,20 @@
     (setq cider-refresh-before-fn "reloaded.repl/suspend")
     (setq cider-refresh-after-fn "reloaded.repl/resume")
     (setq cider-cljs-lein-repl "(do (reloaded.repl/go) (user/cljs-repl))")))
+
+(use-package lsp-mode
+  :custom
+  (lsp-vetur-format-default-formatter-css "none")
+  (lsp-vetur-format-default-formatter-html "none")
+  (lsp-vetur-format-default-formatter-js "none")
+  (lsp-vetur-validation-template nil))
+
+(use-package vue-mode
+  :mode "\\.vue\\'"
+  :hook (vue-mode . prettier-js-mode)
+  :config
+  (add-hook 'vue-mode-hook #'lsp)
+  (setq prettier-js-args '("--parser vue")))
 
 ;; (use-package lsp-mode
 ;;   :ensure t
@@ -955,8 +974,9 @@
  '(js2-include-node-externs t)
  '(nrepl-message-colors
    '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
+ '(org-agenda-files nil)
  '(package-selected-packages
-   '(smooth-scrolling color-theme-sanityinc-solarized amx nurumacs dired-subtree dired-icon vue-html-mode mmm-mode company-lsp lsp-mode doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+   '(quelpa bookmark-view bm vdiff efar rvm smooth-scrolling color-theme-sanityinc-solarized amx nurumacs dired-subtree dired-icon vue-html-mode mmm-mode company-lsp lsp-mode doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(powerline-default-separator 'curve)
@@ -967,6 +987,7 @@
  '(tabbar-use-images nil)
  '(term-default-bg-color "#fdf6e3")
  '(term-default-fg-color "#657b83")
+ '(tool-bar-mode nil)
  '(tramp-syntax 'default nil (tramp))
  '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
@@ -1160,11 +1181,6 @@
 
 (global-set-key (kbd "C-x o") 'select-current-line)
 
-;; (add-to-list 'load-path "~/.config/emacs/elpa/emacs-solargraph")
-
-;; (require 'solargraph)
-;; (require 'ac-solargraph)
-
 (defun ruby-mode-hook ()
   (autoload 'ruby-mode "ruby-mode" nil t)
   (add-to-list 'auto-mode-alist '("Capfile" . ruby-mode))
@@ -1181,4 +1197,15 @@
                                (setq c-tab-always-indent nil))))
 
 (ruby-mode-hook)
+
+
+(add-hook 'ruby-mode-hook
+  (lambda ()
+    (setq-local flycheck-command-wrapper-function
+                (lambda (command) (append '("/home/manuel/.rvm/gems/ruby-2.5.8/bin/bundle" "exec") command)))))
+
+(autoload 'ruby-mode "ruby-mode" "Major mode for ruby files" t)
+(add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
+(add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))
+
 ;;; init.el file ends here

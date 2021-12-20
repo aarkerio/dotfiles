@@ -1,0 +1,5 @@
+#name : shopi
+#group : Enumerables
+# key: shopi
+# --
+ShopifyApp.configuration.api_version

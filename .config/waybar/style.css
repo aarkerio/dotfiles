@@ -1,0 +1,123 @@
+* {
+	border: none;
+	border-radius: 0;
+  font-family: 'Font Awesome';
+	font-size: 13px;
+  font-weight: bold;
+	min-height: 0;
+	color: rgba(253,246,227, 1);
+}
+
+window#waybar {
+	background: rgba(  0, 16, 20, 0.8);
+	border-top: 3px solid rgba(100, 114, 125, 0.5);
+}
+
+/* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
+#workspaces button {
+	padding: 0 5px;
+	background: transparent;
+	border-top: 2px solid rgba(248,212,209, 0.5);
+}
+
+#workspaces button.focused {
+	border-top: 2px solid rgba(255, 238, 0, 1);
+}
+
+#mode {
+	background: rgba(  0, 43, 54, 0.8);
+	border-top: 2px rgba(238,232,213, 0.8);
+}
+
+#battery, #cpu, #memory, #backlight, #network, #pulseaudio, #custom-playerctl, #mode, #idle_inhibitor {
+	padding: 0 10px;
+	margin: 0 5px;
+}
+
+#clock {
+	padding: 0 10px;
+	margin: 0 2px 0 0;
+	background: rgba(201, 0, 111, 0.9);
+}
+
+#clock.UTC {
+	margin: 0 4px;
+}
+
+#battery {
+	background-color: rgba(23, 173, 40, 0.5);
+}
+
+#battery.charging {
+	background-color: rgba(13, 103, 140, 0.5);
+}
+
+@keyframes blink {
+	to {
+		background-color: rgba(0, 16, 20, 0.8);
+	}
+}
+
+#battery {
+	background-color: rgba(0, 189, 19, 1);
+}
+
+
+#battery.warning:not(.charging) {
+	background-color: rgba(194, 171, 1, 1);
+}
+
+#battery.warning {
+	background-color: rgba(220, 50, 47,1);
+}
+
+#battery.critical:not(.charging) {
+	background: rgba(220, 50, 47, 0.8);
+	animation-name: blink;
+	animation-duration: 0.5s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+}
+
+#battery.critical:not(.charging) {
+	background: rgba(220, 50, 47, 0.9);
+}
+
+#cpu {
+	background: rgba(255, 221, 0, 0.9);
+}
+
+#memory {
+	background: rgba(255, 221, 0, 0.9);
+}
+
+#backlight {
+	background: rgba(131,148,150, 0.8);
+}
+
+#network {
+	background: rgba( 38,139,210 , 0.9);
+}
+
+#network.disconnected {
+	background: rgba( 38,139,210 , 0.4);
+}
+
+#pulseaudio {
+	background: rgba(255, 0, 0, 0.8);
+}
+
+#pulseaudio.muted {
+	background: rgba(181,137,  0, 0.5);
+}
+
+#tray {
+	padding: 0 5px;
+	margin: 0;
+}
+
+#idle_inhibitor {
+	background: rgba(255, 0, 102, 0.9);
+}
+
