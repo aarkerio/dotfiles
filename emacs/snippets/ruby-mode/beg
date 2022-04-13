@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: catch_block
+# key: beg
+# --
+  begin
+
+  rescue StandardError => e
+    puts "###  StandardError  ###>>  #{e.inspect}"
+    return false
+  end
