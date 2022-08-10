@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: form
+# key: form
+# --
+= form_for :this_doesnt_matter, action: submit_path do |f|
+  = f.text_field :soundcloud_url
+  = f.submit, 'Login', class: 'ui primary button'

@@ -260,6 +260,8 @@
   (lsp-vetur-format-default-formatter-js "none")
   (lsp-vetur-validation-template nil))
 
+;; (use-package eglot)
+
 (use-package vue-mode
   :mode "\\.vue\\'"
   :hook (vue-mode . prettier-js-mode)
@@ -501,6 +503,14 @@
    :mode (("\\.graphql.ts\\'" . graphql-mode)
           ("\\.graphql\\'" . graphql-mode))
   :ensure t)
+
+(use-package highlight-indentation
+  :ensure t
+  :config
+  (set-face-background 'highlight-indentation-current-column-face "#fff7ba")
+   :init
+  (add-hook 'yaml-mode-hook 'highlight-indentation-current-column-mode)
+  (add-hook 'ruby-mode-hook 'highlight-indentation-current-column-mode))
 
 (use-package helm
   :ensure t
@@ -955,7 +965,7 @@
    '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(org-agenda-files nil)
  '(package-selected-packages
-   '(quelpa bookmark-view bm vdiff efar rvm smooth-scrolling color-theme-sanityinc-solarized nurumacs dired-subtree dired-icon vue-html-mode mmm-mode company-lsp lsp-mode doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+   '(highlight-indentation lsp-ui quelpa bookmark-view bm vdiff efar rvm smooth-scrolling color-theme-sanityinc-solarized nurumacs dired-subtree dired-icon vue-html-mode mmm-mode company-lsp lsp-mode doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(powerline-default-separator 'curve)
@@ -1180,7 +1190,7 @@
 (add-hook 'ruby-mode-hook
   (lambda ()
     (setq-local flycheck-command-wrapper-function
-                (lambda (command) (append '("/home/xpsman/.rvm/gems/ruby-3.0.3/bin/bundle" "exec") command)))))
+                (lambda (command) (append '("/home/xpsman/.rvm/gems/default/bin/bundle" "exec") command)))))
 
 (autoload 'ruby-mode "ruby-mode" "Major mode for ruby files" t)
 (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
