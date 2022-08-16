@@ -31,4 +31,4 @@ emacs/.cache/
 emacs/%backup%~
 emacs/quelpa/
 emacs/tramp
-
+emacs/transient/*.*
