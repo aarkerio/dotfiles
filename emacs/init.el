@@ -1,4 +1,4 @@
-;; Manuel Montoya init.el file 2006-2021
+;; Manuel Montoya init.el file 2006-2022
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; -*- lexical-binding: t -*-
@@ -18,40 +18,24 @@
 
 (setq package-archives '(("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")
-                         ("marmalade" . "https://marmalade-repo.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
                          ("gnu" . "https://elpa.gnu.org/packages/")
                          ("elpy" . "https://jorgenschaefer.github.io/packages/")))
 
-(setq recentf-max-saved-items 100)
-(setq mode-require-final-newline t)
-
-(run-at-time nil (* 5 60)
-             (lambda ()
-               (let ((save-silently t))
-                 (recentf-save-list))))
+;; Force create a backup file always
+(defun force-backup-of-buffer ()
+  (setq buffer-backed-up nil))
+(add-hook 'before-save-hook  'force-backup-of-buffer)
 
 (setq package-check-signature nil)
 (setq load-prefer-newer t)  ;; load newer
 (package-initialize)
-
-(require 'recentf)
-(recentf-mode 1)
 
 (add-hook 'after-init-hook #'global-flycheck-mode)
 (add-to-list 'load-path "~/.config/emacs/mylibs/")
 
 (require 'col-highlight)
 (global-set-key (kbd "C-<escape>") 'col-highlight-flash)
-
-;; Vue stuff
-(require 'eglot)
-(require 'web-mode)
-(define-derived-mode genehack-vue-mode web-mode "ghVue"
-  "A major mode derived from web-mode, for editing .vue files with LSP support.")
-(add-to-list 'auto-mode-alist '("\\.vue\\'" . genehack-vue-mode))
-(add-hook 'genehack-vue-mode-hook #'eglot-ensure)
-(add-to-list 'eglot-server-programs '(genehack-vue-mode "vls"))
 
 ;; Turn off mouse interface early in startup to avoid momentary display
 ;; (when (fboundp 'menu-bar-mode) (menu-bar-mode 0))
@@ -73,9 +57,6 @@
 
 (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
 (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
-
-(require 'rvm)
-(rvm-use-default) ;; use
 
 ;; disable confirmation if a file or buffer does not exist when you
 ;; use C-x C-f or C-x b
@@ -165,6 +146,31 @@
 
 ;;;;;;;;;;;;;;   VERWENDEN SIE PAKET ABSCHNITT BEGINNT   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Vue stuff
+(use-package consult-eglot
+  :ensure t
+  :defer t)
+
+
+(use-package recentf
+  :ensure t
+  :defer t)
+
+(use-package eglot
+  :ensure t
+  :commands (eglot eglot-ensure)
+  :hook ((vue-mode . eglot-ensure)
+         (rust-mode . eglot-ensure)
+         (c-mode . eglot-ensure)
+         (c++-mode . eglot-ensure)
+         (obc-c-mode . eglot-ensure))
+  :config
+  (setq eglot-strict-mode nil)
+  (setq eglot-confirm-server-initiated-edits nil))
+
+(use-package web-mode
+  :ensure t)
+
 (use-package rvm
   :ensure t
   :config
@@ -253,15 +259,6 @@
     (setq cider-refresh-after-fn "reloaded.repl/resume")
     (setq cider-cljs-lein-repl "(do (reloaded.repl/go) (user/cljs-repl))")))
 
-(use-package lsp-mode
-  :custom
-  (lsp-vetur-format-default-formatter-css "none")
-  (lsp-vetur-format-default-formatter-html "none")
-  (lsp-vetur-format-default-formatter-js "none")
-  (lsp-vetur-validation-template nil))
-
-;; (use-package eglot)
-
 (use-package vue-mode
   :mode "\\.vue\\'"
   :hook (vue-mode . prettier-js-mode)
@@ -270,32 +267,40 @@
   (setq prettier-js-args '("--parser vue")))
 
 ;; (use-package lsp-mode
-;;   :ensure t
-;;   :hook ((clojure-mode . lsp)
-;;          (clojurec-mode . lsp)
-;;          (clojurescript-mode . lsp))
-;;   :config
-;;   ;; add paths to your local installation of project mgmt tools, like lein
-;;   (setenv "PATH" (concat
-;;                    "/usr/bin" path-separator
-;;                    (getenv "PATH")))
-;;   (dolist (m '(clojure-mode
-;;                clojurec-mode
-;;                clojurescript-mode
-;;                clojurex-mode))
-;;      (add-to-list 'lsp-language-id-configuration `(,m . "clojure")))
-;;   (setq lsp-enable-indentation nil
-;;         lsp-file-watch-threshold 1000
-;;         lsp-enable-file-watchers nil
-;;         lsp-clojure-server-command '("bash" "-c" "clojure-lsp")))
+;;   :custom
+;;   (lsp-vetur-format-default-formatter-css "none")
+;;   (lsp-vetur-format-default-formatter-html "none")
+;;   (lsp-vetur-format-default-formatter-js "none")
+;;   (lsp-vetur-validation-template nil))
 
-;; (use-package lsp-ui
-;;   :ensure t
-;;   :commands lsp-ui-mode)
+(use-package lsp-mode
+  :ensure t
+  :hook ((ruby-mode . lsp)
+         (clojure-mode . lsp)
+         (clojurec-mode . lsp)
+         (clojurescript-mode . lsp))
+  :config
+  ;; add paths to your local installation of project mgmt tools, like lein
+  (setenv "PATH" (concat
+                   "/usr/bin" path-separator
+                   (getenv "PATH")))
+  (dolist (m '(clojure-mode
+               clojurec-mode
+               clojurescript-mode
+               clojurex-mode))
+     (add-to-list 'lsp-language-id-configuration `(,m . "clojure")))
+  (setq lsp-enable-indentation nil
+        lsp-file-watch-threshold 1000
+        lsp-enable-file-watchers nil
+        lsp-clojure-server-command '("bash" "-c" "clojure-lsp")))
 
-;; (use-package company-lsp
-;;   :ensure t
-;;   :commands company-lsp)
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
+
+(use-package company-lsp
+  :ensure t
+  :commands company-lsp)
 
 (use-package clojure-snippets
   :ensure t)
@@ -443,6 +448,14 @@
 
 (use-package exec-path-from-shell
 	:ensure t)
+
+(use-package rubocop
+  :diminish rubocop-mode
+  :ensure-system-package (rubocop . "sudo gem install rubocop")
+  :after ruby-mode
+  :config
+  (add-hook 'ruby-mode-hook 'rubocop-mode)
+  )
 
 (use-package flycheck  ;; lint like tool
   :defer 1
@@ -668,7 +681,7 @@
 (use-package projectile  ;; dashboard dependency
   :ensure t)
 
-(use-package powerline  ;; Powerline
+(use-package powerline  ;; Powerline Format for mode-line
   :ensure t
   :config
   (powerline-default-theme))
@@ -1000,6 +1013,7 @@
      (340 . "#2c879008c736")
      (360 . "#268bd2")))
  '(vc-annotate-very-old-color nil)
+ '(warning-suppress-types '((use-package)))
  '(weechat-color-list
    '(unspecified "#fdf6e3" "#eee8d5" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900" "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#657b83" "#839496")))
 (custom-set-faces
@@ -1099,22 +1113,6 @@
                    "*Buffer List*"))
       (other-window 1))
   (goto-char (+ 4 (point))))
-
-;; emacs24 doesn't recognize Buffer-menu-sort-column so we do this
-;; nonsense: after list-buffers is called and we've switched to it,
-;; check whether the buffer matches what's stored in
-;; jc-buffer-menu. If it doesn't match, it means it's new, so call
-;; Buffer-menu-sort and update jc-buffer-menu so we don't sort again
-;; on subsequent calls.
-(when (>= emacs-major-version 24)
-  (setq jc-buffer-menu nil)
-  (defadvice list-buffers (after jc-buffer-menu-sort last)
-    (when (not (equal jc-buffer-menu (current-buffer)))
-      (setq jc-buffer-menu (current-buffer))
-      ;; for debugging:
-      ;;(message "sorting!")
-      (Buffer-menu-sort 5))))
-(ad-activate 'list-buffers)
 
 (defun org-make-olist (arg)
   (interactive "P")
