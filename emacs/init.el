@@ -20,10 +20,13 @@
                          ("gnu" . "https://elpa.gnu.org/packages/")
                          ("elpy" . "https://jorgenschaefer.github.io/packages/")))
 
+
 ;; Force create a backup file always
 (defun force-backup-of-buffer ()
   (setq buffer-backed-up nil))
 (add-hook 'before-save-hook  'force-backup-of-buffer)
+
+(defvar my/tab-height 22)
 
 (setq package-check-signature nil)
 (setq load-prefer-newer t)  ;; load newer
@@ -31,19 +34,15 @@
 
 (add-to-list 'load-path "~/.config/emacs/mylibs/")
 
+;; (autoload 'enh-ruby-mode "enh-ruby-mode" "Major mode for ruby files" t)
+;; (add-to-list 'auto-mode-alist '("\\.rb\\'" . enh-ruby-mode))
+;; (add-to-list 'interpreter-mode-alist '("ruby" . enh-ruby-mode))
+
 (require 'col-highlight)
 (require 'toggle-quotes)
 (global-set-key (kbd "C-'") 'toggle-quotes)
 
 (global-set-key (kbd "C-<escape>") 'col-highlight-flash)
-
-;; Turn off mouse interface early in startup to avoid momentary display
-;; (when (fboundp 'menu-bar-mode) (menu-bar-mode 0))
-(when (fboundp 'tool-bar-mode) (tool-bar-mode 0))
-;; (when (fboundp 'scroll-bar-mode) (scroll-bar-mode 0))
-
-;; use ibuffer instead of buffer
-;; (bind-key "C-x C-b" 'ibuffer)
 
 ;; use trash
 (setq delete-by-moving-to-trash t)  ;; look in ~/.local/share/Trash/files/
@@ -55,8 +54,8 @@
 (defun my-minibuffer-exit-hook ()
   (setq gc-cons-threshold 800000))
 
-(add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
-(add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
+(add-hook 'minibuffer-setup-hook 'my-minibuffer-setup-hook)
+(add-hook 'minibuffer-exit-hook 'my-minibuffer-exit-hook)
 
 ;; disable confirmation if a file or buffer does not exist when you
 ;; use C-x C-f or C-x b
@@ -82,6 +81,7 @@
 ;; electric-pair-mode
 (electric-pair-mode 1)
 (show-paren-mode 1)
+(tab-line-mode 1)
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -96,7 +96,7 @@
 (set-frame-font "Hack-11" nil t)
 
 (global-hi-lock-mode 1)
-(setq hi-lock-file-patterns-policy #'(lambda (dummy) t))
+(setq hi-lock-file-patterns-policy '(lambda (dummy) t))
 
 (require 'hi-lock)   ;; highlight a string in the current buffer.
 
@@ -146,11 +146,36 @@
 
 ;;;;;;;;;;;;;;   VERWENDEN SIE PAKET ABSCHNITT BEGINNT   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Vue stuff
-(use-package consult-eglot
+;;;; Completion
+
+(use-package corfu
+  :ensure t
+  ;; Optional customizations
+  :custom
+  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (corfu-auto t)                 ;; Enable auto completion
+  (corfu-separator ?\s)          ;; Orderless field separator
+  (corfu-quit-at-boundary t)   ;; Never quit at completion boundary
+  (corfu-quit-no-match t)      ;; Never quit, even if there is no match
+  (corfu-preview-current nil)    ;; Disable current candidate preview
+  (corfu-preselect-first nil)    ;; Disable candidate preselection
+  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  (corfu-echo-documentation nil) ;; Disable documentation in the echo area
+  (corfu-scroll-margin 5)        ;; Use scroll margin
+
+  ;; Recommended: Enable Corfu globally.
+  ;; This is recommended since Dabbrev can be used globally (M-/).
+  ;; See also `corfu-excluded-modes'.
+  :init
+  (global-corfu-mode))
+
+ ;;; Enhances completion at point see https://github.com/minad/cape
+(use-package cape
+  :ensure t)
+
+(use-package all-the-icons
   :ensure t
   :defer t)
-
 
 (use-package recentf
   :ensure t
@@ -159,14 +184,7 @@
 (use-package eglot
   :ensure t
   :commands (eglot eglot-ensure)
-  :hook ((vue-mode . eglot-ensure)
-         (rust-mode . eglot-ensure)
-         (c-mode . eglot-ensure)
-         (c++-mode . eglot-ensure)
-         (obc-c-mode . eglot-ensure))
-  :config
-  (setq eglot-strict-mode nil)
-  (setq eglot-confirm-server-initiated-edits nil))
+	:hook (ruby-mode	. eglot-ensure))
 
 (use-package web-mode
   :ensure t)
@@ -176,14 +194,20 @@
   :config
   (rvm-use-default))
 
-(use-package solarized-theme
-  :ensure t
-  :config
-  (setq solarized-distinct-fringe-background t)
-  (setq solarized-use-variable-pitch nil)
-  (setq solarized-scale-org-headlines nil)
-  (setq solarized-high-contrast-mode-line t)
-  (load-theme 'solarized-light t))
+;; (use-package solarized-theme
+;;   :ensure t
+;;   :config
+;;   (setq solarized-distinct-fringe-background t)
+;;   (setq solarized-use-variable-pitch nil)
+;;   (setq solarized-scale-org-headlines nil)
+;;   (setq solarized-high-contrast-mode-line t)
+;;   (load-theme 'solarized-light t))
+
+(use-package material-light
+  :init (progn (load-theme 'material-light t t)
+               (enable-theme 'material-light))
+  :defer t
+  :ensure t)
 
 (use-package ace-jump-buffer
   :bind
@@ -222,21 +246,27 @@
 
 (use-package better-jumper
   :ensure t
-  :bind (("C-c o" . better-jumper-jump-backward)
-         ("C-c g" . better-jumper-jump-forward))
+  :bind (("C-<f12>" . better-jumper-jump-backward)
+         ("s-<f12>" . better-jumper-jump-forward)
+				 ("C-<f8>" . better-jumper-set-jump))
   :config
   (better-jumper-mode +1))
 
+(global-set-key (kbd "C-.")
+	(lambda () (interactive "")
+	  (switch-to-buffer (other-buffer (current-buffer) t))))
+
 (use-package buffer-flip
   :ensure t
-  :bind  (("M-<tab>" . buffer-flip)
+  :bind  (("M-<f1>" . buffer-flip)
           :map buffer-flip-map
-          ( "M-<tab>" .   buffer-flip-forward)
-          ( "M-S-<tab>" . buffer-flip-backward)
+          ( "M-<f1>" .   buffer-flip-forward)
+          ( "M-S-<f1>" . buffer-flip-backward)
           ( "M-<ESC>" .     buffer-flip-abort))
   :config
   (setq buffer-flip-skip-patterns
         '("^\\*helm\\b"
+					"^\\*sorbet\\*$"
           "^\\*swiper\\*$")))
 
 ;;  CLOJURE BLOCK STARTS
@@ -261,46 +291,43 @@
 
 (use-package vue-mode
   :mode "\\.vue\\'"
-  :hook (vue-mode . prettier-js-mode)
+  :hook ((vue-mode . prettier-js-mode)
+				 (vue-mode . eglot))
   :config
-  (add-hook 'vue-mode-hook #'lsp)
   (setq prettier-js-args '("--parser vue")))
 
 ;; (use-package lsp-mode
+;;   :ensure t
+;;   :hook ((ruby-mode . lsp)
+;;          (clojure-mode . lsp)
+;;          (clojurec-mode . lsp)
+;;          (clojurescript-mode . lsp))
+;;   :config
+;;   ;; add paths to your local installation of project mgmt tools, like lein
+;;   (setenv "PATH" (concat
+;;                    "/usr/bin" path-separator
+;;                    (getenv "PATH")))
+;;   (dolist (m '(clojure-mode
+;;                clojurec-mode
+;;                clojurescript-mode
+;;                clojurex-mode))
+;;      (add-to-list 'lsp-language-id-configuration `(,m . "clojure")))
+;;   (setq lsp-enable-indentation nil
+;;         lsp-file-watch-threshold 1000
+;;         lsp-enable-file-watchers nil
+;;         lsp-clojure-server-command '("bash" "-c" "clojure-lsp")))
+
+;; (use-package lsp-mode
+;;   :ensure t
+;;   :hook ((ruby-mode . lsp)
+;;           (clojure-mode . lsp))
 ;;   :custom
-;;   (lsp-vetur-format-default-formatter-css "none")
-;;   (lsp-vetur-format-default-formatter-html "none")
-;;   (lsp-vetur-format-default-formatter-js "none")
-;;   (lsp-vetur-validation-template nil))
+;;   (lsp-headerline-breadcrumb-enable nil))
 
-(use-package lsp-mode
-  :ensure t
-  :hook ((ruby-mode . lsp)
-         (clojure-mode . lsp)
-         (clojurec-mode . lsp)
-         (clojurescript-mode . lsp))
-  :config
-  ;; add paths to your local installation of project mgmt tools, like lein
-  (setenv "PATH" (concat
-                   "/usr/bin" path-separator
-                   (getenv "PATH")))
-  (dolist (m '(clojure-mode
-               clojurec-mode
-               clojurescript-mode
-               clojurex-mode))
-     (add-to-list 'lsp-language-id-configuration `(,m . "clojure")))
-  (setq lsp-enable-indentation nil
-        lsp-file-watch-threshold 1000
-        lsp-enable-file-watchers nil
-        lsp-clojure-server-command '("bash" "-c" "clojure-lsp")))
-
-(use-package lsp-ui
-  :ensure t
-  :commands lsp-ui-mode)
-
-(use-package company-lsp
-  :ensure t
-  :commands company-lsp)
+;; (use-package lsp-ui
+;;   :ensure t
+;;   :hook ((ruby-mode . lsp))
+;;   :commands lsp-ui-mode)
 
 (use-package clojure-snippets
   :ensure t)
@@ -369,7 +396,7 @@
   :config
   (progn
     ;; Use Company for completion
-    (bind-key [remap completion-at-point] #'company-complete company-mode-map)
+    (bind-key [remap completion-at-point] 'company-complete company-mode-map)
     (setq company-tooltip-align-annotations t
           ;; Easy navigation to candidates with M-<n>
           company-show-numbers t)
@@ -409,9 +436,8 @@
 (use-package dired-subtree
 	:ensure t
   :after dired
-  :config
-  (bind-key "<tab>" #'dired-subtree-toggle dired-mode-map)
-  (bind-key "<backtab>" #'dired-subtree-cycle dired-mode-map))
+  :bind  (("[C-tab]" . dired-subtree-toggle)
+          ("[C-backtab]" . dired-subtree-cycle)))
 
 (use-package eshell
   :init
@@ -754,10 +780,10 @@
     (when (string-equal "jsx" (file-name-extension buffer-file-name))
       (setup-tide-mode)))
 
-  ;; (add-hook 'typescript-mode-hook #'setup-tide-mode)
-  (add-hook 'js2-mode-hook #'setup-tide-mode)
-  (add-hook 'web-mode-hook #'my/setup-tsx-mode)
-  (add-hook 'rjsx-mode-hook #'my/setup-jsx-mode)
+  ;; (add-hook 'typescript-mode-hook 'setup-tide-mode)
+  (add-hook 'js2-mode-hook 'setup-tide-mode)
+  (add-hook 'web-mode-hook 'my/setup-tsx-mode)
+  (add-hook 'rjsx-mode-hook 'my/setup-jsx-mode)
   :requires flycheck
   :config
   (add-to-list 'company-backends 'company-tide)
@@ -781,7 +807,7 @@
          "\\.liquid\\'")
   :config
   ;; configure jsx-tide checker to run after your default jsx checker
-  (add-hook 'web-mode-hook #'lsp!)
+  (add-hook 'web-mode-hook 'lsp-mode)
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   ;; (flycheck-add-mode 'typescript-tslint 'web-mode)
   )
@@ -812,7 +838,7 @@
 
 (use-package pug-mode
   :mode ("\\.vue\\'" . pug-mode)
-  :config (add-hook 'vue-mode-hook #'lsp))
+  :config (add-hook 'vue-mode-hook 'lsp))
 
 (use-package web-mode
   :ensure t
@@ -826,7 +852,7 @@
   :bind (("C-c T w" . whitespace-mode))
   :init
   (dolist (hook '(conf-mode-hook))
-    (add-hook hook #'whitespace-mode))
+    (add-hook hook 'whitespace-mode))
   :config (setq whitespace-line-column nil)
   :diminish whitespace-mode)
 
@@ -844,8 +870,11 @@
 ;;;;;;;;;;;;;;   USE PACKAGE SECTION ENDS   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; backup/autosave
+(setq auto-save-file-name-transforms
+  `((".*" "~/.config/emacs/emacs-saves/" t)))
 (defvar autosave-dir (expand-file-name "~/.config/emacs/autosave/"))
 (setq backup-directory-alist '(("." . "~/.config/emacs/autosave/")))
+(setq backup-by-copying t) ;; always make backups by copying
 (setq auto-save-file-name-transforms
   `((".*" "~/.config/emacs/autosave/" t)))
 
@@ -970,7 +999,7 @@
    '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(org-agenda-files nil)
  '(package-selected-packages
-   '(nose highlight-indentation lsp-ui quelpa bookmark-view bm vdiff efar rvm smooth-scrolling color-theme-sanityinc-solarized nurumacs dired-subtree dired-icon vue-html-mode mmm-mode company-lsp lsp-mode doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+   '(material-light cape corfu tab-bar-buffers lsp-treemacs all-the-icons-completion all-the-icons-dired all-the-icons-ibuffer nose highlight-indentation lsp-ui quelpa bookmark-view bm vdiff efar rvm smooth-scrolling color-theme-sanityinc-solarized nurumacs dired-subtree dired-icon vue-html-mode mmm-mode lsp-mode doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(powerline-default-separator 'curve)
@@ -981,7 +1010,6 @@
  '(tabbar-use-images nil)
  '(term-default-bg-color "#fdf6e3")
  '(term-default-fg-color "#657b83")
- '(tool-bar-mode nil)
  '(tramp-syntax 'default nil (tramp))
  '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
@@ -1005,7 +1033,7 @@
      (340 . "#2c879008c736")
      (360 . "#268bd2")))
  '(vc-annotate-very-old-color nil)
- '(warning-suppress-types '((use-package)))
+ '(warning-suppress-types '((use-package) (use-package) (use-package)))
  '(weechat-color-list
    '(unspecified "#fdf6e3" "#eee8d5" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900" "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#657b83" "#839496")))
 (custom-set-faces
