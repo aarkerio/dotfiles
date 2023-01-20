@@ -95,9 +95,9 @@
   (require 'use-package))
 
 ;; (set-default-font "Fira Mono-11")
-;; (set-default-font "Inconsolata-12")
+(set-frame-font "Inconsolata-12")
 ;; (set-default-font "Hack-11")
-(set-frame-font "Hack-11" nil t)
+;; (set-frame-font "Hack-11" nil t)
 
 (global-hi-lock-mode 1)
 (setq hi-lock-file-patterns-policy '(lambda (dummy) t))
@@ -241,7 +241,8 @@
        ;; Set the title
        (setq dashboard-banner-logo-title "Willkommen zu einem weiteren großen Tag des Erfolgs!!")
        ;; Set the banner
-       (setq dashboard-startup-banner (concat home-directory "Documents/backups/dotfiles/emacs/lisplogo_256.png"))
+       (setq dashboard-startup-banner (concat home-directory
+                                              "Documents/backups/dotfiles/emacs/themes/lisplogo_fancy_256.png"))
        (setq dashboard-items '((recents  . 5)
                                (bookmarks . 5)
                                (projects . 0)
@@ -305,58 +306,58 @@
 
 (global-prettify-symbols-mode +1)
 
-(use-package clojure-mode
-  :ensure t
-  :mode (("\\.edn$"  . clojure-mode)
-         ("\\.clj$"  . clojure-mode))
-  :bind (("C-c d f" . cider-code)
-         ("C-c d g" . cider-grimoire)
-         ("C-c d w" . cider-grimoire-web)
-         ("C-c d c" . clojure-cheatsheet)
-         ("C-c d d" . dash-at-point))
-  :init
-  (defconst clojure--prettify-symbols-alist
-    '(("__"   . ?⁈)
-      ("fn"   . ?λ)))
-  :config
-    (progn
-      (setq clojure-align-forms-automatically t)
-      (require 'flycheck-clj-kondo)
-      (define-clojure-indent
-        (defroutes 'defun)
-        (GET 2)
-        (POST 2)
-        (PUT 2)
-        (DELETE 2)
-        (HEAD 2)
-        (ANY 2)
-        (context 2)
-        (let-routes 1))
+;; (use-package clojure-mode
+;;   :ensure t
+;;   :mode (("\\.edn$"  . clojure-mode)
+;;          ("\\.clj$"  . clojure-mode))
+;;   :bind (("C-c d f" . cider-code)
+;;          ("C-c d g" . cider-grimoire)
+;;          ("C-c d w" . cider-grimoire-web)
+;;          ("C-c d c" . clojure-cheatsheet)
+;;          ("C-c d d" . dash-at-point))
+;;   :init
+;;   (defconst clojure--prettify-symbols-alist
+;;     '(("__"   . ?⁈)
+;;       ("fn"   . ?λ)))
+;;   :config
+;;     (progn
+;;       (setq clojure-align-forms-automatically t)
+;;       (require 'flycheck-clj-kondo)
+;;       (define-clojure-indent
+;;         (defroutes 'defun)
+;;         (GET 2)
+;;         (POST 2)
+;;         (PUT 2)
+;;         (DELETE 2)
+;;         (HEAD 2)
+;;         (ANY 2)
+;;         (context 2)
+;;         (let-routes 1))
 
-      (define-clojure-indent
-        (s/fdef 1))
+;;       (define-clojure-indent
+;;         (s/fdef 1))
 
-      (defun toggle-nrepl-buffer ()
-        "Toggle the nREPL REPL on and off"
-        (interactive)
-        (if (string-match "cider-repl" (buffer-name (current-buffer)))
-            (delete-window)
-          (cider-switch-to-repl-buffer)))
+;;       (defun toggle-nrepl-buffer ()
+;;         "Toggle the nREPL REPL on and off"
+;;         (interactive)
+;;         (if (string-match "cider-repl" (buffer-name (current-buffer)))
+;;             (delete-window)
+;;           (cider-switch-to-repl-buffer)))
 
-      (defun cider-save-and-refresh ()
-        (interactive)
-        (save-buffer)
-        (call-interactively 'cider-refresh))
+;;       (defun cider-save-and-refresh ()
+;;         (interactive)
+;;         (save-buffer)
+;;         (call-interactively 'cider-refresh))
 
-      (defun cider-eval-last-sexp-and-append ()
-        (interactive)
-        (cider-eval-last-sexp '(1)))
+;;       (defun cider-eval-last-sexp-and-append ()
+;;         (interactive)
+;;         (cider-eval-last-sexp '(1)))
 
-			(add-hook 'clojure-mode-hook
-            (lambda ()
-              (push clojure--prettify-symbols-alist prettify-symbols-alist)))
-      (add-hook 'clojure-mode-hook 'global-prettify-symbols-mode)
-      (add-hook 'clojure-mode-hook 'hs-minor-mode)))
+;; 			(add-hook 'clojure-mode-hook
+;;             (lambda ()
+;;               (push clojure--prettify-symbols-alist prettify-symbols-alist)))
+;;       (add-hook 'clojure-mode-hook 'global-prettify-symbols-mode)
+;;       (add-hook 'clojure-mode-hook 'hs-minor-mode)))
 
 ;;  CLOJURE BLOCK ENDS
 
@@ -407,8 +408,8 @@
 (use-package dired-subtree
 	:ensure t
   :after dired
-  :bind  (("[C-tab]" . dired-subtree-toggle)
-          ("[C-backtab]" . dired-subtree-cycle)))
+  :bind  (("C-c C-q" . dired-subtree-toggle)
+          ("C-c C-l"    . dired-subtree-cycle)))
 
 (use-package eshell
   :init
@@ -546,10 +547,19 @@
   :init
   (helm-mode 1))
 
-(require 'helm-config)
-(helm-autoresize-mode 1)
-(define-key helm-find-files-map (kbd "C-b") 'helm-find-files-up-one-level)
-(define-key helm-find-files-map (kbd "C-f") 'helm-execute-persistent-action)
+;; (require 'helm-config)
+;; (helm-autoresize-mode 1)
+;; (define-key helm-find-files-map (kbd "C-b") 'helm-find-files-up-one-level)
+;; (define-key helm-find-files-map (kbd "C-f") 'helm-execute-persistent-action)
+
+(use-package helm-config
+  :init
+  (custom-set-variables '(helm-command-prefix-key "C-;"))
+  :config
+  (bind-keys :map helm-command-map
+             ("a" . helm-ag)
+             ("o" . helm-occur)
+             ("y" . yas-insert-snippet)))
 
 (use-package helm-ag  ;; search a pattern in files and buffers
   :ensure t
@@ -667,6 +677,9 @@
     (setq inhibit-compacting-font-caches t)))
 
 (use-package projectile  ;; dashboard dependency
+  :config
+  (setq projectile-project-search-path '("~/entwicklung/chipotle/rdigital/txt2give/txt2give-app/"
+                                         "~/entwicklung/chipotle/rdigital/icu/incartupsell"))
   :ensure t)
 
 (use-package powerline  ;; Powerline Format for mode-line
@@ -698,50 +711,69 @@
   :bind (("C-s" . swiper)
          ("C-r" . swiper)))
 
-(use-package tab-line
-  :defer 0.5
-  :init
- 	  (progn (global-tab-line-mode t))
-	  ;; (setq tab-line-new-button-show t)  ;; do not show add-new button
-    ;; (setq tab-line-close-button-show t)  ;; do not show close button
-    (setq tab-line-separator " 💾 ")  ;; set it to empty
-  :bind
-	  (("M-s-<left>"  . tab-line-switch-to-prev-tab)
-     ("s-{"         . tab-bar-move-bar-backward)
-     ("M-s-<right>" . tab-line-switch-to-next-tab))
+(use-package centaur-tabs
+  :ensure t
   :config
-  (progn
-      '(tab-line-tabs-function 'group-by-no-asterisks)
-	    (setq tab-line-new-button-show t
-            tab-line-close-button-show t
-            ;; setq tab-line-tabs-function #'tab-line-tabs-buffer-extensions
-            tab-line-exclude-modes '(cider-test-report-mode
-                                     deft-mode
-                                     magit-mode
-                                     magit-status-mode
-                                     magit-diff-mode
-                                     magit-log-mode
-                                     magit-process-mode
-                                     magit-popup-mode
-                                     term-mode
-                                     text-mode
-                                     ediff-mode
-                                     process-menu-mode
-                                     vterm-mode
-                                     tide-references-mode
-                                     xref--xref-buffer-mode))
-      (set-face-attribute 'tab-line nil ;; background behind tabs
-                          :background "#e8ff3d" ; base2
-                          :foreground "#657b83" ; base00
-                          :distant-foreground "#586e75" ; base01
-                          :height 0.95
-                          :box nil)
-     (set-face-attribute 'tab-line-tab-current nil ;; active tab in current window
-                         :background "#f0cffc" ; base3
-                         :foreground "#000" ; base01
-                         :box t)
-      )
-    )
+  (centaur-tabs-mode t)
+  (setq centaur-tabs-style "wave"
+        centaur-tabs-set-bar 'under
+        x-underline-at-descent-line t
+        centaur-tabs-height 32
+        centaur-tabs-set-icons t
+        centaur-tabs-set-bar 'left
+        centaur-tabs-set-bar 'over)
+  :bind
+  ("M-s-<left>" . centaur-tabs-backward)
+  ("M-s-<right>" . centaur-tabs-forward))
+
+;; (use-package tab-line
+;;   :defer 0.5
+;;   :init
+;;  	  (progn (global-tab-line-mode t)
+;; 		       ;; (setq tab-line-tabs-buffer-group-function 'group-by-no-asterisks)
+;;            ;; (setq tab-line-tabs-buffer-group-sort-function #'my/buffer-sort)
+;;            ;; (setq tab-line-tabs-buffer-group-function #'my/tab-line-buffer-group)
+;;            ;; (setq tab-line-tabs-function #'tab-line-tabs-buffer-groups)
+;;            ;; (setq tab-line-tabs-buffer-group-function #'my/tab-line-buffer-group)
+;; 	         ;; (setq tab-line-new-button-show t)  ;; do not show add-new button
+;;            ;; (setq tab-line-close-button-show t)  ;; do not show close button
+;;            (setq tab-line-separator " 💾 "))  ;; set it to empty
+;;   :bind
+;; 	  (("M-s-<left>"  . tab-line-switch-to-prev-tab)
+;;      ("s-{"         . tab-bar-move-bar-backward)
+;;      ("M-s-<right>" . tab-line-switch-to-next-tab))
+;;   :config
+;;   (progn
+;; 	    (setq tab-line-new-button-show t
+;;             tab-line-close-button-show t
+;;             ;; setq tab-line-tabs-function #'tab-line-tabs-buffer-extensions
+;;             tab-line-exclude-modes '(cider-test-report-mode
+;;                                      deft-mode
+;;                                      magit-mode
+;;                                      magit-status-mode
+;;                                      magit-diff-mode
+;;                                      magit-log-mode
+;;                                      magit-process-mode
+;;                                      magit-popup-mode
+;;                                      term-mode
+;;                                      text-mode
+;;                                      ediff-mode
+;;                                      process-menu-mode
+;;                                      vterm-mode
+;;                                      tide-references-mode
+;;                                      xref--xref-buffer-mode))
+;;       (set-face-attribute 'tab-line nil ;; background behind tabs
+;;                           :background "#e8ff3d" ; base2
+;;                           :foreground "#657b83" ; base00
+;;                           :distant-foreground "#586e75" ; base01
+;;                           :height 0.95
+;;                           :box nil)
+;;      (set-face-attribute 'tab-line-tab-current nil ;; active tab in current window
+;;                          :background "#f0cffc" ; base3
+;;                          :foreground "#000" ; base01
+;;                          :box t)
+;;       )
+;;     )
 
 (use-package js2-mode
   :mode "\\.js\\'"
@@ -950,6 +982,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(centaur-tabs-mode t nil (centaur-tabs))
  '(cider-show-error-buffer nil)
  '(cider-use-tooltips t)
  '(column-number-mode t)
@@ -965,6 +998,7 @@
  '(fill-column 100)
  '(flycheck-typescript-tslint-config "~/entwicklung/chipotle/node/tslint.json")
  '(global-display-fill-column-indicator-mode t)
+ '(helm-command-prefix-key "C-;")
  '(helm-ff-lynx-style-map t)
  '(highlight-changes-colors '("#d33682" "#6c71c4"))
  '(highlight-symbol-colors
@@ -1031,6 +1065,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(centaur-tabs-default ((t (:background "khaki" :foreground "linen"))))
+ '(centaur-tabs-unselected ((t (:background "yellow green" :foreground "white smoke" :overline nil :underline nil))))
+ '(centaur-tabs-unselected-modified ((t (:background "dark goldenrod" :foreground "cornsilk" :overline nil :underline nil))))
  '(powerline-active1 ((t (:inherit mode-line :background "hot pink"))))
  '(powerline-active2 ((t (:inherit mode-line :background "DarkOliveGreen3" :weight bold))))
  '(powerline-inactive1 ((t (:inherit mode-line-inactive :background "OliveDrab2"))))
