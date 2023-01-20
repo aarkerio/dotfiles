@@ -1,4 +1,4 @@
-;; Manuel Montoya init.el file 2006-2022
+;; Manuel Montoya init.el file 2006-2023
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; -*- lexical-binding: t -*-
@@ -26,7 +26,14 @@
   (setq buffer-backed-up nil))
 (add-hook 'before-save-hook  'force-backup-of-buffer)
 
-(defvar my/tab-height 22)
+(setq
+   backup-by-copying t      ; don't clobber symlinks
+   backup-directory-alist
+    '(("." . "~/.saves/"))    ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t)       ; use versioned backups
 
 (setq package-check-signature nil)
 (setq load-prefer-newer t)  ;; load newer
@@ -34,12 +41,10 @@
 
 (add-to-list 'load-path "~/.config/emacs/mylibs/")
 
-;; (autoload 'enh-ruby-mode "enh-ruby-mode" "Major mode for ruby files" t)
-;; (add-to-list 'auto-mode-alist '("\\.rb\\'" . enh-ruby-mode))
-;; (add-to-list 'interpreter-mode-alist '("ruby" . enh-ruby-mode))
-
 (require 'col-highlight)
 (require 'toggle-quotes)
+(require 'beitreten)
+
 (global-set-key (kbd "C-'") 'toggle-quotes)
 
 (global-set-key (kbd "C-<escape>") 'col-highlight-flash)
@@ -81,7 +86,6 @@
 ;; electric-pair-mode
 (electric-pair-mode 1)
 (show-paren-mode 1)
-(tab-line-mode 1)
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -101,7 +105,7 @@
 (require 'hi-lock)   ;; highlight a string in the current buffer.
 
 (show-paren-mode 1)   ;; Show parentesis
-(global-linum-mode 1) ;; always show line numbers
+(global-display-line-numbers-mode) ;; always show line numbers
 (column-number-mode 1)
 (global-hl-line-mode 1)
 (global-visual-line-mode 1)  ;; Proper line wrapping
@@ -181,10 +185,10 @@
   :ensure t
   :defer t)
 
-(use-package eglot
-  :ensure t
-  :commands (eglot eglot-ensure)
-	:hook (ruby-mode	. eglot-ensure))
+;; (use-package eglot
+;;   :ensure t
+;;   :commands (eglot eglot-ensure)
+;; 	:hook (ruby-mode	. eglot-ensure))
 
 (use-package web-mode
   :ensure t)
@@ -203,7 +207,7 @@
 ;;   (setq solarized-high-contrast-mode-line t)
 ;;   (load-theme 'solarized-light t))
 
-(use-package material-light
+(use-package material-theme
   :init (progn (load-theme 'material-light t t)
                (enable-theme 'material-light))
   :defer t
@@ -295,39 +299,6 @@
 				 (vue-mode . eglot))
   :config
   (setq prettier-js-args '("--parser vue")))
-
-;; (use-package lsp-mode
-;;   :ensure t
-;;   :hook ((ruby-mode . lsp)
-;;          (clojure-mode . lsp)
-;;          (clojurec-mode . lsp)
-;;          (clojurescript-mode . lsp))
-;;   :config
-;;   ;; add paths to your local installation of project mgmt tools, like lein
-;;   (setenv "PATH" (concat
-;;                    "/usr/bin" path-separator
-;;                    (getenv "PATH")))
-;;   (dolist (m '(clojure-mode
-;;                clojurec-mode
-;;                clojurescript-mode
-;;                clojurex-mode))
-;;      (add-to-list 'lsp-language-id-configuration `(,m . "clojure")))
-;;   (setq lsp-enable-indentation nil
-;;         lsp-file-watch-threshold 1000
-;;         lsp-enable-file-watchers nil
-;;         lsp-clojure-server-command '("bash" "-c" "clojure-lsp")))
-
-;; (use-package lsp-mode
-;;   :ensure t
-;;   :hook ((ruby-mode . lsp)
-;;           (clojure-mode . lsp))
-;;   :custom
-;;   (lsp-headerline-breadcrumb-enable nil))
-
-;; (use-package lsp-ui
-;;   :ensure t
-;;   :hook ((ruby-mode . lsp))
-;;   :commands lsp-ui-mode)
 
 (use-package clojure-snippets
   :ensure t)
@@ -447,14 +418,13 @@
 		(use-package em-prompt)
 		(use-package em-tramp)
 		(add-hook 'eshell-mode-hook
-							(lambda ()
-								(add-to-list 'eshell-visual-commands "ssh")
-								(add-to-list 'eshell-visual-commands "tail")
-								(add-to-list 'eshell-visual-commands "top")))
-		(add-hook 'eshell-mode-hook (lambda ()
-																	(eshell/alias "e" "find-file $1")
-																	(eshell/alias "ff" "find-file $1")
-																	(eshell/alias "emacs" "find-file $1")
+	          	(lambda ()
+  		  				(add-to-list 'eshell-visual-commands "ssh")
+					    	(add-to-list 'eshell-visual-commands "tail")
+			      			(add-to-list 'eshell-visual-commands "top")))
+		(add-hook 'eshell-mode-hook (lambda ()		       													(eshell/alias "e" "find-file $1")
+    																(eshell/alias "ff" "find-file $1")
+	   															(eshell/alias "emacs" "find-file $1")
 																	(eshell/alias "ee" "find-file-other-window $1")
 																	(eshell/alias "gd" "magit-diff-unstaged")
 																	(eshell/alias "gds" "magit-diff-staged")
@@ -728,29 +698,50 @@
   :bind (("C-s" . swiper)
          ("C-r" . swiper)))
 
-(use-package tabbar   ;; tabs for emacs
-	:ensure t
-  :bind (("M-s-<left>"  . tabbar-backward)
-         ("M-s-<right>" . tabbar-forward))
-	:init
-	(progn (tabbar-mode t))
-  :config (progn
-            (customize-set-variable 'tabbar-background-color "gray20")
-            (customize-set-variable 'tabbar-separator '(0.5))
-            (customize-set-variable 'tabbar-use-images nil)
-            (set-face-attribute 'tabbar-default nil :background "gray20" :foreground  "gray60" :distant-foreground "gray50"
-                                                    :family "Helvetica Neue" :box nil)
-            (set-face-attribute 'tabbar-unselected nil
-                                :background "gray80" :foreground "black" :box nil)
-            (set-face-attribute 'tabbar-modified nil
-                                :foreground "red4" :box nil
-                                :inherit 'tabbar-unselected)
-            (set-face-attribute 'tabbar-selected nil
-                                :background "#4090c0" :foreground "white" :box nil)
-            (set-face-attribute 'tabbar-selected-modified nil
-                                :inherit 'tabbar-selected :foreground "GoldenRod2" :box nil)
-            (set-face-attribute 'tabbar-button nil
-                                :box nil)))
+(use-package tab-line
+  :defer 0.5
+  :init
+ 	  (progn (global-tab-line-mode t))
+	  ;; (setq tab-line-new-button-show t)  ;; do not show add-new button
+    ;; (setq tab-line-close-button-show t)  ;; do not show close button
+    (setq tab-line-separator " 💾 ")  ;; set it to empty
+  :bind
+	  (("M-s-<left>"  . tab-line-switch-to-prev-tab)
+     ("s-{"         . tab-bar-move-bar-backward)
+     ("M-s-<right>" . tab-line-switch-to-next-tab))
+  :config
+  (progn
+      '(tab-line-tabs-function 'group-by-no-asterisks)
+	    (setq tab-line-new-button-show t
+            tab-line-close-button-show t
+            ;; setq tab-line-tabs-function #'tab-line-tabs-buffer-extensions
+            tab-line-exclude-modes '(cider-test-report-mode
+                                     deft-mode
+                                     magit-mode
+                                     magit-status-mode
+                                     magit-diff-mode
+                                     magit-log-mode
+                                     magit-process-mode
+                                     magit-popup-mode
+                                     term-mode
+                                     text-mode
+                                     ediff-mode
+                                     process-menu-mode
+                                     vterm-mode
+                                     tide-references-mode
+                                     xref--xref-buffer-mode))
+      (set-face-attribute 'tab-line nil ;; background behind tabs
+                          :background "#e8ff3d" ; base2
+                          :foreground "#657b83" ; base00
+                          :distant-foreground "#586e75" ; base01
+                          :height 0.95
+                          :box nil)
+     (set-face-attribute 'tab-line-tab-current nil ;; active tab in current window
+                         :background "#f0cffc" ; base3
+                         :foreground "#000" ; base01
+                         :box t)
+      )
+    )
 
 (use-package js2-mode
   :mode "\\.js\\'"
@@ -874,7 +865,6 @@
   `((".*" "~/.config/emacs/emacs-saves/" t)))
 (defvar autosave-dir (expand-file-name "~/.config/emacs/autosave/"))
 (setq backup-directory-alist '(("." . "~/.config/emacs/autosave/")))
-(setq backup-by-copying t) ;; always make backups by copying
 (setq auto-save-file-name-transforms
   `((".*" "~/.config/emacs/autosave/" t)))
 

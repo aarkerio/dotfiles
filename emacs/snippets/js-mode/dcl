@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: DOMContentLoaded
+# key: dcl
+# --
+document.addEventListener('DOMContentLoaded', () => {
+    alert("DOM ready!");
+  });
