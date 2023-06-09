@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: debug variable
+# key: dd
+# --
+Txt2give::Logging.dbug __LINE__, File.basename(__FILE__), 'name', value

@@ -2,4 +2,4 @@
 # name: puts
 # key: put
 # --
-puts "### VAR  ###>>  #{var.inspect}"
+puts "###{__LINE__} VVVV #{File.basename(__FILE__)} : VAR  ##>>  #{var.inspect}"

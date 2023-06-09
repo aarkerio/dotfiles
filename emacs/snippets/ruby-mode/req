@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: require
+# key: req
+# --
+require Rails.root.join('app/lib/url_generator')

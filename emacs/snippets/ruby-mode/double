@@ -1,0 +1,8 @@
+#name : instance_double
+# key: doub
+# --
+let(:twilio_validator) { instance_double(Twilio::Security::RequestValidator) }
+
+allow(Twilio::Security::RequestValidator).to receive(:new).and_return(twilio_validator)
+
+allow(twilio_validator).to receive(:select).and_return(true)

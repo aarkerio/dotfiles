@@ -1,0 +1,5 @@
+#name : content_tag
+#group : helpers
+# key: cont
+# --
+content_tag(:div, 'Hello World!', id: :foo, class: 'btn')

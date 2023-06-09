@@ -2,4 +2,4 @@
 # name: console-log
 # key: log
 # --
-console.log("  ############  ** VALUE ** :  >>>> ", JSON.stringify(da));
+console.log("#########   VALUE >>>> ", JSON.stringify(da));

@@ -26,10 +26,11 @@
   (setq buffer-backed-up nil))
 (add-hook 'before-save-hook  'force-backup-of-buffer)
 
+(tool-bar-mode -1) ;; icons sucks
+
 (setq
    backup-by-copying t      ; don't clobber symlinks
-   backup-directory-alist
-    '(("." . "~/.saves/"))    ; don't litter my fs tree
+   backup-directory-alist '(("." . "~/.saves/"))    ; don't litter my fs tree
    delete-old-versions t
    kept-new-versions 6
    kept-old-versions 2
@@ -121,6 +122,14 @@
               show-trailing-whitespace t
               truncate-lines t)
 
+;; (set-face-attribute 'whitespace-space nil :background nil :foreground "gray30")
+(set-face-attribute 'trailing-whitespace nil
+                      :foreground "OliveDrab2"
+                      :inverse-video 'unspecified
+                      :slant 'unspecified
+                      :weight 'unspecified
+                      :background "OliveDrab2")
+
 (setq default-tab-width 2
       tab-width 2
       indent-tabs-mode t
@@ -140,6 +149,11 @@
       load-prefer-newer t)           ;; Don't load outdated byte code
 
 (set-face-attribute 'region nil :background "#ffd45e")
+
+(add-hook 'haml-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode nil)
+            (define-key haml-mode-map "\C-m" 'newline-and-indent)))
 
 ;; Ändern Sie die Echonachricht
 (defun display-startup-echo-area-message ()
@@ -207,11 +221,11 @@
 ;;   (setq solarized-high-contrast-mode-line t)
 ;;   (load-theme 'solarized-light t))
 
-(use-package material-theme
-  :init (progn (load-theme 'material-light t t)
-               (enable-theme 'material-light))
-  :defer t
-  :ensure t)
+;; (use-package material-theme
+;;   :init (progn (load-theme 'material-light t t)
+;;                (enable-theme 'material-light))
+;;   :defer t
+;;   :ensure t)
 
 (use-package ace-jump-buffer
   :bind
@@ -483,7 +497,7 @@
 (use-package frog-jump-buffer
   :ensure t
   :bind
-  (([(?\s-q)] . frog-jump-buffer))
+  (([(?\s-<)] . frog-jump-buffer))
 	:init
 	(setq frog-jump-buffer-posframe-parameters '((left-fringe . 5)
 																							 (right-fringe . 5)
@@ -547,19 +561,8 @@
   :init
   (helm-mode 1))
 
-;; (require 'helm-config)
-;; (helm-autoresize-mode 1)
 ;; (define-key helm-find-files-map (kbd "C-b") 'helm-find-files-up-one-level)
 ;; (define-key helm-find-files-map (kbd "C-f") 'helm-execute-persistent-action)
-
-(use-package helm-config
-  :init
-  (custom-set-variables '(helm-command-prefix-key "C-;"))
-  :config
-  (bind-keys :map helm-command-map
-             ("a" . helm-ag)
-             ("o" . helm-occur)
-             ("y" . yas-insert-snippet)))
 
 (use-package helm-ag  ;; search a pattern in files and buffers
   :ensure t
@@ -672,8 +675,7 @@
 	:commands (turn-on-pretty-mode global-prettify-symbols-mode)
   :bind ("C-c <C-return>" . prettify-symbols-mode)
   :config
-	(progn
-		(setq prettify-symbols-unprettify-at-point 'right-edge)
+	(progn (setq prettify-symbols-unprettify-at-point 'right-edge)
     (setq inhibit-compacting-font-caches t)))
 
 (use-package projectile  ;; dashboard dependency
@@ -725,55 +727,6 @@
   :bind
   ("M-s-<left>" . centaur-tabs-backward)
   ("M-s-<right>" . centaur-tabs-forward))
-
-;; (use-package tab-line
-;;   :defer 0.5
-;;   :init
-;;  	  (progn (global-tab-line-mode t)
-;; 		       ;; (setq tab-line-tabs-buffer-group-function 'group-by-no-asterisks)
-;;            ;; (setq tab-line-tabs-buffer-group-sort-function #'my/buffer-sort)
-;;            ;; (setq tab-line-tabs-buffer-group-function #'my/tab-line-buffer-group)
-;;            ;; (setq tab-line-tabs-function #'tab-line-tabs-buffer-groups)
-;;            ;; (setq tab-line-tabs-buffer-group-function #'my/tab-line-buffer-group)
-;; 	         ;; (setq tab-line-new-button-show t)  ;; do not show add-new button
-;;            ;; (setq tab-line-close-button-show t)  ;; do not show close button
-;;            (setq tab-line-separator " 💾 "))  ;; set it to empty
-;;   :bind
-;; 	  (("M-s-<left>"  . tab-line-switch-to-prev-tab)
-;;      ("s-{"         . tab-bar-move-bar-backward)
-;;      ("M-s-<right>" . tab-line-switch-to-next-tab))
-;;   :config
-;;   (progn
-;; 	    (setq tab-line-new-button-show t
-;;             tab-line-close-button-show t
-;;             ;; setq tab-line-tabs-function #'tab-line-tabs-buffer-extensions
-;;             tab-line-exclude-modes '(cider-test-report-mode
-;;                                      deft-mode
-;;                                      magit-mode
-;;                                      magit-status-mode
-;;                                      magit-diff-mode
-;;                                      magit-log-mode
-;;                                      magit-process-mode
-;;                                      magit-popup-mode
-;;                                      term-mode
-;;                                      text-mode
-;;                                      ediff-mode
-;;                                      process-menu-mode
-;;                                      vterm-mode
-;;                                      tide-references-mode
-;;                                      xref--xref-buffer-mode))
-;;       (set-face-attribute 'tab-line nil ;; background behind tabs
-;;                           :background "#e8ff3d" ; base2
-;;                           :foreground "#657b83" ; base00
-;;                           :distant-foreground "#586e75" ; base01
-;;                           :height 0.95
-;;                           :box nil)
-;;      (set-face-attribute 'tab-line-tab-current nil ;; active tab in current window
-;;                          :background "#f0cffc" ; base3
-;;                          :foreground "#000" ; base01
-;;                          :box t)
-;;       )
-;;     )
 
 (use-package js2-mode
   :mode "\\.js\\'"
@@ -871,13 +824,13 @@
   :config
   (setq web-mode-markup-indent-offset 2))
 
-(use-package whitespace ;; shows Whitespaces
-  :bind (("C-c T w" . whitespace-mode))
-  :init
-  (dolist (hook '(conf-mode-hook))
-    (add-hook hook 'whitespace-mode))
-  :config (setq whitespace-line-column nil)
-  :diminish whitespace-mode)
+;; (use-package whitespace ;; shows Whitespaces
+;;   :bind (("C-c T w" . whitespace-mode))
+;;   :init
+;;   (dolist (hook '(conf-mode-hook))
+;;     (add-hook hook 'whitespace-mode))
+;;   :config (setq whitespace-line-column nil)
+;;   :diminish whitespace-mode)
 
 (use-package yaml-mode
   :ensure t
@@ -895,10 +848,9 @@
 ;;; backup/autosave
 (setq auto-save-file-name-transforms
   `((".*" "~/.config/emacs/emacs-saves/" t)))
-(defvar autosave-dir (expand-file-name "~/.config/emacs/autosave/"))
-(setq backup-directory-alist '(("." . "~/.config/emacs/autosave/")))
+(defvar autosave-dir (expand-file-name "~/.saves/"))
 (setq auto-save-file-name-transforms
-  `((".*" "~/.config/emacs/autosave/" t)))
+  `((".*" "~/.saves/" t)))
 
 (global-set-key (kbd "M-g") 'goto-line)    ;; M-g  'goto-line
 (global-set-key [(f7)]  'comment-region)
@@ -1023,7 +975,7 @@
    '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(org-agenda-files nil)
  '(package-selected-packages
-   '(material-light cape corfu tab-bar-buffers lsp-treemacs all-the-icons-completion all-the-icons-dired all-the-icons-ibuffer nose highlight-indentation lsp-ui quelpa bookmark-view bm vdiff efar rvm smooth-scrolling color-theme-sanityinc-solarized nurumacs dired-subtree dired-icon vue-html-mode mmm-mode lsp-mode doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+   '(dir-treeview-themes material-light cape corfu tab-bar-buffers lsp-treemacs all-the-icons-completion all-the-icons-dired all-the-icons-ibuffer nose highlight-indentation lsp-ui quelpa bookmark-view bm vdiff efar rvm smooth-scrolling color-theme-sanityinc-solarized nurumacs dired-subtree dired-icon vue-html-mode mmm-mode lsp-mode doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(powerline-default-separator 'curve)
@@ -1240,5 +1192,17 @@
 (autoload 'ruby-mode "ruby-mode" "Major mode for ruby files" t)
 (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode))
 (add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))
+
+
+(defun copy-current-line-position-to-clipboard ()
+  "Copy current line in file to clipboard as '</path/to/file>:<line-number>'."
+  (interactive)
+  (let ((path-with-line-number
+         (concat "puts \"#### " (buffer-file-name) ":" (number-to-string (line-number-at-pos)) " #{var.inspect}\"")))
+    (kill-new path-with-line-number)
+    (message (concat path-with-line-number " copied to clipboard"))))
+
+(define-key global-map (kbd "M-ñ") 'copy-current-line-position-to-clipboard)
+
 
 ;;; init.el file ends here
