@@ -32,3 +32,4 @@ emacs/%backup%~
 emacs/quelpa/
 emacs/tramp
 emacs/transient/*.*
+emacs/eln-cache/

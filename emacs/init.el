@@ -162,6 +162,9 @@
 (setq home-directory "/home/xpsman/")
 (setq default-directory (concat home-directory "entwicklung/chipotle/rdigital/"))
 
+(add-hook 'find-file-hook
+          (lambda() (setq default-directory (substitute-in-file-name default-directory))))
+
 ;;;;;;;;;;;;;;   VERWENDEN SIE PAKET ABSCHNITT BEGINNT   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;; Completion
@@ -200,6 +203,11 @@
   :defer t)
 
 ;; (use-package eglot
+;;   :ensure t
+;;   :commands (eglot eglot-ensure)
+;; 	:hook (ruby-mode	. eglot-ensure))
+
+;; (use-package rspec-mode
 ;;   :ensure t
 ;;   :commands (eglot eglot-ensure)
 ;; 	:hook (ruby-mode	. eglot-ensure))
@@ -660,6 +668,12 @@
 (use-package org-bullets  ;; for org-mode
   :ensure t)
 
+(use-package dash
+  :ensure t)
+
+(use-package s  ;; string library
+  :ensure t)
+
 (use-package page-break-lines ;; dashboard dependency
   :ensure t)
 
@@ -975,7 +989,7 @@
    '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(org-agenda-files nil)
  '(package-selected-packages
-   '(dir-treeview-themes material-light cape corfu tab-bar-buffers lsp-treemacs all-the-icons-completion all-the-icons-dired all-the-icons-ibuffer nose highlight-indentation lsp-ui quelpa bookmark-view bm vdiff efar rvm smooth-scrolling color-theme-sanityinc-solarized nurumacs dired-subtree dired-icon vue-html-mode mmm-mode lsp-mode doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+   '(rspec-mode dir-treeview-themes material-light cape corfu tab-bar-buffers lsp-treemacs all-the-icons-completion all-the-icons-dired all-the-icons-ibuffer nose highlight-indentation lsp-ui quelpa bookmark-view bm vdiff efar rvm smooth-scrolling color-theme-sanityinc-solarized nurumacs dired-subtree dired-icon vue-html-mode mmm-mode lsp-mode doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(powerline-default-separator 'curve)
@@ -1183,7 +1197,7 @@
                                (setq c-tab-always-indent nil))))
 
 (ruby-mode-hook)
-
+;; Confirm : gem install bundler
 (add-hook 'ruby-mode-hook
   (lambda ()
     (setq-local flycheck-command-wrapper-function

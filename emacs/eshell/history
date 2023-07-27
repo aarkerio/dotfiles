@@ -7,10 +7,8 @@ cd ..
 cd ..
 cd
 cd entwicklung/
-ll
 ls
 cd chipotle
-ll
 ls
 cd lisp/
 ls
@@ -57,3 +55,6 @@ npm run start
 npm install
 ls
 ll
+ls
+cls
+exit
