@@ -1,0 +1,7 @@
+#name : stderror
+#group : Enumerables
+# key: std
+# --
+NoFooError < StandardError; end
+
+

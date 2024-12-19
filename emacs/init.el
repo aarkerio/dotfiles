@@ -1,9 +1,10 @@
-;; Manuel Montoya init.el file 2006-2023
+;; Manuel Montoya init.el file 2006-2024
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; -*- lexical-binding: t -*-
 ;; M-s h .  &  M-s h u  ;; Highlight and Unhighlight text
 
+;; eval-buffer C-x p
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
@@ -106,7 +107,7 @@
 (require 'hi-lock)   ;; highlight a string in the current buffer.
 
 (show-paren-mode 1)   ;; Show parentesis
-(global-display-line-numbers-mode) ;; always show line numbers
+(global-display-line-numbers-mode 1) ;; always show line numbers
 (column-number-mode 1)
 (global-hl-line-mode 1)
 (global-visual-line-mode 1)  ;; Proper line wrapping
@@ -148,6 +149,24 @@
       scroll-conservatively 20       ;; move minimum when cursor exits view, instead of recentering
       load-prefer-newer t)           ;; Don't load outdated byte code
 
+(setq treesit-language-source-alist
+   '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+     (cmake "https://github.com/uyha/tree-sitter-cmake")
+     (css "https://github.com/tree-sitter/tree-sitter-css")
+     (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+     (html "https://github.com/tree-sitter/tree-sitter-html")
+     (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+     (json "https://github.com/tree-sitter/tree-sitter-json")
+     (make "https://github.com/alemuller/tree-sitter-make")
+     (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+     (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
+     (toml "https://github.com/tree-sitter/tree-sitter-toml")
+     (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+     (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+     (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+(mapc #'treesit-install-language-grammar (mapcar #'car treesit-language-source-alist))
+
 (set-face-attribute 'region nil :background "#ffd45e")
 
 (add-hook 'haml-mode-hook
@@ -168,6 +187,21 @@
 ;;;;;;;;;;;;;;   VERWENDEN SIE PAKET ABSCHNITT BEGINNT   ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;; Completion
+
+(use-package dash
+  :ensure t)
+
+;; (use-package copilot
+;;   :vc (:url "https://github.com/copilot-emacs/copilot.el"
+;;             :rev :newest
+;;             :branch "main"))
+
+(add-to-list 'load-path "/home/xpsman/.config/emacs/elpa/copilot/copilot.el")
+(require 'copilot)
+
+(add-hook 'prog-mode-hook 'copilot-mode)
+(define-key copilot-mode-map (kbd "<tab>") 'copilot-accept-completion)
+(add-to-list 'copilot-major-mode-alist '("enh-ruby" . "ruby"))
 
 (use-package corfu
   :ensure t
@@ -234,17 +268,6 @@
 ;;                (enable-theme 'material-light))
 ;;   :defer t
 ;;   :ensure t)
-
-(use-package ace-jump-buffer
-  :bind
-  ("s-q" . ace-jump-buffer)
-  :config
-  (make-ace-jump-buffer-function
-      "special"
-    (with-current-buffer buffer
-      (--all?
-       (not (derived-mode-p it))
-       '(comint-mode magit-mode inf-ruby-mode rg-mode compilation-mode)))))
 
 (use-package all-the-icons
   :ensure t) ;; various Icon and Fonts for Emacs
@@ -979,7 +1002,9 @@
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
  '(custom-safe-themes
-	 '("c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "eeb23ebf4a97b95a85f6f5e6b8524a9854da008f494828f0e78693675d6fc9ca" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
+   '("c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358"
+     "eeb23ebf4a97b95a85f6f5e6b8524a9854da008f494828f0e78693675d6fc9ca"
+     "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" default))
  '(display-fill-column-indicator t)
  '(fci-rule-color "#eee8d5")
  '(fill-column 100)
@@ -989,28 +1014,24 @@
  '(helm-ff-lynx-style-map t)
  '(highlight-changes-colors '("#d33682" "#6c71c4"))
  '(highlight-symbol-colors
-	 '("#efe4da49afb1" "#cfc4e1acd08b" "#fe52c9e6b34e" "#dbb6d3c2dcf3" "#e183dee0b053" "#f944cc6dae47" "#d35fdac4e069"))
+   '("#efe4da49afb1" "#cfc4e1acd08b" "#fe52c9e6b34e" "#dbb6d3c2dcf3" "#e183dee0b053" "#f944cc6dae47"
+     "#d35fdac4e069"))
  '(highlight-symbol-foreground-color "#586e75")
  '(highlight-tail-colors
-	 '(("#eee8d5" . 0)
-		 ("#b3c34d" . 20)
-		 ("#6ccec0" . 30)
-		 ("#74adf5" . 50)
-		 ("#e1af4b" . 60)
-		 ("#fb7640" . 70)
-		 ("#ff699e" . 85)
-		 ("#eee8d5" . 100)))
+   '(("#eee8d5" . 0) ("#b3c34d" . 20) ("#6ccec0" . 30) ("#74adf5" . 50) ("#e1af4b" . 60)
+     ("#fb7640" . 70) ("#ff699e" . 85) ("#eee8d5" . 100)))
  '(hl-bg-colors
-	 '("#e1af4b" "#fb7640" "#ff6849" "#ff699e" "#8d85e7" "#74adf5" "#6ccec0" "#b3c34d"))
+   '("#e1af4b" "#fb7640" "#ff6849" "#ff699e" "#8d85e7" "#74adf5" "#6ccec0" "#b3c34d"))
  '(hl-fg-colors
-	 '("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3"))
+   '("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3"))
  '(hl-paren-colors '("#2aa198" "#b58900" "#268bd2" "#6c71c4" "#859900"))
  '(js2-include-node-externs t)
  '(nrepl-message-colors
-	 '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
+   '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(org-agenda-files nil)
- '(package-selected-packages
-	 '(swiper all-the-icons-ivy-rich rspec-mode dir-treeview-themes material-light cape corfu tab-bar-buffers lsp-treemacs all-the-icons-completion all-the-icons-dired all-the-icons-ibuffer nose highlight-indentation lsp-ui quelpa bookmark-view bm vdiff efar rvm smooth-scrolling color-theme-sanityinc-solarized nurumacs dired-subtree dired-icon vue-html-mode mmm-mode lsp-mode doom-themes eglot posframe pug-mode vue-mode rubocopfmt rubocop slim-mode jekyll-modes easy-jekyll coffee-mode comint-better-defaults esh-autosuggest eshell-prompt-extras cider ac-cider anakondo haml-mode flymake-haml modus-operandi-theme flycheck-clj-kondo helm-ag prettier-js rjsx-mode alect-themes apropospriate-theme anti-zenburn-theme ahungry-theme ace-jump-buffer better-jumper yaml-mode web-mode use-package-chords undo-tree transpose-frame tide tabbar solarized-theme smart-mode-line-powerline-theme rainbow-delimiters projectile popwin parseclj org-bullets neotree multiple-cursors markdown-mode majapahit-theme magit json-mode js2-mode ivy imenu-anywhere helm graphql-mode go-direx git-timemachine flycheck-pos-tip flycheck-clojure exec-path-from-shell discover dired-quick-sort dashboard company col-highlight clojurescript-mode clojure-snippets buffer-flip avy auctex all-the-icons))
+ '(package-selected-packages nil)
+ '(package-vc-selected-packages
+   '((copilot :url "https://github.com/copilot-emacs/copilot.el" :branch "main")))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(powerline-default-separator 'curve)
@@ -1025,28 +1046,16 @@
  '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
-	 '((20 . "#dc322f")
-		 (40 . "#cb4366eb20b4")
-		 (60 . "#c1167942154f")
-		 (80 . "#b58900")
-		 (100 . "#a6ae8f7c0000")
-		 (120 . "#9ed892380000")
-		 (140 . "#96be94cf0000")
-		 (160 . "#8e5397440000")
-		 (180 . "#859900")
-		 (200 . "#77679bfc4635")
-		 (220 . "#6d449d465bfd")
-		 (240 . "#5fc09ea47092")
-		 (260 . "#4c68a01784aa")
-		 (280 . "#2aa198")
-		 (300 . "#303498e7affc")
-		 (320 . "#2fa1947cbb9b")
-		 (340 . "#2c879008c736")
-		 (360 . "#268bd2")))
+   '((20 . "#dc322f") (40 . "#cb4366eb20b4") (60 . "#c1167942154f") (80 . "#b58900")
+     (100 . "#a6ae8f7c0000") (120 . "#9ed892380000") (140 . "#96be94cf0000") (160 . "#8e5397440000")
+     (180 . "#859900") (200 . "#77679bfc4635") (220 . "#6d449d465bfd") (240 . "#5fc09ea47092")
+     (260 . "#4c68a01784aa") (280 . "#2aa198") (300 . "#303498e7affc") (320 . "#2fa1947cbb9b")
+     (340 . "#2c879008c736") (360 . "#268bd2")))
  '(vc-annotate-very-old-color nil)
  '(warning-suppress-types '((use-package) (use-package) (use-package)))
  '(weechat-color-list
-	 '(unspecified "#fdf6e3" "#eee8d5" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900" "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#657b83" "#839496")))
+   '(unspecified "#fdf6e3" "#eee8d5" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900"
+                 "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#657b83" "#839496")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -1239,5 +1248,11 @@
 
 (define-key global-map (kbd "M-ñ") 'copy-current-line-position-to-clipboard)
 
+(setq switch-to-prev-buffer-skip-regexp '("\\*helm" "\\*Warnings" "\\*scratch" "\\*Messages"))
+
+(add-hook 'emacs-startup-hook (lambda ()
+                                (when (get-buffer "*scratch*")
+                                  (kill-buffer "*scratch*"))))
 
 ;;; init.el file ends here
+(put 'downcase-region 'disabled nil)

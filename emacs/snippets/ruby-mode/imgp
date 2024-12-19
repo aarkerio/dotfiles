@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: imagepack
+# key: imgp
+# --
+image_pack_tag 'static/active_admin/img/autores_banner.png', title: 'Offer', alt: 'Offer'

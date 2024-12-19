@@ -33,3 +33,6 @@ emacs/quelpa/
 emacs/tramp
 emacs/transient/*.*
 emacs/eln-cache/
+emacs/projects
+emacs/tree-sitter
+

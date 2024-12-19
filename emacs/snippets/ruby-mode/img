@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: image
+# key: img
+# --
+image_tag 'icon.png', alt: 'alt', title: 'title'
